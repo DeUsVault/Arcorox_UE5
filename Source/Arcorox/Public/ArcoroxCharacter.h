@@ -7,6 +7,7 @@
 #include "InputActionValue.h"
 #include "ArcoroxCharacter.generated.h"
 
+//Forward declarations to avoid including unnecessary header files
 class UInputMappingContext;
 class UInputAction;
 class USpringArmComponent;
