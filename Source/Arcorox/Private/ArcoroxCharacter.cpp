@@ -21,6 +21,8 @@ AArcoroxCharacter::AArcoroxCharacter()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
+
+	AutoPossessPlayer = EAutoReceiveInput::Player0;
 }
 
 void AArcoroxCharacter::BeginPlay()
