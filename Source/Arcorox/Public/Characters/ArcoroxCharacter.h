@@ -32,6 +32,7 @@ protected:
 	/* Input callback functions */
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
+	void FireWeapon();
 
 	/* Enhanced Input */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -45,6 +46,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* JumpAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* FireWeaponAction;
 
 private:	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))

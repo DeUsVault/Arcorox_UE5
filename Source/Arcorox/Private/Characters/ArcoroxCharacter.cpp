@@ -19,7 +19,9 @@ AArcoroxCharacter::AArcoroxCharacter()
 
 	//Make Character Mesh move according to movement direction
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->RotationRate = FRotator(0.f, 400.f, 0.f);
+	GetCharacterMovement()->RotationRate = FRotator(0.f, 540.f, 0.f);
+	GetCharacterMovement()->JumpZVelocity = 600.f;
+	GetCharacterMovement()->AirControl = 0.2f;
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(GetRootComponent());
@@ -72,6 +74,11 @@ void AArcoroxCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
+void AArcoroxCharacter::FireWeapon()
+{
+
+}
+
 void AArcoroxCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -89,6 +96,7 @@ void AArcoroxCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AArcoroxCharacter::Look);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AArcoroxCharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		EnhancedInputComponent->BindAction(FireWeaponAction, ETriggerEvent::Triggered, this, &AArcoroxCharacter::FireWeapon);
 	}
 }
 
