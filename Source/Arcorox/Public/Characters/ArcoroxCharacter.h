@@ -13,6 +13,7 @@ class UInputAction;
 class USpringArmComponent;
 class UCameraComponent;
 class UParticleSystem;
+class UAnimMontage;
 
 UCLASS()
 class ARCOROX_API AArcoroxCharacter : public ACharacter
@@ -52,6 +53,10 @@ protected:
 	UInputAction* FireWeaponAction;
 
 private:	
+	void PlayFireSound();
+	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
+	void PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames);
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;
 
@@ -63,4 +68,10 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UParticleSystem* MuzzleFlash;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* HipFireMontage;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	TArray<FName> HipFireMontageSections;
 };
