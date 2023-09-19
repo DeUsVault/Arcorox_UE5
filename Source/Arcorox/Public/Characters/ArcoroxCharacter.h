@@ -36,6 +36,8 @@ protected:
 	void Look(const FInputActionValue& Value);
 	void FireWeapon();
 
+	bool GetBeamEndLocation(const FVector& BarrelSocketLocation, FVector& OutBeamLocation);
+
 	/* Enhanced Input */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputMappingContext* ArcoroxContext;
@@ -54,6 +56,9 @@ protected:
 
 private:	
 	void PlayFireSound();
+	void SpawnMuzzleFlash(const FTransform& SocketTransform);
+	void SpawnImpactParticles(const FVector& BeamEnd);
+	void SpawnBeamParticles(const FTransform& SocketTransform, const FVector& BeamEnd);
 	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
 	void PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames);
 

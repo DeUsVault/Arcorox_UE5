@@ -109,43 +109,63 @@ void AArcoroxCharacter::FireWeapon()
 {
 	PlayFireSound();
 	const USkeletalMeshSocket* BarrelSocket = GetMesh()->GetSocketByName("BarrelSocket");
-
 	if (BarrelSocket)
 	{
 		const FTransform SocketTransform = BarrelSocket->GetSocketTransform(GetMesh());
-
-		if (MuzzleFlash)
+		FVector BeamEnd;
+		SpawnMuzzleFlash(SocketTransform);
+		if (GetBeamEndLocation(SocketTransform.GetLocation(), BeamEnd))
 		{
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, SocketTransform);
-		}
-
-		const FVector Start{ SocketTransform.GetLocation() };
-		const FQuat Rotation{ SocketTransform.GetRotation() };
-		const FVector RotationAxis{ Rotation.GetAxisX() };
-		const FVector End{ Start + RotationAxis * 50000.f };
-		FVector BeamEnd{ End };
-		FHitResult FireHit;
-		GetWorld()->LineTraceSingleByChannel(FireHit, Start, End, ECollisionChannel::ECC_Visibility);
-		if (FireHit.bBlockingHit)
-		{
-			BeamEnd = FireHit.Location;
-			if (BeamParticles)
-			{
-				UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BeamParticles, SocketTransform);
-				if (Beam)
-				{
-					Beam->SetVectorParameter(FName("Target"), BeamEnd);
-				}
-			}
-
-			if (ImpactParticles)
-			{
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, FireHit.Location);
-			}
+			SpawnImpactParticles(BeamEnd);
+			SpawnBeamParticles(SocketTransform, BeamEnd);
 		}
 	}
-
 	PlayRandomMontageSection(HipFireMontage, HipFireMontageSections);
+}
+
+bool AArcoroxCharacter::GetBeamEndLocation(const FVector& BarrelSocketLocation, FVector& OutBeamLocation)
+{
+	//Get size of viewport
+	FVector2D ViewportSize;
+	if (GEngine && GEngine->GameViewport)
+	{
+		GEngine->GameViewport->GetViewportSize(ViewportSize);
+	}
+	//Get screen space location of crosshairs
+	FVector2D CrosshairLocation(ViewportSize.X / 2.f, ViewportSize.Y / 2.f);
+	CrosshairLocation.Y -= 50.f;
+	FVector CrosshairWorldPosition, CrosshairWorldDirection;
+	//Get crosshairs world position and direction
+	bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(UGameplayStatics::GetPlayerController(this, 0), CrosshairLocation, CrosshairWorldPosition, CrosshairWorldDirection);
+	if (bScreenToWorld) //was deprojection successful
+	{
+		FHitResult ScreenTraceHit;
+		const FVector Start{ CrosshairWorldPosition };
+		const FVector End{ CrosshairWorldPosition + CrosshairWorldDirection * 50000 };
+
+		//Set beam end point to line trace end point
+		OutBeamLocation = End;
+
+		//Trace outward from crosshairs location
+		GetWorld()->LineTraceSingleByChannel(ScreenTraceHit, Start, End, ECollisionChannel::ECC_Visibility);
+		if (ScreenTraceHit.bBlockingHit) //was there a trace hit
+		{
+			//Set beam end point to trace hit location
+			OutBeamLocation = ScreenTraceHit.Location;
+		}
+
+		//Perform line trace from weapon barrel
+		FHitResult WeaponTraceHit;
+		const FVector WeaponTraceStart{ BarrelSocketLocation };
+		const FVector WeaponTraceEnd{ OutBeamLocation };
+		GetWorld()->LineTraceSingleByChannel(WeaponTraceHit, WeaponTraceStart, WeaponTraceEnd, ECollisionChannel::ECC_Visibility);
+		if (WeaponTraceHit.bBlockingHit) //Object between weapon barrel and beam end point?
+		{
+			OutBeamLocation = WeaponTraceHit.Location;
+		}
+		return true;
+	}
+	return false;
 }
 
 void AArcoroxCharacter::PlayFireSound()
@@ -153,6 +173,34 @@ void AArcoroxCharacter::PlayFireSound()
 	if (FireSound)
 	{
 		UGameplayStatics::PlaySound2D(this, FireSound);
+	}
+}
+
+void AArcoroxCharacter::SpawnMuzzleFlash(const FTransform& SocketTransform)
+{
+	if (MuzzleFlash)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, SocketTransform);
+	}
+}
+
+void AArcoroxCharacter::SpawnImpactParticles(const FVector& BeamEnd)
+{
+	if (ImpactParticles)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, BeamEnd);
+	}
+}
+
+void AArcoroxCharacter::SpawnBeamParticles(const FTransform& SocketTransform, const FVector& BeamEnd)
+{
+	if (BeamParticles)
+	{
+		UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BeamParticles, SocketTransform);
+		if (Beam)
+		{
+			Beam->SetVectorParameter(FName("Target"), BeamEnd);
+		}
 	}
 }
 
