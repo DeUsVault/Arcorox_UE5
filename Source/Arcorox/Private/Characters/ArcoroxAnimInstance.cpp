@@ -26,5 +26,9 @@ void UArcoroxAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		Speed = UKismetMathLibrary::VSizeXY(ArcoroxCharacterMovement->Velocity);
 		bIsFalling = ArcoroxCharacterMovement->IsFalling();
 		bIsAccelerating = ArcoroxCharacterMovement->GetCurrentAcceleration().Size() > 0.f;
+
+		FRotator AimRotation = ArcoroxCharacter->GetBaseAimRotation();
+		FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(ArcoroxCharacter->GetVelocity());
+		MovementOffsetYaw = UKismetMathLibrary::NormalizedDeltaRotator(MovementRotation, AimRotation).Yaw;
 	}
 }
