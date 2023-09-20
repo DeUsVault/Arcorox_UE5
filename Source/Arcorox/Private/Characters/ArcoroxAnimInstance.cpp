@@ -30,5 +30,6 @@ void UArcoroxAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		FRotator AimRotation = ArcoroxCharacter->GetBaseAimRotation();
 		FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(ArcoroxCharacter->GetVelocity());
 		MovementOffsetYaw = UKismetMathLibrary::NormalizedDeltaRotator(MovementRotation, AimRotation).Yaw;
+		if (ArcoroxCharacter->GetVelocity().Size() > 0) LastMovementOffsetYaw = MovementOffsetYaw;
 	}
 }
