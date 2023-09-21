@@ -13,7 +13,12 @@
 #include "Animation/AnimMontage.h"
 #include "Kismet/GameplayStatics.h"
 
-AArcoroxCharacter::AArcoroxCharacter()
+AArcoroxCharacter::AArcoroxCharacter() :
+	bAiming(false),
+	CameraDefaultFOV(0.f),
+	CameraZoomedFOV(35.f),
+	CameraCurrentFOV(0.f),
+	ZoomInterpolationSpeed(25.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -29,9 +34,9 @@ AArcoroxCharacter::AArcoroxCharacter()
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(GetRootComponent());
-	CameraBoom->TargetArmLength = 300.f;
+	CameraBoom->TargetArmLength = 200.f;
 	CameraBoom->bUsePawnControlRotation = true;
-	CameraBoom->SocketOffset = FVector(0.f, 50.f, 50.f);
+	CameraBoom->SocketOffset = FVector(0.f, 50.f, 70.f);
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
@@ -44,13 +49,12 @@ void AArcoroxCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+	SetupEnhancedInput();
+
+	if (GetCamera())
 	{
-		//Link Input Mapping Context to Character Player Controller
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer())) 
-		{
-			Subsystem->AddMappingContext(ArcoroxContext, 0);
-		}
+		CameraDefaultFOV = GetCamera()->FieldOfView;
+		CameraCurrentFOV = CameraDefaultFOV;
 	}
 }
 
@@ -58,6 +62,7 @@ void AArcoroxCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	CameraZoomInterpolation(DeltaTime);
 }
 
 void AArcoroxCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -72,6 +77,8 @@ void AArcoroxCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AArcoroxCharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 		EnhancedInputComponent->BindAction(FireWeaponAction, ETriggerEvent::Started, this, &AArcoroxCharacter::FireWeapon);
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Started, this, &AArcoroxCharacter::AimButtonPressed);
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &AArcoroxCharacter::AimButtonReleased);
 	}
 }
 
@@ -123,6 +130,16 @@ void AArcoroxCharacter::FireWeapon()
 	PlayRandomMontageSection(HipFireMontage, HipFireMontageSections);
 }
 
+void AArcoroxCharacter::AimButtonPressed()
+{
+	bAiming = true;
+}
+
+void AArcoroxCharacter::AimButtonReleased()
+{
+	bAiming = false;
+}
+
 bool AArcoroxCharacter::GetBeamEndLocation(const FVector& BarrelSocketLocation, FVector& OutBeamLocation)
 {
 	//Get size of viewport
@@ -139,33 +156,40 @@ bool AArcoroxCharacter::GetBeamEndLocation(const FVector& BarrelSocketLocation, 
 	bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(UGameplayStatics::GetPlayerController(this, 0), CrosshairLocation, CrosshairWorldPosition, CrosshairWorldDirection);
 	if (bScreenToWorld) //was deprojection successful
 	{
-		FHitResult ScreenTraceHit;
-		const FVector Start{ CrosshairWorldPosition };
-		const FVector End{ CrosshairWorldPosition + CrosshairWorldDirection * 50000 };
-
-		//Set beam end point to line trace end point
-		OutBeamLocation = End;
-
-		//Trace outward from crosshairs location
-		GetWorld()->LineTraceSingleByChannel(ScreenTraceHit, Start, End, ECollisionChannel::ECC_Visibility);
-		if (ScreenTraceHit.bBlockingHit) //was there a trace hit
-		{
-			//Set beam end point to trace hit location
-			OutBeamLocation = ScreenTraceHit.Location;
-		}
-
-		//Perform line trace from weapon barrel
-		FHitResult WeaponTraceHit;
-		const FVector WeaponTraceStart{ BarrelSocketLocation };
-		const FVector WeaponTraceEnd{ OutBeamLocation };
-		GetWorld()->LineTraceSingleByChannel(WeaponTraceHit, WeaponTraceStart, WeaponTraceEnd, ECollisionChannel::ECC_Visibility);
-		if (WeaponTraceHit.bBlockingHit) //Object between weapon barrel and beam end point?
-		{
-			OutBeamLocation = WeaponTraceHit.Location;
-		}
+		CrosshairLineTrace(CrosshairWorldPosition, CrosshairWorldDirection, OutBeamLocation);
+		WeaponLineTrace(BarrelSocketLocation, OutBeamLocation);
 		return true;
 	}
 	return false;
+}
+
+void AArcoroxCharacter::WeaponLineTrace(const FVector& BarrelSocketLocation, FVector& OutBeamLocation)
+{
+	//Perform line trace from weapon barrel
+	FHitResult WeaponTraceHit;
+	const FVector WeaponTraceStart{ BarrelSocketLocation };
+	const FVector WeaponTraceEnd{ OutBeamLocation };
+	GetWorld()->LineTraceSingleByChannel(WeaponTraceHit, WeaponTraceStart, WeaponTraceEnd, ECollisionChannel::ECC_Visibility);
+	if (WeaponTraceHit.bBlockingHit) //Object between weapon barrel and beam end point?
+	{
+		OutBeamLocation = WeaponTraceHit.Location;
+	}
+}
+
+void AArcoroxCharacter::CrosshairLineTrace(FVector& CrosshairWorldPosition, FVector& CrosshairWorldDirection, FVector& OutBeamLocation)
+{
+	FHitResult ScreenTraceHit;
+	const FVector Start{ CrosshairWorldPosition };
+	const FVector End{ CrosshairWorldPosition + CrosshairWorldDirection * 50000 };
+	//Set beam end point to line trace end point
+	OutBeamLocation = End;
+	//Trace outward from crosshairs location
+	GetWorld()->LineTraceSingleByChannel(ScreenTraceHit, Start, End, ECollisionChannel::ECC_Visibility);
+	if (ScreenTraceHit.bBlockingHit) //was there a trace hit
+	{
+		//Set beam end point to trace hit location
+		OutBeamLocation = ScreenTraceHit.Location;
+	}
 }
 
 void AArcoroxCharacter::PlayFireSound()
@@ -219,4 +243,32 @@ void AArcoroxCharacter::PlayRandomMontageSection(UAnimMontage* Montage, const TA
 	if (SectionNames.Num() <= 0) return;
 	const int32 Section = FMath::RandRange(0, SectionNames.Num() - 1);
 	PlayMontageSection(Montage, SectionNames[Section]);
+}
+
+void AArcoroxCharacter::CameraZoomInterpolation(float DeltaTime)
+{
+	//Smoothly transition the current camera field of view
+	if (bAiming)
+	{
+		//Interpolate to zoomed field of view
+		CameraCurrentFOV = FMath::FInterpTo<float>(CameraCurrentFOV, CameraZoomedFOV, DeltaTime, ZoomInterpolationSpeed);
+	}
+	else
+	{
+		//Interpolate to default field of view
+		CameraCurrentFOV = FMath::FInterpTo<float>(CameraCurrentFOV, CameraDefaultFOV, DeltaTime, ZoomInterpolationSpeed);
+	}
+	if (GetCamera()) GetCamera()->SetFieldOfView(CameraCurrentFOV);
+}
+
+void AArcoroxCharacter::SetupEnhancedInput()
+{
+	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+	{
+		//Link Input Mapping Context to Character Player Controller
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			Subsystem->AddMappingContext(ArcoroxContext, 0);
+		}
+	}
 }

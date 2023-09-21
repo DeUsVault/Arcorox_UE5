@@ -21,7 +21,7 @@ void UArcoroxAnimInstance::NativeUpdateAnimation(float DeltaTime)
 {
 	Super::NativeUpdateAnimation(DeltaTime);
 
-	if (ArcoroxCharacterMovement)
+	if (ArcoroxCharacter && ArcoroxCharacterMovement)
 	{
 		Speed = UKismetMathLibrary::VSizeXY(ArcoroxCharacterMovement->Velocity);
 		bIsFalling = ArcoroxCharacterMovement->IsFalling();
@@ -31,5 +31,7 @@ void UArcoroxAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(ArcoroxCharacter->GetVelocity());
 		MovementOffsetYaw = UKismetMathLibrary::NormalizedDeltaRotator(MovementRotation, AimRotation).Yaw;
 		if (ArcoroxCharacter->GetVelocity().Size() > 0) LastMovementOffsetYaw = MovementOffsetYaw;
+
+		bAiming = ArcoroxCharacter->IsAiming();
 	}
 }

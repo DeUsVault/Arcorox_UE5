@@ -28,6 +28,7 @@ public:
 
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE UCameraComponent* GetCamera() const { return Camera; }
+	FORCEINLINE bool IsAiming() const { return bAiming; }
 protected:
 	virtual void BeginPlay() override;
 
@@ -35,8 +36,12 @@ protected:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void FireWeapon();
+	void AimButtonPressed();
+	void AimButtonReleased();
 
 	bool GetBeamEndLocation(const FVector& BarrelSocketLocation, FVector& OutBeamLocation);
+	void WeaponLineTrace(const FVector& BarrelSocketLocation, FVector& OutBeamLocation);
+	void CrosshairLineTrace(FVector& CrosshairWorldPosition, FVector& CrosshairWorldDirection, FVector& OutBeamLocation);
 
 	/* Enhanced Input */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -54,6 +59,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* FireWeaponAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* AimAction;
+
 private:	
 	void PlayFireSound();
 	void SpawnMuzzleFlash(const FTransform& SocketTransform);
@@ -61,6 +69,8 @@ private:
 	void SpawnBeamParticles(const FTransform& SocketTransform, const FVector& BeamEnd);
 	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
 	void PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames);
+	void CameraZoomInterpolation(float DeltaTime);
+	void SetupEnhancedInput();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;
@@ -85,4 +95,15 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	TArray<FName> HipFireMontageSections;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	bool bAiming;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	float ZoomInterpolationSpeed;
+
+	float CameraDefaultFOV;
+	float CameraZoomedFOV;
+	float CameraCurrentFOV;
+
 };
