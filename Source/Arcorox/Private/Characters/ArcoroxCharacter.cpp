@@ -18,7 +18,10 @@ AArcoroxCharacter::AArcoroxCharacter() :
 	CameraDefaultFOV(0.f),
 	CameraZoomedFOV(35.f),
 	CameraCurrentFOV(0.f),
-	ZoomInterpolationSpeed(25.f)
+	ZoomInterpolationSpeed(25.f),
+	LookScale(1.f),
+	HipLookScale(1.f),
+	AimingLookScale(0.25f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -63,6 +66,8 @@ void AArcoroxCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	CameraZoomInterpolation(DeltaTime);
+	SetLookScale();
+	CalculateCrosshairSpread(DeltaTime);
 }
 
 void AArcoroxCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -87,6 +92,11 @@ void AArcoroxCharacter::Jump()
 	Super::Jump();
 }
 
+float AArcoroxCharacter::GetCrosshairSpreadMultiplier() const
+{
+	return CrosshairSpreadMultiplier;
+}
+
 void AArcoroxCharacter::Move(const FInputActionValue& Value)
 {
 	const FVector2D MovementVector = Value.Get<FVector2D>();
@@ -107,8 +117,8 @@ void AArcoroxCharacter::Look(const FInputActionValue& Value)
 	const FVector2D LookAxisVector = Value.Get<FVector2D>();
 	if (GetController())
 	{
-		AddControllerPitchInput(LookAxisVector.Y);
-		AddControllerYawInput(LookAxisVector.X);
+		AddControllerPitchInput(LookScale * LookAxisVector.Y);
+		AddControllerYawInput(LookScale * LookAxisVector.X);
 	}
 }
 
@@ -192,6 +202,16 @@ void AArcoroxCharacter::CrosshairLineTrace(FVector& CrosshairWorldPosition, FVec
 	}
 }
 
+void AArcoroxCharacter::CalculateCrosshairSpread(float DeltaTime)
+{
+	FVector2D WalkSpeedRange{ 0.f, 600.f };
+	FVector2D VelocityMultiplierRange{ 0.f, 1.f };
+	FVector Velocity{ GetVelocity() };
+	Velocity.Z = 0.f;
+	CrosshairVelocityFactor = FMath::GetMappedRangeValueClamped(WalkSpeedRange, VelocityMultiplierRange, Velocity.Size());
+	CrosshairSpreadMultiplier = 0.5f + CrosshairVelocityFactor;
+}
+
 void AArcoroxCharacter::PlayFireSound()
 {
 	if (FireSound)
@@ -271,4 +291,10 @@ void AArcoroxCharacter::SetupEnhancedInput()
 			Subsystem->AddMappingContext(ArcoroxContext, 0);
 		}
 	}
+}
+
+void AArcoroxCharacter::SetLookScale()
+{
+	if (bAiming) LookScale = AimingLookScale;
+	else LookScale = HipLookScale;
 }
