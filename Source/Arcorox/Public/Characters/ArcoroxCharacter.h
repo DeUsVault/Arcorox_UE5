@@ -47,6 +47,11 @@ protected:
 	void CrosshairLineTrace(FVector& CrosshairWorldPosition, FVector& CrosshairWorldDirection, FVector& OutBeamLocation);
 	void CalculateCrosshairSpread(float DeltaTime);
 
+	void StartCrosshairShootTimer();
+
+	UFUNCTION()
+	void FinishedCrosshairShootTimer();
+
 	/* Enhanced Input */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputMappingContext* ArcoroxContext;
@@ -135,4 +140,7 @@ private:
 	float CameraZoomedFOV;
 	float CameraCurrentFOV;
 
+	float ShootTimeDuration;
+	bool bFiringWeapon;
+	FTimerHandle CrosshairShootTimer;
 };

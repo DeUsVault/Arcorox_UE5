@@ -21,7 +21,14 @@ AArcoroxCharacter::AArcoroxCharacter() :
 	ZoomInterpolationSpeed(25.f),
 	LookScale(1.f),
 	HipLookScale(1.f),
-	AimingLookScale(0.25f)
+	AimingLookScale(0.25f),
+	CrosshairSpreadMultiplier(0.f),
+	CrosshairVelocityFactor(0.f),
+	CrosshairInAirFactor(0.f),
+	CrosshairAimFactor(0.f),
+	CrosshairShootingFactor(0.f),
+	ShootTimeDuration(0.05f),
+	bFiringWeapon(false)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -204,12 +211,29 @@ void AArcoroxCharacter::CrosshairLineTrace(FVector& CrosshairWorldPosition, FVec
 
 void AArcoroxCharacter::CalculateCrosshairSpread(float DeltaTime)
 {
+	//Calculate CrosshairVelocityFactor
 	FVector2D WalkSpeedRange{ 0.f, 600.f };
 	FVector2D VelocityMultiplierRange{ 0.f, 1.f };
 	FVector Velocity{ GetVelocity() };
 	Velocity.Z = 0.f;
 	CrosshairVelocityFactor = FMath::GetMappedRangeValueClamped(WalkSpeedRange, VelocityMultiplierRange, Velocity.Size());
-	CrosshairSpreadMultiplier = 0.5f + CrosshairVelocityFactor;
+	//Calculate CrosshairInAirFactor
+	if (GetCharacterMovement()->IsFalling()) CrosshairInAirFactor = FMath::FInterpTo<float>(CrosshairInAirFactor, 2.25f, DeltaTime, 2.25f);
+	else CrosshairInAirFactor = FMath::FInterpTo<float>(CrosshairInAirFactor, 0.f, DeltaTime, 30.f);
+	//Calculate CrosshairAimFactor
+	if (bAiming) CrosshairAimFactor = FMath::FInterpTo<float>(CrosshairAimFactor, 0.6f, DeltaTime, 30.f);
+	else CrosshairAimFactor = FMath::FInterpTo<float>(CrosshairAimFactor, 0.f, DeltaTime, 30.f);
+	CrosshairSpreadMultiplier = 0.5f + CrosshairVelocityFactor + CrosshairInAirFactor - CrosshairAimFactor;
+}
+
+void AArcoroxCharacter::StartCrosshairShootTimer()
+{
+	bFiringWeapon = true;
+}
+
+void AArcoroxCharacter::FinishedCrosshairShootTimer()
+{
+	bFiringWeapon = false;
 }
 
 void AArcoroxCharacter::PlayFireSound()
