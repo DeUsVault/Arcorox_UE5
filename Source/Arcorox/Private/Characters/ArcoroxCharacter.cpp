@@ -145,6 +145,7 @@ void AArcoroxCharacter::FireWeapon()
 		}
 	}
 	PlayRandomMontageSection(HipFireMontage, HipFireMontageSections);
+	StartCrosshairShootTimer();
 }
 
 void AArcoroxCharacter::AimButtonPressed()
@@ -167,7 +168,6 @@ bool AArcoroxCharacter::GetBeamEndLocation(const FVector& BarrelSocketLocation, 
 	}
 	//Get screen space location of crosshairs
 	FVector2D CrosshairLocation(ViewportSize.X / 2.f, ViewportSize.Y / 2.f);
-	CrosshairLocation.Y -= 50.f;
 	FVector CrosshairWorldPosition, CrosshairWorldDirection;
 	//Get crosshairs world position and direction
 	bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(UGameplayStatics::GetPlayerController(this, 0), CrosshairLocation, CrosshairWorldPosition, CrosshairWorldDirection);
@@ -221,14 +221,18 @@ void AArcoroxCharacter::CalculateCrosshairSpread(float DeltaTime)
 	if (GetCharacterMovement()->IsFalling()) CrosshairInAirFactor = FMath::FInterpTo<float>(CrosshairInAirFactor, 2.25f, DeltaTime, 2.25f);
 	else CrosshairInAirFactor = FMath::FInterpTo<float>(CrosshairInAirFactor, 0.f, DeltaTime, 30.f);
 	//Calculate CrosshairAimFactor
-	if (bAiming) CrosshairAimFactor = FMath::FInterpTo<float>(CrosshairAimFactor, 0.6f, DeltaTime, 30.f);
+	if (bAiming) CrosshairAimFactor = FMath::FInterpTo<float>(CrosshairAimFactor, -0.6f, DeltaTime, 30.f);
 	else CrosshairAimFactor = FMath::FInterpTo<float>(CrosshairAimFactor, 0.f, DeltaTime, 30.f);
-	CrosshairSpreadMultiplier = 0.5f + CrosshairVelocityFactor + CrosshairInAirFactor - CrosshairAimFactor;
+	//Calculate CrosshairShootFactor
+	if (bFiringWeapon) CrosshairShootingFactor = FMath::FInterpTo<float>(CrosshairShootingFactor, 0.4f, DeltaTime, 60.f);
+	else CrosshairShootingFactor = FMath::FInterpTo<float>(CrosshairShootingFactor, 0.f, DeltaTime, 60.f);
+	CrosshairSpreadMultiplier = 0.5f + CrosshairVelocityFactor + CrosshairInAirFactor + CrosshairAimFactor + CrosshairShootingFactor;
 }
 
 void AArcoroxCharacter::StartCrosshairShootTimer()
 {
 	bFiringWeapon = true;
+	GetWorldTimerManager().SetTimer(CrosshairShootTimer, this, &AArcoroxCharacter::FinishedCrosshairShootTimer, ShootTimeDuration);
 }
 
 void AArcoroxCharacter::FinishedCrosshairShootTimer()
