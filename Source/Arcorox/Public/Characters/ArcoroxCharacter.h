@@ -39,6 +39,8 @@ protected:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void FireWeapon();
+	void FireButtonPressed();
+	void FireButtonReleased();
 	void AimButtonPressed();
 	void AimButtonReleased();
 
@@ -48,6 +50,11 @@ protected:
 	void CalculateCrosshairSpread(float DeltaTime);
 
 	void StartCrosshairShootTimer();
+
+	void StartAutoFireTimer();
+
+	UFUNCTION()
+	void AutoFireReset();
 
 	UFUNCTION()
 	void FinishedCrosshairShootTimer();
@@ -136,11 +143,19 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Crosshairs, meta = (AllowPrivateAccess = "true"))
 	float CrosshairShootingFactor;
 
+	//Camera field of view
 	float CameraDefaultFOV;
 	float CameraZoomedFOV;
 	float CameraCurrentFOV;
 
+	//Crosshair spread
 	float ShootTimeDuration;
 	bool bFiringWeapon;
 	FTimerHandle CrosshairShootTimer;
+
+	//Automatic Weapon Fire
+	bool bFireButtonPressed;
+	bool bShouldFire;
+	float FireRate;
+	FTimerHandle AutoFireTimer;
 };

@@ -14,21 +14,29 @@
 #include "Kismet/GameplayStatics.h"
 
 AArcoroxCharacter::AArcoroxCharacter() :
+	//Is Aiming
 	bAiming(false),
+	//Camera field of view
 	CameraDefaultFOV(0.f),
 	CameraZoomedFOV(35.f),
 	CameraCurrentFOV(0.f),
 	ZoomInterpolationSpeed(25.f),
+	//Look sensitivity
 	LookScale(1.f),
 	HipLookScale(1.f),
 	AimingLookScale(0.25f),
+	//Crosshair spread
 	CrosshairSpreadMultiplier(0.f),
 	CrosshairVelocityFactor(0.f),
 	CrosshairInAirFactor(0.f),
 	CrosshairAimFactor(0.f),
 	CrosshairShootingFactor(0.f),
 	ShootTimeDuration(0.05f),
-	bFiringWeapon(false)
+	bFiringWeapon(false),
+	//Automatic weapon fire
+	FireRate(0.1f),
+	bShouldFire(true),
+	bFireButtonPressed(false)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -88,7 +96,8 @@ void AArcoroxCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AArcoroxCharacter::Look);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AArcoroxCharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-		EnhancedInputComponent->BindAction(FireWeaponAction, ETriggerEvent::Started, this, &AArcoroxCharacter::FireWeapon);
+		EnhancedInputComponent->BindAction(FireWeaponAction, ETriggerEvent::Started, this, &AArcoroxCharacter::FireButtonPressed);
+		EnhancedInputComponent->BindAction(FireWeaponAction, ETriggerEvent::Completed, this, &AArcoroxCharacter::FireButtonReleased);
 		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Started, this, &AArcoroxCharacter::AimButtonPressed);
 		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &AArcoroxCharacter::AimButtonReleased);
 	}
@@ -146,6 +155,17 @@ void AArcoroxCharacter::FireWeapon()
 	}
 	PlayRandomMontageSection(HipFireMontage, HipFireMontageSections);
 	StartCrosshairShootTimer();
+}
+
+void AArcoroxCharacter::FireButtonPressed()
+{
+	bFireButtonPressed = true;
+	StartAutoFireTimer();
+}
+
+void AArcoroxCharacter::FireButtonReleased()
+{
+	bFireButtonPressed = false;
 }
 
 void AArcoroxCharacter::AimButtonPressed()
@@ -233,6 +253,22 @@ void AArcoroxCharacter::StartCrosshairShootTimer()
 {
 	bFiringWeapon = true;
 	GetWorldTimerManager().SetTimer(CrosshairShootTimer, this, &AArcoroxCharacter::FinishedCrosshairShootTimer, ShootTimeDuration);
+}
+
+void AArcoroxCharacter::StartAutoFireTimer()
+{
+	if (bShouldFire)
+	{
+		FireWeapon();
+		bShouldFire = false;
+		GetWorldTimerManager().SetTimer(AutoFireTimer, this, &AArcoroxCharacter::AutoFireReset, FireRate);
+	}
+}
+
+void AArcoroxCharacter::AutoFireReset()
+{
+	bShouldFire = true;
+	if (bFireButtonPressed) StartAutoFireTimer();
 }
 
 void AArcoroxCharacter::FinishedCrosshairShootTimer()
