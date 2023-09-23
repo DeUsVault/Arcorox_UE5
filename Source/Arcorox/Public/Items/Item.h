@@ -7,6 +7,7 @@
 #include "Item.generated.h"
 
 class UBoxComponent;
+class UWidgetComponent;
 
 UCLASS()
 class ARCOROX_API AItem : public AActor
@@ -29,4 +30,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 	UBoxComponent* CollisionBox;
 
+	/* Popup Widget showing item properties */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	UWidgetComponent* PickupWidget;
 };
