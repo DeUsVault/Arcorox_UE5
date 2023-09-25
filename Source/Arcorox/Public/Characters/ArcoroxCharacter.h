@@ -47,6 +47,8 @@ protected:
 	bool GetBeamEndLocation(const FVector& BarrelSocketLocation, FVector& OutBeamLocation);
 	void WeaponLineTrace(const FVector& BarrelSocketLocation, FVector& OutBeamLocation);
 	void CrosshairLineTrace(FVector& CrosshairWorldPosition, FVector& CrosshairWorldDirection, FVector& OutBeamLocation);
+	/* Line trace for items behind the crosshairs*/
+	bool CrosshairTrace(FHitResult& OutHit);
 	void CalculateCrosshairSpread(float DeltaTime);
 
 	void StartCrosshairShootTimer();

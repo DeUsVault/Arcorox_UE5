@@ -2,6 +2,7 @@
 
 
 #include "Characters/ArcoroxCharacter.h"
+#include "Items/Item.h"
 #include "InputMappingContext.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
@@ -83,6 +84,16 @@ void AArcoroxCharacter::Tick(float DeltaTime)
 	CameraZoomInterpolation(DeltaTime);
 	SetLookScale();
 	CalculateCrosshairSpread(DeltaTime);
+
+	FHitResult ItemTraceResult;
+	if (CrosshairTrace(ItemTraceResult))
+	{
+		AItem* HitItem = Cast<AItem>(ItemTraceResult.GetActor());
+		if (HitItem)
+		{
+			HitItem->ShowPickupWidget();
+		}
+	}
 }
 
 void AArcoroxCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -217,7 +228,7 @@ void AArcoroxCharacter::CrosshairLineTrace(FVector& CrosshairWorldPosition, FVec
 {
 	FHitResult ScreenTraceHit;
 	const FVector Start{ CrosshairWorldPosition };
-	const FVector End{ CrosshairWorldPosition + CrosshairWorldDirection * 50000 };
+	const FVector End{ Start + CrosshairWorldDirection * 50000 };
 	//Set beam end point to line trace end point
 	OutBeamLocation = End;
 	//Trace outward from crosshairs location
@@ -227,6 +238,30 @@ void AArcoroxCharacter::CrosshairLineTrace(FVector& CrosshairWorldPosition, FVec
 		//Set beam end point to trace hit location
 		OutBeamLocation = ScreenTraceHit.Location;
 	}
+}
+
+bool AArcoroxCharacter::CrosshairTrace(FHitResult& OutHit)
+{
+	//Get size of viewport
+	FVector2D ViewportSize;
+	if (GEngine && GEngine->GameViewport)
+	{
+		GEngine->GameViewport->GetViewportSize(ViewportSize);
+	}
+	//Get screen space location of crosshairs
+	FVector2D CrosshairLocation(ViewportSize.X / 2.f, ViewportSize.Y / 2.f);
+	FVector CrosshairWorldPosition, CrosshairWorldDirection;
+	//Get crosshairs world position and direction
+	bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(UGameplayStatics::GetPlayerController(this, 0), CrosshairLocation, CrosshairWorldPosition, CrosshairWorldDirection);
+	if (bScreenToWorld) //was deprojection successful
+	{
+		//Trace outward from crosshair location
+		const FVector Start{ CrosshairWorldPosition };
+		const FVector End{ Start + CrosshairWorldDirection * 50000 };
+		GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, ECollisionChannel::ECC_Visibility);
+		return OutHit.bBlockingHit;
+	}
+	return false;
 }
 
 void AArcoroxCharacter::CalculateCrosshairSpread(float DeltaTime)

@@ -6,9 +6,7 @@
 #include "Items/Item.h"
 #include "Weapon.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class ARCOROX_API AWeapon : public AItem
 {

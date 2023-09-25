@@ -18,6 +18,9 @@ public:
 	AItem();
 	virtual void Tick(float DeltaTime) override;
 
+	void ShowPickupWidget();
+	void HidePickupWidget();
+
 protected:
 	virtual void BeginPlay() override;
 
