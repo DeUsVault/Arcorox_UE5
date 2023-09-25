@@ -86,7 +86,8 @@ void AArcoroxCharacter::Tick(float DeltaTime)
 	CalculateCrosshairSpread(DeltaTime);
 
 	FHitResult ItemTraceResult;
-	if (CrosshairTrace(ItemTraceResult))
+	FVector HitLocation;
+	if (CrosshairLineTrace(ItemTraceResult, HitLocation))
 	{
 		AItem* HitItem = Cast<AItem>(ItemTraceResult.GetActor());
 		if (HitItem)
@@ -191,56 +192,27 @@ void AArcoroxCharacter::AimButtonReleased()
 
 bool AArcoroxCharacter::GetBeamEndLocation(const FVector& BarrelSocketLocation, FVector& OutBeamLocation)
 {
-	//Get size of viewport
-	FVector2D ViewportSize;
-	if (GEngine && GEngine->GameViewport)
+	//Check for crosshair trace hit
+	FHitResult CrosshairHitResult;
+	if (CrosshairLineTrace(CrosshairHitResult, OutBeamLocation))
 	{
-		GEngine->GameViewport->GetViewportSize(ViewportSize);
+		OutBeamLocation = CrosshairHitResult.Location;
 	}
-	//Get screen space location of crosshairs
-	FVector2D CrosshairLocation(ViewportSize.X / 2.f, ViewportSize.Y / 2.f);
-	FVector CrosshairWorldPosition, CrosshairWorldDirection;
-	//Get crosshairs world position and direction
-	bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(UGameplayStatics::GetPlayerController(this, 0), CrosshairLocation, CrosshairWorldPosition, CrosshairWorldDirection);
-	if (bScreenToWorld) //was deprojection successful
+	//Perform line trace from weapon barrel
+	FHitResult WeaponTraceHit;
+	const FVector WeaponTraceStart{ BarrelSocketLocation };
+	const FVector StartToEnd{ OutBeamLocation - BarrelSocketLocation };
+	const FVector WeaponTraceEnd{ BarrelSocketLocation + StartToEnd * 1.25f };
+	GetWorld()->LineTraceSingleByChannel(WeaponTraceHit, WeaponTraceStart, WeaponTraceEnd, ECollisionChannel::ECC_Visibility);
+	if (WeaponTraceHit.bBlockingHit) //Object between weapon barrel and beam end point?
 	{
-		CrosshairLineTrace(CrosshairWorldPosition, CrosshairWorldDirection, OutBeamLocation);
-		WeaponLineTrace(BarrelSocketLocation, OutBeamLocation);
+		OutBeamLocation = WeaponTraceHit.Location;
 		return true;
 	}
 	return false;
 }
 
-void AArcoroxCharacter::WeaponLineTrace(const FVector& BarrelSocketLocation, FVector& OutBeamLocation)
-{
-	//Perform line trace from weapon barrel
-	FHitResult WeaponTraceHit;
-	const FVector WeaponTraceStart{ BarrelSocketLocation };
-	const FVector WeaponTraceEnd{ OutBeamLocation };
-	GetWorld()->LineTraceSingleByChannel(WeaponTraceHit, WeaponTraceStart, WeaponTraceEnd, ECollisionChannel::ECC_Visibility);
-	if (WeaponTraceHit.bBlockingHit) //Object between weapon barrel and beam end point?
-	{
-		OutBeamLocation = WeaponTraceHit.Location;
-	}
-}
-
-void AArcoroxCharacter::CrosshairLineTrace(FVector& CrosshairWorldPosition, FVector& CrosshairWorldDirection, FVector& OutBeamLocation)
-{
-	FHitResult ScreenTraceHit;
-	const FVector Start{ CrosshairWorldPosition };
-	const FVector End{ Start + CrosshairWorldDirection * 50000 };
-	//Set beam end point to line trace end point
-	OutBeamLocation = End;
-	//Trace outward from crosshairs location
-	GetWorld()->LineTraceSingleByChannel(ScreenTraceHit, Start, End, ECollisionChannel::ECC_Visibility);
-	if (ScreenTraceHit.bBlockingHit) //was there a trace hit
-	{
-		//Set beam end point to trace hit location
-		OutBeamLocation = ScreenTraceHit.Location;
-	}
-}
-
-bool AArcoroxCharacter::CrosshairTrace(FHitResult& OutHit)
+bool AArcoroxCharacter::CrosshairLineTrace(FHitResult& OutHit, FVector& OutHitLocation)
 {
 	//Get size of viewport
 	FVector2D ViewportSize;
@@ -258,8 +230,13 @@ bool AArcoroxCharacter::CrosshairTrace(FHitResult& OutHit)
 		//Trace outward from crosshair location
 		const FVector Start{ CrosshairWorldPosition };
 		const FVector End{ Start + CrosshairWorldDirection * 50000 };
+		OutHitLocation = End;
 		GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, ECollisionChannel::ECC_Visibility);
-		return OutHit.bBlockingHit;
+		if (OutHit.bBlockingHit)
+		{
+			OutHitLocation = OutHit.Location;
+			return true;
+		}
 	}
 	return false;
 }
