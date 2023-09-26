@@ -3,6 +3,7 @@
 
 #include "Characters/ArcoroxCharacter.h"
 #include "Items/Item.h"
+#include "Items/Weapon.h"
 #include "InputMappingContext.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
@@ -76,6 +77,8 @@ void AArcoroxCharacter::BeginPlay()
 		CameraDefaultFOV = GetCamera()->FieldOfView;
 		CameraCurrentFOV = CameraDefaultFOV;
 	}
+
+	SpawnDefaultWeapon();
 }
 
 void AArcoroxCharacter::Tick(float DeltaTime)
@@ -300,6 +303,21 @@ void AArcoroxCharacter::StartAutoFireTimer()
 		FireWeapon();
 		bShouldFire = false;
 		GetWorldTimerManager().SetTimer(AutoFireTimer, this, &AArcoroxCharacter::AutoFireReset, FireRate);
+	}
+}
+
+void AArcoroxCharacter::SpawnDefaultWeapon()
+{
+	UWorld* World = GetWorld();
+	if (World && DefaultWeaponClass)
+	{
+		AWeapon* DefaultWeapon = World->SpawnActor<AWeapon>(DefaultWeaponClass);
+		const USkeletalMeshSocket* WeaponSocket = GetMesh()->GetSocketByName(FName("WeaponSocket"));
+		if (WeaponSocket)
+		{
+			WeaponSocket->AttachActor(DefaultWeapon, GetMesh());
+			EquippedWeapon = DefaultWeapon;
+		}
 	}
 }
 

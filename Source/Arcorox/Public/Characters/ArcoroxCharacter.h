@@ -15,6 +15,7 @@ class UCameraComponent;
 class UParticleSystem;
 class UAnimMontage;
 class AItem;
+class AWeapon;
 
 UCLASS()
 class ARCOROX_API AArcoroxCharacter : public ACharacter
@@ -57,8 +58,9 @@ protected:
 	void ItemTrace();
 
 	void StartCrosshairShootTimer();
-
 	void StartAutoFireTimer();
+
+	void SpawnDefaultWeapon();
 
 	UFUNCTION()
 	void AutoFireReset();
@@ -152,6 +154,14 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
 	AItem* TraceHitItem;
+
+	/* Currently equipped weapon */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	AWeapon* EquippedWeapon;
+
+	/* Default weapon class to spawn for character */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<AWeapon> DefaultWeaponClass;
 
 	//Camera field of view
 	float CameraDefaultFOV;
