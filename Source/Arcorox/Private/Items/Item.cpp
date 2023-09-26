@@ -100,3 +100,13 @@ void AItem::HidePickupWidget()
 {
 	if(PickupWidget) PickupWidget->SetVisibility(false);
 }
+
+void AItem::DisableSphereCollision()
+{
+	if(OverlapSphere) OverlapSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+}
+
+void AItem::DisableBoxCollision()
+{
+	if (CollisionBox) CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+}

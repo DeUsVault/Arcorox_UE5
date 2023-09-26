@@ -78,7 +78,7 @@ void AArcoroxCharacter::BeginPlay()
 		CameraCurrentFOV = CameraDefaultFOV;
 	}
 
-	SpawnDefaultWeapon();
+	EquipWeapon(SpawnDefaultWeapon());
 }
 
 void AArcoroxCharacter::Tick(float DeltaTime)
@@ -306,17 +306,24 @@ void AArcoroxCharacter::StartAutoFireTimer()
 	}
 }
 
-void AArcoroxCharacter::SpawnDefaultWeapon()
+AWeapon* AArcoroxCharacter::SpawnDefaultWeapon()
 {
 	UWorld* World = GetWorld();
-	if (World && DefaultWeaponClass)
+	if (World && DefaultWeaponClass) return World->SpawnActor<AWeapon>(DefaultWeaponClass);
+	return nullptr;
+}
+
+void AArcoroxCharacter::EquipWeapon(AWeapon* Weapon)
+{
+	if (Weapon)
 	{
-		AWeapon* DefaultWeapon = World->SpawnActor<AWeapon>(DefaultWeaponClass);
+		Weapon->DisableSphereCollision();
+		Weapon->DisableBoxCollision();
 		const USkeletalMeshSocket* WeaponSocket = GetMesh()->GetSocketByName(FName("WeaponSocket"));
 		if (WeaponSocket)
 		{
-			WeaponSocket->AttachActor(DefaultWeapon, GetMesh());
-			EquippedWeapon = DefaultWeapon;
+			WeaponSocket->AttachActor(Weapon, GetMesh());
+			EquippedWeapon = Weapon;
 		}
 	}
 }

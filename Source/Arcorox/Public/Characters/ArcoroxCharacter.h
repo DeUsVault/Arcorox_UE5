@@ -60,7 +60,11 @@ protected:
 	void StartCrosshairShootTimer();
 	void StartAutoFireTimer();
 
-	void SpawnDefaultWeapon();
+	/* Spawn default weapon for character in BeginPlay */
+	AWeapon* SpawnDefaultWeapon();
+
+	/* Attach weapon to character's weapon socket */
+	void EquipWeapon(AWeapon* Weapon);
 
 	UFUNCTION()
 	void AutoFireReset();

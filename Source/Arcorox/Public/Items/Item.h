@@ -33,6 +33,8 @@ public:
 
 	void ShowPickupWidget();
 	void HidePickupWidget();
+	void DisableSphereCollision();
+	void DisableBoxCollision();
 
 protected:
 	virtual void BeginPlay() override;
