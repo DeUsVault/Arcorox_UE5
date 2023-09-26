@@ -37,7 +37,8 @@ AArcoroxCharacter::AArcoroxCharacter() :
 	//Automatic weapon fire
 	FireRate(0.1f),
 	bShouldFire(true),
-	bFireButtonPressed(false)
+	bFireButtonPressed(false),
+	bShouldTraceForItems(false)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -85,16 +86,7 @@ void AArcoroxCharacter::Tick(float DeltaTime)
 	SetLookScale();
 	CalculateCrosshairSpread(DeltaTime);
 
-	FHitResult ItemTraceResult;
-	FVector HitLocation;
-	if (CrosshairLineTrace(ItemTraceResult, HitLocation))
-	{
-		AItem* HitItem = Cast<AItem>(ItemTraceResult.GetActor());
-		if (HitItem)
-		{
-			HitItem->ShowPickupWidget();
-		}
-	}
+	ItemTrace();
 }
 
 void AArcoroxCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -123,6 +115,12 @@ void AArcoroxCharacter::Jump()
 float AArcoroxCharacter::GetCrosshairSpreadMultiplier() const
 {
 	return CrosshairSpreadMultiplier;
+}
+
+void AArcoroxCharacter::IncrementOverlappedItemCount(int8 Amount)
+{
+	OverlappedItemCount += Amount;
+	bShouldTraceForItems = OverlappedItemCount > 0;
 }
 
 void AArcoroxCharacter::Move(const FInputActionValue& Value)
@@ -259,6 +257,34 @@ void AArcoroxCharacter::CalculateCrosshairSpread(float DeltaTime)
 	if (bFiringWeapon) CrosshairShootingFactor = FMath::FInterpTo<float>(CrosshairShootingFactor, 0.4f, DeltaTime, 60.f);
 	else CrosshairShootingFactor = FMath::FInterpTo<float>(CrosshairShootingFactor, 0.f, DeltaTime, 60.f);
 	CrosshairSpreadMultiplier = 0.5f + CrosshairVelocityFactor + CrosshairInAirFactor + CrosshairAimFactor + CrosshairShootingFactor;
+}
+
+void AArcoroxCharacter::ItemTrace()
+{
+	if (bShouldTraceForItems)
+	{
+		FHitResult ItemTraceResult;
+		FVector HitLocation;
+		if (CrosshairLineTrace(ItemTraceResult, HitLocation))
+		{
+			AItem* HitItem = Cast<AItem>(ItemTraceResult.GetActor());
+			if (HitItem)
+			{
+				HitItem->ShowPickupWidget();
+			}
+
+			if (TraceHitItem)
+			{
+				if (HitItem != TraceHitItem) TraceHitItem->HidePickupWidget();
+			}
+			TraceHitItem = HitItem;
+		}
+	}
+	else if (TraceHitItem)
+	{
+		TraceHitItem->HidePickupWidget();
+		TraceHitItem = nullptr;
+	}
 }
 
 void AArcoroxCharacter::StartCrosshairShootTimer()

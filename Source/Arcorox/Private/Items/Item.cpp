@@ -2,10 +2,13 @@
 
 
 #include "Items/Item.h"
+#include "Characters/ArcoroxCharacter.h"
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Components/SphereComponent.h"
 
-AItem::AItem()
+AItem::AItem():
+	ItemName(FString("Item"))
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -19,6 +22,9 @@ AItem::AItem()
 
 	PickupWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickupWidget"));
 	PickupWidget->SetupAttachment(GetRootComponent());
+
+	OverlapSphere = CreateDefaultSubobject<USphereComponent>(TEXT("OverlapSphere"));
+	OverlapSphere->SetupAttachment(GetRootComponent());
 }
 
 void AItem::Tick(float DeltaTime)
@@ -32,6 +38,28 @@ void AItem::BeginPlay()
 	Super::BeginPlay();
 	
 	HidePickupWidget();
+
+	//Setup overlap for sphere component
+	OverlapSphere->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnSphereOverlap);
+	OverlapSphere->OnComponentEndOverlap.AddDynamic(this, &AItem::OnSphereEndOverlap);
+}
+
+void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor)
+	{
+		AArcoroxCharacter* ArcoroxCharacter = Cast<AArcoroxCharacter>(OtherActor);
+		if (ArcoroxCharacter)ArcoroxCharacter->IncrementOverlappedItemCount(1);
+	}
+}
+
+void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor)
+	{
+		AArcoroxCharacter* ArcoroxCharacter = Cast<AArcoroxCharacter>(OtherActor);
+		if (ArcoroxCharacter) ArcoroxCharacter->IncrementOverlappedItemCount(-1);
+	}
 }
 
 void AItem::ShowPickupWidget()

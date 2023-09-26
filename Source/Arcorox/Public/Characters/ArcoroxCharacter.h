@@ -14,6 +14,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UParticleSystem;
 class UAnimMontage;
+class AItem;
 
 UCLASS()
 class ARCOROX_API AArcoroxCharacter : public ACharacter
@@ -29,9 +30,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetCrosshairSpreadMultiplier() const; 
 
+	void IncrementOverlappedItemCount(int8 Amount);
+
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE UCameraComponent* GetCamera() const { return Camera; }
 	FORCEINLINE bool IsAiming() const { return bAiming; }
+	FORCEINLINE int8 GetOverlappedItemCount() const { return OverlappedItemCount; }
 protected:
 	virtual void BeginPlay() override;
 
@@ -48,6 +52,9 @@ protected:
 	/* Line trace for items behind the crosshairs*/
 	bool CrosshairLineTrace(FHitResult& OutHit, FVector& OutHitLocation);
 	void CalculateCrosshairSpread(float DeltaTime);
+
+	/* Trace for Items if OverlappedItemCount > 0 */
+	void ItemTrace();
 
 	void StartCrosshairShootTimer();
 
@@ -143,6 +150,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Crosshairs, meta = (AllowPrivateAccess = "true"))
 	float CrosshairShootingFactor;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
+	AItem* TraceHitItem;
+
 	//Camera field of view
 	float CameraDefaultFOV;
 	float CameraZoomedFOV;
@@ -158,4 +168,7 @@ private:
 	bool bShouldFire;
 	float FireRate;
 	FTimerHandle AutoFireTimer;
+
+	bool bShouldTraceForItems;
+	int8 OverlappedItemCount;
 };
