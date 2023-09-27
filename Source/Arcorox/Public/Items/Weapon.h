@@ -16,10 +16,17 @@ public:
 	AWeapon();
 	virtual void Tick(float DeltaTime) override;
 
+	/* Adds impulse force to weapon */
+	void ThrowWeapon();
+
 protected:
 	virtual void BeginPlay() override;
 
-private:
+	void StopFalling();
 
+private:
+	FTimerHandle ThrowWeaponTimer;
+	float ThrowWeaponTime;
+	bool bIsFalling;
 
 };

@@ -107,6 +107,8 @@ void AArcoroxCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(FireWeaponAction, ETriggerEvent::Completed, this, &AArcoroxCharacter::FireButtonReleased);
 		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Started, this, &AArcoroxCharacter::AimButtonPressed);
 		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &AArcoroxCharacter::AimButtonReleased);
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AArcoroxCharacter::InteractButtonPressed);
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &AArcoroxCharacter::InteractButtonReleased);
 	}
 }
 
@@ -189,6 +191,16 @@ void AArcoroxCharacter::AimButtonPressed()
 void AArcoroxCharacter::AimButtonReleased()
 {
 	bAiming = false;
+}
+
+void AArcoroxCharacter::InteractButtonPressed()
+{
+	DropWeapon();
+}
+
+void AArcoroxCharacter::InteractButtonReleased()
+{
+
 }
 
 bool AArcoroxCharacter::GetBeamEndLocation(const FVector& BarrelSocketLocation, FVector& OutBeamLocation)
@@ -317,8 +329,6 @@ void AArcoroxCharacter::EquipWeapon(AWeapon* Weapon)
 {
 	if (Weapon)
 	{
-		Weapon->DisableSphereCollision();
-		Weapon->DisableBoxCollision();
 		const USkeletalMeshSocket* WeaponSocket = GetMesh()->GetSocketByName(FName("WeaponSocket"));
 		if (WeaponSocket)
 		{
@@ -326,6 +336,17 @@ void AArcoroxCharacter::EquipWeapon(AWeapon* Weapon)
 			EquippedWeapon = Weapon;
 			EquippedWeapon->SetItemState(EItemState::EIS_Equipped);
 		}
+	}
+}
+
+void AArcoroxCharacter::DropWeapon()
+{
+	if (EquippedWeapon)
+	{
+		FDetachmentTransformRules DetachmentTransformRules(EDetachmentRule::KeepWorld, true);
+		EquippedWeapon->GetItemMesh()->DetachFromComponent(DetachmentTransformRules);
+		EquippedWeapon->SetItemState(EItemState::EIS_Falling);
+		EquippedWeapon->ThrowWeapon();
 	}
 }
 

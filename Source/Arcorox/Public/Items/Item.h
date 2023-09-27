@@ -47,9 +47,11 @@ public:
 	void HidePickupWidget();
 	void DisableSphereCollision();
 	void DisableBoxCollision();
+	void DisableMeshCollision();
+	void SetItemState(EItemState State);
 
 	FORCEINLINE EItemState GetItemState() const { return ItemState; }
-	FORCEINLINE void SetItemState(EItemState State) { ItemState = State; }
+	FORCEINLINE USkeletalMeshComponent* GetItemMesh() const { return ItemMesh; }
 
 protected:
 	virtual void BeginPlay() override;

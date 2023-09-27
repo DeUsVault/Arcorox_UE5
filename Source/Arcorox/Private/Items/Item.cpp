@@ -16,6 +16,8 @@ AItem::AItem():
 	PrimaryActorTick.bCanEverTick = true;
 
 	ItemMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("ItemMesh"));
+	ItemMesh->SetSimulatePhysics(false);
+	ItemMesh->SetEnableGravity(false);
 	SetRootComponent(ItemMesh);
 
 	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
@@ -100,9 +102,9 @@ void AItem::SetItemProperties(EItemState State)
 	{
 		case EItemState::EIS_Pickup:
 			ItemMesh->SetSimulatePhysics(false);
+			ItemMesh->SetEnableGravity(false);
 			ItemMesh->SetVisibility(true);
-			ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-			ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			DisableMeshCollision();
 			OverlapSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 			OverlapSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 			DisableBoxCollision();
@@ -111,13 +113,20 @@ void AItem::SetItemProperties(EItemState State)
 			break;
 		case EItemState::EIS_Equipped:
 			ItemMesh->SetSimulatePhysics(false);
+			ItemMesh->SetEnableGravity(false);
 			ItemMesh->SetVisibility(true);
-			ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-			ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			DisableMeshCollision();
 			DisableSphereCollision();
-			OverlapSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			DisableBoxCollision();
-			CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			break;
+		case EItemState::EIS_Falling:
+			ItemMesh->SetSimulatePhysics(true);
+			ItemMesh->SetEnableGravity(true);
+			ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+			ItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+			DisableSphereCollision();
+			DisableBoxCollision();
 			break;
 	}
 }
@@ -134,10 +143,33 @@ void AItem::HidePickupWidget()
 
 void AItem::DisableSphereCollision()
 {
-	if(OverlapSphere) OverlapSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	if (OverlapSphere)
+	{
+		OverlapSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		OverlapSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
 }
 
 void AItem::DisableBoxCollision()
 {
-	if (CollisionBox) CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	if (CollisionBox)
+	{
+		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+}
+
+void AItem::DisableMeshCollision()
+{
+	if (ItemMesh)
+	{
+		ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+}
+
+void AItem::SetItemState(EItemState State)
+{
+	ItemState = State;
+	SetItemProperties(ItemState);
 }

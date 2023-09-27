@@ -48,6 +48,8 @@ protected:
 	void FireButtonReleased();
 	void AimButtonPressed();
 	void AimButtonReleased();
+	void InteractButtonPressed();
+	void InteractButtonReleased();
 
 	bool GetBeamEndLocation(const FVector& BarrelSocketLocation, FVector& OutBeamLocation);
 	/* Line trace for items behind the crosshairs*/
@@ -65,6 +67,9 @@ protected:
 
 	/* Attach weapon to character's weapon socket */
 	void EquipWeapon(AWeapon* Weapon);
+
+	/* Detach weapon and have it fall to ground */
+	void DropWeapon();
 
 	UFUNCTION()
 	void AutoFireReset();
@@ -90,6 +95,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* AimAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* InteractAction;
 
 private:	
 	void PlayFireSound();
