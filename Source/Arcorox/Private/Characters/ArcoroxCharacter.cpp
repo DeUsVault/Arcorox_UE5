@@ -324,6 +324,7 @@ void AArcoroxCharacter::EquipWeapon(AWeapon* Weapon)
 		{
 			WeaponSocket->AttachActor(Weapon, GetMesh());
 			EquippedWeapon = Weapon;
+			EquippedWeapon->SetItemState(EItemState::EIS_Equipped);
 		}
 	}
 }

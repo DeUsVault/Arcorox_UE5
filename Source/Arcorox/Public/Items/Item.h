@@ -11,6 +11,18 @@ class UWidgetComponent;
 class USphereComponent;
 
 UENUM(BlueprintType)
+enum class EItemState : uint8
+{
+	EIS_Pickup UMETA(DisplayName = "Pickup"),
+	EIS_EquipInterpolating UMETA(DisplayName = "EquipInterpolating"),
+	EIS_PickedUp UMETA(DisplayName = "PickedUp"),
+	EIS_Equipped UMETA(DisplayName = "Equipped"),
+	EIS_Falling UMETA(DisplayName = "Falling"),
+
+	EIS_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
+UENUM(BlueprintType)
 enum class EItemRarity : uint8
 {
 	EIR_Damaged UMETA(DisplayName = "Damaged"),
@@ -36,8 +48,17 @@ public:
 	void DisableSphereCollision();
 	void DisableBoxCollision();
 
+	FORCEINLINE EItemState GetItemState() const { return ItemState; }
+	FORCEINLINE void SetItemState(EItemState State) { ItemState = State; }
+
 protected:
 	virtual void BeginPlay() override;
+
+	/* Sets ActiveStars boolean array based on item rarity */
+	void SetActiveStars();
+
+	/* Sets Item properties based on ItemState */
+	void SetItemProperties(EItemState State);
 
 	/* Callback for Sphere Component OnComponentBeginOverlap */
 	UFUNCTION()
@@ -46,9 +67,6 @@ protected:
 	/* Callback for Sphere Component OnComponentEndOverlap */
 	UFUNCTION()
 	void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-	/* Sets ActiveStars boolean array based on item rarity */
-	void SetActiveStars();
 
 private:
 	/* Item Skeletal Mesh */
@@ -82,4 +100,9 @@ private:
 	/* Array of booleans to determine which stars to show in the pickup widget */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 	TArray<bool> ActiveStars;
+
+	/* Item State - determines behavior */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	EItemState ItemState;
+
 };

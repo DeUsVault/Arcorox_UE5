@@ -10,7 +10,8 @@
 AItem::AItem():
 	ItemName(FString("Item")),
 	ItemCount(0),
-	ItemRarity(EItemRarity::EIR_Common)
+	ItemRarity(EItemRarity::EIR_Common),
+	ItemState(EItemState::EIS_Pickup)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -45,6 +46,8 @@ void AItem::BeginPlay()
 	//Setup overlap for sphere component
 	OverlapSphere->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnSphereOverlap);
 	OverlapSphere->OnComponentEndOverlap.AddDynamic(this, &AItem::OnSphereEndOverlap);
+
+	SetItemProperties(ItemState);
 }
 
 void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -87,6 +90,34 @@ void AItem::SetActiveStars()
 			break;
 		default:
 			for (int32 i = 1; i < 3; i++) ActiveStars[i] = true;
+			break;
+	}
+}
+
+void AItem::SetItemProperties(EItemState State)
+{
+	switch (State)
+	{
+		case EItemState::EIS_Pickup:
+			ItemMesh->SetSimulatePhysics(false);
+			ItemMesh->SetVisibility(true);
+			ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+			ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			OverlapSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+			OverlapSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+			DisableBoxCollision();
+			CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+			CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			break;
+		case EItemState::EIS_Equipped:
+			ItemMesh->SetSimulatePhysics(false);
+			ItemMesh->SetVisibility(true);
+			ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+			ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			DisableSphereCollision();
+			OverlapSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			DisableBoxCollision();
+			CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			break;
 	}
 }
