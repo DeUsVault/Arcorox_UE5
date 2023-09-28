@@ -39,7 +39,10 @@ AArcoroxCharacter::AArcoroxCharacter() :
 	FireRate(0.1f),
 	bShouldFire(true),
 	bFireButtonPressed(false),
-	bShouldTraceForItems(false)
+	bShouldTraceForItems(false),
+	//Camera interp location variables
+	CameraInterpDistance(250.f),
+	CameraInterpElevation(65.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -117,15 +120,28 @@ void AArcoroxCharacter::Jump()
 	Super::Jump();
 }
 
-float AArcoroxCharacter::GetCrosshairSpreadMultiplier() const
-{
-	return CrosshairSpreadMultiplier;
-}
-
 void AArcoroxCharacter::IncrementOverlappedItemCount(int8 Amount)
 {
 	OverlappedItemCount += Amount;
 	bShouldTraceForItems = OverlappedItemCount > 0;
+}
+
+FVector AArcoroxCharacter::GetCameraInterpLocation()
+{
+	const FVector CameraLocation{ Camera->GetComponentLocation() };
+	const FVector CameraForward{ Camera->GetForwardVector() };
+	return CameraLocation + (CameraForward * CameraInterpDistance) + (FVector(0.f, 0.f, CameraInterpElevation));
+}
+
+void AArcoroxCharacter::GetPickupItem(AItem* Item)
+{
+	auto Weapon = Cast<AWeapon>(Item);
+	if (Weapon) SwapWeapon(Weapon);
+}
+
+float AArcoroxCharacter::GetCrosshairSpreadMultiplier() const
+{
+	return CrosshairSpreadMultiplier;
 }
 
 void AArcoroxCharacter::Move(const FInputActionValue& Value)

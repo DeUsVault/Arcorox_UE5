@@ -9,6 +9,7 @@
 class UBoxComponent;
 class UWidgetComponent;
 class USphereComponent;
+class UCurveFloat;
 
 UENUM(BlueprintType)
 enum class EItemState : uint8
@@ -106,5 +107,9 @@ private:
 	/* Item State - determines behavior */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 	EItemState ItemState;
+
+	/* Curve to use for Item Z location when interpolating */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	UCurveFloat* ItemZCurve;
 
 };
