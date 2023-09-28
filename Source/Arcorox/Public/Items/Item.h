@@ -10,6 +10,7 @@ class UBoxComponent;
 class UWidgetComponent;
 class USphereComponent;
 class UCurveFloat;
+class AArcoroxCharacter;
 
 UENUM(BlueprintType)
 enum class EItemState : uint8
@@ -50,6 +51,7 @@ public:
 	void DisableBoxCollision();
 	void DisableMeshCollision();
 	void SetItemState(EItemState State);
+	void StartItemCurve(AArcoroxCharacter* Character);
 
 	FORCEINLINE EItemState GetItemState() const { return ItemState; }
 	FORCEINLINE USkeletalMeshComponent* GetItemMesh() const { return ItemMesh; }
@@ -62,6 +64,12 @@ protected:
 
 	/* Sets Item properties based on ItemState */
 	void SetItemProperties(EItemState State);
+
+	/* Interpolates Item when in interpolation state */
+	void ItemInterpolation(float DeltaTime);
+
+	/* Callback for end of ItemInterpolationTimer */
+	void FinishInterpolating();
 
 	/* Callback for Sphere Component OnComponentBeginOverlap */
 	UFUNCTION()
@@ -111,5 +119,29 @@ private:
 	/* Curve to use for Item Z location when interpolating */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 	UCurveFloat* ItemZCurve;
+
+	/* Start location for item interpolation */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	FVector ItemInterpStartLocation;
+
+	/* Target location in front of camera for item interpolation */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	FVector CameraTargetInterpLocation;
+
+	/* Is the item interpolating */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	bool bIsInterpolating;
+
+	/* Reference to Arcorox Character */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	AArcoroxCharacter* ArcoroxCharacter;
+
+	/* Duration of timer and curve */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	float ZCurveTime;
+
+	/* Timer for item interpolation */
+	FTimerHandle ItemInterpolationTimer;
+
 
 };

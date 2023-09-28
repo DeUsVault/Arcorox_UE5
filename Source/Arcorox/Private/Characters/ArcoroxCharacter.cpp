@@ -211,7 +211,7 @@ void AArcoroxCharacter::AimButtonReleased()
 
 void AArcoroxCharacter::InteractButtonPressed()
 {
-	if(TraceHitItem) SwapWeapon(Cast<AWeapon>(TraceHitItem));
+	if(TraceHitItem) TraceHitItem->StartItemCurve(this);
 }
 
 void AArcoroxCharacter::InteractButtonReleased()

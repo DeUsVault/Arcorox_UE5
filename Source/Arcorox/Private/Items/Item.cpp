@@ -7,11 +7,15 @@
 #include "Components/WidgetComponent.h"
 #include "Components/SphereComponent.h"
 
-AItem::AItem():
+AItem::AItem() :
 	ItemName(FString("Item")),
 	ItemCount(0),
 	ItemRarity(EItemRarity::EIR_Common),
-	ItemState(EItemState::EIS_Pickup)
+	ItemState(EItemState::EIS_Pickup),
+	ZCurveTime(0.7f),
+	ItemInterpStartLocation(FVector(0.f)),
+	CameraTargetInterpLocation(FVector(0.f)),
+	bIsInterpolating(false)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -36,6 +40,8 @@ void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//Interpolate item when in interpolating state 
+	ItemInterpolation(DeltaTime);
 }
 
 void AItem::BeginPlay()
@@ -56,7 +62,7 @@ void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 {
 	if (OtherActor)
 	{
-		AArcoroxCharacter* ArcoroxCharacter = Cast<AArcoroxCharacter>(OtherActor);
+		ArcoroxCharacter = Cast<AArcoroxCharacter>(OtherActor);
 		if (ArcoroxCharacter)ArcoroxCharacter->IncrementOverlappedItemCount(1);
 	}
 }
@@ -65,7 +71,7 @@ void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 {
 	if (OtherActor)
 	{
-		AArcoroxCharacter* ArcoroxCharacter = Cast<AArcoroxCharacter>(OtherActor);
+		ArcoroxCharacter = Cast<AArcoroxCharacter>(OtherActor);
 		if (ArcoroxCharacter) ArcoroxCharacter->IncrementOverlappedItemCount(-1);
 	}
 }
@@ -129,7 +135,46 @@ void AItem::SetItemProperties(EItemState State)
 			DisableSphereCollision();
 			DisableBoxCollision();
 			break;
+		case EItemState::EIS_EquipInterpolating:
+			HidePickupWidget();
+			ItemMesh->SetSimulatePhysics(false);
+			ItemMesh->SetEnableGravity(false);
+			ItemMesh->SetVisibility(true);
+			DisableMeshCollision();
+			DisableSphereCollision();
+			DisableBoxCollision();
+			break;
 	}
+}
+
+void AItem::ItemInterpolation(float DeltaTime)
+{
+	if (!bIsInterpolating) return;
+	if (ArcoroxCharacter && ItemZCurve)
+	{
+		//Time since ItemInterpolationTimer started
+		const float ElapsedTime = GetWorldTimerManager().GetTimerElapsed(ItemInterpolationTimer);
+		//Curve value corresponding to ElapsedTime
+		const float CurveValue = ItemZCurve->GetFloatValue(ElapsedTime);
+		//Initial location of Item when timer started
+		FVector ItemLocation = ItemInterpStartLocation;
+		//Target location in front of camera
+		CameraTargetInterpLocation = ArcoroxCharacter->GetCameraInterpLocation();
+		const FVector CameraInterpLocation = CameraTargetInterpLocation;
+		//Vector from Item to CameraInterpLocation, X and Y components zeroed out
+		const FVector ItemToCamera{ FVector(0.f, 0.f, (CameraInterpLocation - ItemLocation).Z) };
+		//Scale factor for curve value
+		const float DeltaZ = ItemToCamera.Size();
+		//Add curve value to Z component of ItemLocation scaled by DeltaZ
+		ItemLocation.Z += CurveValue * DeltaZ;
+		SetActorLocation(ItemLocation, true, nullptr, ETeleportType::TeleportPhysics);
+	}
+}
+
+void AItem::FinishInterpolating()
+{
+	bIsInterpolating = false;
+	if (ArcoroxCharacter) ArcoroxCharacter->GetPickupItem(this);
 }
 
 void AItem::ShowPickupWidget()
@@ -173,4 +218,12 @@ void AItem::SetItemState(EItemState State)
 {
 	ItemState = State;
 	SetItemProperties(ItemState);
+}
+
+void AItem::StartItemCurve(AArcoroxCharacter* Character)
+{
+	ArcoroxCharacter = Character;
+	ItemInterpStartLocation = GetActorLocation();
+	bIsInterpolating = true;
+	SetItemState(EItemState::EIS_EquipInterpolating);
 }
