@@ -195,7 +195,7 @@ void AArcoroxCharacter::AimButtonReleased()
 
 void AArcoroxCharacter::InteractButtonPressed()
 {
-	DropWeapon();
+	if(TraceHitItem) SwapWeapon(Cast<AWeapon>(TraceHitItem));
 }
 
 void AArcoroxCharacter::InteractButtonReleased()
@@ -282,23 +282,23 @@ void AArcoroxCharacter::ItemTrace()
 		FVector HitLocation;
 		if (CrosshairLineTrace(ItemTraceResult, HitLocation))
 		{
-			AItem* HitItem = Cast<AItem>(ItemTraceResult.GetActor());
-			if (HitItem)
-			{
-				HitItem->ShowPickupWidget();
-			}
-
+			TraceHitItem = Cast<AItem>(ItemTraceResult.GetActor());
 			if (TraceHitItem)
 			{
-				if (HitItem != TraceHitItem) TraceHitItem->HidePickupWidget();
+				TraceHitItem->ShowPickupWidget();
 			}
-			TraceHitItem = HitItem;
+
+			if (TraceHitItemLastFrame)
+			{
+				if (TraceHitItem != TraceHitItemLastFrame) TraceHitItemLastFrame->HidePickupWidget();
+			}
+			TraceHitItemLastFrame = TraceHitItem;
 		}
 	}
-	else if (TraceHitItem)
+	else if (TraceHitItemLastFrame)
 	{
-		TraceHitItem->HidePickupWidget();
-		TraceHitItem = nullptr;
+		TraceHitItemLastFrame->HidePickupWidget();
+		TraceHitItemLastFrame = nullptr;
 	}
 }
 
@@ -348,6 +348,14 @@ void AArcoroxCharacter::DropWeapon()
 		EquippedWeapon->SetItemState(EItemState::EIS_Falling);
 		EquippedWeapon->ThrowWeapon();
 	}
+}
+
+void AArcoroxCharacter::SwapWeapon(AWeapon* Weapon)
+{
+	DropWeapon();
+	EquipWeapon(Weapon);
+	TraceHitItem = nullptr;
+	TraceHitItemLastFrame = nullptr;
 }
 
 void AArcoroxCharacter::AutoFireReset()

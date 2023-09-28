@@ -112,6 +112,7 @@ void AItem::SetItemProperties(EItemState State)
 			CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 			break;
 		case EItemState::EIS_Equipped:
+			HidePickupWidget();
 			ItemMesh->SetSimulatePhysics(false);
 			ItemMesh->SetEnableGravity(false);
 			ItemMesh->SetVisibility(true);

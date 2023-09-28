@@ -71,6 +71,9 @@ protected:
 	/* Detach weapon and have it fall to ground */
 	void DropWeapon();
 
+	/* Drops equipped weapon and equips TraceHitItem if it's a weapon */
+	void SwapWeapon(AWeapon* Weapon);
+
 	UFUNCTION()
 	void AutoFireReset();
 
@@ -165,7 +168,7 @@ private:
 	float CrosshairShootingFactor;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
-	AItem* TraceHitItem;
+	AItem* TraceHitItemLastFrame;
 
 	/* Currently equipped weapon */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
@@ -174,6 +177,10 @@ private:
 	/* Default weapon class to spawn for character */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AWeapon> DefaultWeaponClass;
+
+	/* Item currently hit by line trace */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
+	AItem* TraceHitItem;
 
 	//Camera field of view
 	float CameraDefaultFOV;
