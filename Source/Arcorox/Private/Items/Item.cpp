@@ -226,4 +226,5 @@ void AItem::StartItemCurve(AArcoroxCharacter* Character)
 	ItemInterpStartLocation = GetActorLocation();
 	bIsInterpolating = true;
 	SetItemState(EItemState::EIS_EquipInterpolating);
+	GetWorldTimerManager().SetTimer(ItemInterpolationTimer, this, &AItem::FinishInterpolating, ZCurveTime);
 }
