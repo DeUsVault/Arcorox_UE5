@@ -41,8 +41,8 @@ AArcoroxCharacter::AArcoroxCharacter() :
 	bFireButtonPressed(false),
 	bShouldTraceForItems(false),
 	//Camera interp location variables
-	CameraInterpDistance(250.f),
-	CameraInterpElevation(65.f)
+	CameraInterpDistance(200.f),
+	CameraInterpElevation(50.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 

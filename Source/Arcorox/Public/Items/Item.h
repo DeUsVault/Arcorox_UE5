@@ -120,6 +120,10 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 	UCurveFloat* ItemZCurve;
 
+	/* Curve to scale item when interpolating */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	UCurveFloat* ItemScaleCurve;
+
 	/* Start location for item interpolation */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 	FVector ItemInterpStartLocation;
@@ -140,8 +144,14 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 	float ZCurveTime;
 
+	/* For interpolating item in X and Y directions */
+	float ItemInterpX;
+	float ItemInterpY;
+
 	/* Timer for item interpolation */
 	FTimerHandle ItemInterpolationTimer;
 
+	/* Initial offset of Yaw between Item and Camera */
+	float InterpInitialYawOffset;
 
 };

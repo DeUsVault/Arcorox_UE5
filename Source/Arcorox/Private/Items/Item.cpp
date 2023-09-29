@@ -6,6 +6,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/SphereComponent.h"
+#include "Camera/CameraComponent.h"
 
 AItem::AItem() :
 	ItemName(FString("Item")),
@@ -15,7 +16,10 @@ AItem::AItem() :
 	ZCurveTime(0.7f),
 	ItemInterpStartLocation(FVector(0.f)),
 	CameraTargetInterpLocation(FVector(0.f)),
-	bIsInterpolating(false)
+	bIsInterpolating(false),
+	ItemInterpX(30.f),
+	ItemInterpY(30.f),
+	InterpInitialYawOffset(0.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -150,11 +154,11 @@ void AItem::SetItemProperties(EItemState State)
 void AItem::ItemInterpolation(float DeltaTime)
 {
 	if (!bIsInterpolating) return;
-	if (ArcoroxCharacter && ItemZCurve)
+	if (ArcoroxCharacter && ItemZCurve && ItemScaleCurve)
 	{
 		//Time since ItemInterpolationTimer started
 		const float ElapsedTime = GetWorldTimerManager().GetTimerElapsed(ItemInterpolationTimer);
-		//Curve value corresponding to ElapsedTime
+		//Z Curve value corresponding to elapsed time
 		const float CurveValue = ItemZCurve->GetFloatValue(ElapsedTime);
 		//Initial location of Item when timer started
 		FVector ItemLocation = ItemInterpStartLocation;
@@ -165,9 +169,27 @@ void AItem::ItemInterpolation(float DeltaTime)
 		const FVector ItemToCamera{ FVector(0.f, 0.f, (CameraInterpLocation - ItemLocation).Z) };
 		//Scale factor for curve value
 		const float DeltaZ = ItemToCamera.Size();
+		//Current item location
+		const FVector CurrentLocation{ GetActorLocation() };
+		//Interpolated X value
+		const float InterpX = FMath::FInterpTo<float>(CurrentLocation.X, CameraInterpLocation.X, DeltaTime, ItemInterpX);
+		//Interpolated Y value
+		const float InterpY = FMath::FInterpTo<float>(CurrentLocation.Y, CameraInterpLocation.Y, DeltaTime, ItemInterpY);
+		//Set Item Location interpolated X and Y values
+		ItemLocation.X = InterpX;
+		ItemLocation.Y = InterpY;
 		//Add curve value to Z component of ItemLocation scaled by DeltaZ
 		ItemLocation.Z += CurveValue * DeltaZ;
 		SetActorLocation(ItemLocation, true, nullptr, ETeleportType::TeleportPhysics);
+		//Current Camera rotation
+		const FRotator CameraRotation{ ArcoroxCharacter->GetCamera()->GetComponentRotation() };
+		//Target Item rotation
+		FRotator ItemRotation{ 0.f, CameraRotation.Yaw + InterpInitialYawOffset, 0.f };
+		SetActorRotation(ItemRotation, ETeleportType::TeleportPhysics);
+		//Scale Curve value corresponding to elapsed time
+		const float ScaleCurveValue = ItemScaleCurve->GetFloatValue(ElapsedTime);
+		//Scale item according to scale curve value
+		SetActorScale3D(FVector(ScaleCurveValue));
 	}
 }
 
@@ -175,6 +197,8 @@ void AItem::FinishInterpolating()
 {
 	bIsInterpolating = false;
 	if (ArcoroxCharacter) ArcoroxCharacter->GetPickupItem(this);
+	//Scale item to original size
+	SetActorScale3D(FVector(1.f));
 }
 
 void AItem::ShowPickupWidget()
@@ -223,7 +247,11 @@ void AItem::SetItemState(EItemState State)
 void AItem::StartItemCurve(AArcoroxCharacter* Character)
 {
 	ArcoroxCharacter = Character;
+	if (!ArcoroxCharacter->GetCamera()) return;
 	ItemInterpStartLocation = GetActorLocation();
+	const float CameraYaw = ArcoroxCharacter->GetCamera()->GetComponentRotation().Yaw;
+	const float ItemYaw = GetActorRotation().Yaw;
+	InterpInitialYawOffset = ItemYaw - CameraYaw;
 	bIsInterpolating = true;
 	SetItemState(EItemState::EIS_EquipInterpolating);
 	GetWorldTimerManager().SetTimer(ItemInterpolationTimer, this, &AItem::FinishInterpolating, ZCurveTime);
