@@ -42,7 +42,10 @@ AArcoroxCharacter::AArcoroxCharacter() :
 	bShouldTraceForItems(false),
 	//Camera interp location variables
 	CameraInterpDistance(200.f),
-	CameraInterpElevation(50.f)
+	CameraInterpElevation(50.f),
+	//Default ammo amounts
+	Starting9mmAmmo(120),
+	Starting556Ammo(90)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -82,6 +85,8 @@ void AArcoroxCharacter::BeginPlay()
 	}
 
 	EquipWeapon(SpawnDefaultWeapon());
+
+	InitializeAmmoMap();
 }
 
 void AArcoroxCharacter::Tick(float DeltaTime)
@@ -245,10 +250,7 @@ bool AArcoroxCharacter::CrosshairLineTrace(FHitResult& OutHit, FVector& OutHitLo
 {
 	//Get size of viewport
 	FVector2D ViewportSize;
-	if (GEngine && GEngine->GameViewport)
-	{
-		GEngine->GameViewport->GetViewportSize(ViewportSize);
-	}
+	if (GEngine && GEngine->GameViewport) GEngine->GameViewport->GetViewportSize(ViewportSize);
 	//Get screen space location of crosshairs
 	FVector2D CrosshairLocation(ViewportSize.X / 2.f, ViewportSize.Y / 2.f);
 	FVector CrosshairWorldPosition, CrosshairWorldDirection;
@@ -299,11 +301,8 @@ void AArcoroxCharacter::ItemTrace()
 		if (CrosshairLineTrace(ItemTraceResult, HitLocation))
 		{
 			TraceHitItem = Cast<AItem>(ItemTraceResult.GetActor());
-			if (TraceHitItem)
-			{
-				TraceHitItem->ShowPickupWidget();
-			}
-
+			if (TraceHitItem) TraceHitItem->ShowPickupWidget();
+			
 			if (TraceHitItemLastFrame)
 			{
 				if (TraceHitItem != TraceHitItemLastFrame) TraceHitItemLastFrame->HidePickupWidget();
@@ -374,6 +373,12 @@ void AArcoroxCharacter::SwapWeapon(AWeapon* Weapon)
 	TraceHitItemLastFrame = nullptr;
 }
 
+void AArcoroxCharacter::InitializeAmmoMap()
+{
+	AmmoMap.Add(EAmmoType::EAT_9mm, Starting9mmAmmo);
+	AmmoMap.Add(EAmmoType::EAT_556, Starting556Ammo);
+}
+
 void AArcoroxCharacter::AutoFireReset()
 {
 	bShouldFire = true;
@@ -387,26 +392,17 @@ void AArcoroxCharacter::FinishedCrosshairShootTimer()
 
 void AArcoroxCharacter::PlayFireSound()
 {
-	if (FireSound)
-	{
-		UGameplayStatics::PlaySound2D(this, FireSound);
-	}
+	if (FireSound) UGameplayStatics::PlaySound2D(this, FireSound);
 }
 
 void AArcoroxCharacter::SpawnMuzzleFlash(const FTransform& SocketTransform)
 {
-	if (MuzzleFlash)
-	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, SocketTransform);
-	}
+	if (MuzzleFlash) UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, SocketTransform);
 }
 
 void AArcoroxCharacter::SpawnImpactParticles(const FVector& BeamEnd)
 {
-	if (ImpactParticles)
-	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, BeamEnd);
-	}
+	if (ImpactParticles) UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, BeamEnd);
 }
 
 void AArcoroxCharacter::SpawnBeamParticles(const FTransform& SocketTransform, const FVector& BeamEnd)
@@ -414,10 +410,7 @@ void AArcoroxCharacter::SpawnBeamParticles(const FTransform& SocketTransform, co
 	if (BeamParticles)
 	{
 		UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BeamParticles, SocketTransform);
-		if (Beam)
-		{
-			Beam->SetVectorParameter(FName("Target"), BeamEnd);
-		}
+		if (Beam) Beam->SetVectorParameter(FName("Target"), BeamEnd);
 	}
 }
 

@@ -17,6 +17,15 @@ class UAnimMontage;
 class AItem;
 class AWeapon;
 
+UENUM(BlueprintType)
+enum class EAmmoType : uint8
+{
+	EAT_9mm UMETA(DisplayName = "9mm"),
+	EAT_556 UMETA(DisplayName = "5.56 x 45mm NATO"),
+
+	EAT_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
 UCLASS()
 class ARCOROX_API AArcoroxCharacter : public ACharacter
 {
@@ -63,6 +72,7 @@ protected:
 	/* Trace for Items if OverlappedItemCount > 0 */
 	void ItemTrace();
 
+	/* Weapon fire timers */
 	void StartCrosshairShootTimer();
 	void StartAutoFireTimer();
 
@@ -77,6 +87,9 @@ protected:
 
 	/* Drops equipped weapon and equips TraceHitItem if it's a weapon */
 	void SwapWeapon(AWeapon* Weapon);
+
+	/* Initialize Ammo Map with default ammo values */
+	void InitializeAmmoMap();
 
 	UFUNCTION()
 	void AutoFireReset();
@@ -193,6 +206,18 @@ private:
 	/* Distance upward from camera for item to interpolate to */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
 	float CameraInterpElevation;
+
+	/* Map for ammo types */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
+	TMap<EAmmoType, int32> AmmoMap;
+
+	/* Default amount of 9mm ammo */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items, meta = (AllowPrivateAccess = "true"))
+	int32 Starting9mmAmmo;
+
+	/* Default ammount of 5.56 ammo */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items, meta = (AllowPrivateAccess = "true"))
+	int32 Starting556Ammo;
 
 	//Camera field of view
 	float CameraDefaultFOV;
