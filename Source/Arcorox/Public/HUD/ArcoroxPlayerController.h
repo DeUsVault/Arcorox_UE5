@@ -19,6 +19,11 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	/* HUD Overlay Widget Blueprint class */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widgets, meta = (AllowPrivateAccess = "true"));
+	TSubclassOf<UUserWidget> HUDOverlayClass;
 
-
+	/* HUD Overlay Widget object pointer */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Widgets, meta = (AllowPrivateAccess = "true"))
+	UUserWidget* HUDOverlay;
 };

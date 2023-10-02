@@ -2,6 +2,7 @@
 
 
 #include "HUD/ArcoroxPlayerController.h"
+#include "Blueprint/UserWidget.h"
 
 AArcoroxPlayerController::AArcoroxPlayerController()
 {
@@ -14,7 +15,15 @@ void AArcoroxPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-
+	if (HUDOverlayClass)
+	{
+		HUDOverlay = CreateWidget<UUserWidget>(this, HUDOverlayClass);
+		if (HUDOverlay)
+		{
+			HUDOverlay->AddToViewport();
+			HUDOverlay->SetVisibility(ESlateVisibility::Visible);
+		}
+	}
 }
 
 void AArcoroxPlayerController::Tick(float DeltaTime)
