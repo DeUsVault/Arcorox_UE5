@@ -176,11 +176,12 @@ void AArcoroxCharacter::Look(const FInputActionValue& Value)
 
 void AArcoroxCharacter::FireWeapon()
 {
+	if (EquippedWeapon == nullptr) return;
 	PlayFireSound();
-	const USkeletalMeshSocket* BarrelSocket = GetMesh()->GetSocketByName("BarrelSocket");
+	const USkeletalMeshSocket* BarrelSocket = EquippedWeapon->GetItemMesh()->GetSocketByName("BarrelSocket");
 	if (BarrelSocket)
 	{
-		const FTransform SocketTransform = BarrelSocket->GetSocketTransform(GetMesh());
+		const FTransform SocketTransform = BarrelSocket->GetSocketTransform(EquippedWeapon->GetItemMesh());
 		FVector BeamEnd;
 		SpawnMuzzleFlash(SocketTransform);
 		if (GetBeamEndLocation(SocketTransform.GetLocation(), BeamEnd))
@@ -191,7 +192,7 @@ void AArcoroxCharacter::FireWeapon()
 	}
 	PlayRandomMontageSection(HipFireMontage, HipFireMontageSections);
 	StartCrosshairShootTimer();
-	if (EquippedWeapon) EquippedWeapon->DecrementAmmo();
+	EquippedWeapon->DecrementAmmo();
 }
 
 void AArcoroxCharacter::FireButtonPressed()

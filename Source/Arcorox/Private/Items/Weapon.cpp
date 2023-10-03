@@ -7,7 +7,7 @@
 AWeapon::AWeapon():
 	ThrowWeaponTime(0.7f),
 	bIsFalling(false),
-	Ammo(0)
+	Ammo(120)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
