@@ -91,6 +91,9 @@ protected:
 	/* Initialize Ammo Map with default ammo values */
 	void InitializeAmmoMap();
 
+	/* Checks if the player's equipped weapon has ammo */
+	bool WeaponHasAmmo();
+
 	UFUNCTION()
 	void AutoFireReset();
 

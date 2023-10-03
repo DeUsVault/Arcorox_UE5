@@ -191,12 +191,16 @@ void AArcoroxCharacter::FireWeapon()
 	}
 	PlayRandomMontageSection(HipFireMontage, HipFireMontageSections);
 	StartCrosshairShootTimer();
+	if (EquippedWeapon) EquippedWeapon->DecrementAmmo();
 }
 
 void AArcoroxCharacter::FireButtonPressed()
 {
-	bFireButtonPressed = true;
-	StartAutoFireTimer();
+	if (WeaponHasAmmo())
+	{
+		bFireButtonPressed = true;
+		StartAutoFireTimer();
+	}
 }
 
 void AArcoroxCharacter::FireButtonReleased()
@@ -379,10 +383,19 @@ void AArcoroxCharacter::InitializeAmmoMap()
 	AmmoMap.Add(EAmmoType::EAT_556, Starting556Ammo);
 }
 
+bool AArcoroxCharacter::WeaponHasAmmo()
+{
+	if (EquippedWeapon) return EquippedWeapon->GetAmmo() > 0;
+	return false;
+}
+
 void AArcoroxCharacter::AutoFireReset()
 {
-	bShouldFire = true;
-	if (bFireButtonPressed) StartAutoFireTimer();
+	if (WeaponHasAmmo())
+	{
+		bShouldFire = true;
+		if (bFireButtonPressed) StartAutoFireTimer();
+	}
 }
 
 void AArcoroxCharacter::FinishedCrosshairShootTimer()
