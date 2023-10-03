@@ -13,14 +13,13 @@ class ARCOROX_API AArcoroxPlayerController : public APlayerController
 	
 public:
 	AArcoroxPlayerController();
-	virtual void Tick(float DeltaTime) override;
 
 protected:
 	virtual void BeginPlay() override;
 
 private:
 	/* HUD Overlay Widget Blueprint class */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widgets, meta = (AllowPrivateAccess = "true"));
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widgets, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UUserWidget> HUDOverlayClass;
 
 	/* HUD Overlay Widget object pointer */

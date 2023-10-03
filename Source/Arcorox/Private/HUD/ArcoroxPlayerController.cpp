@@ -6,8 +6,6 @@
 
 AArcoroxPlayerController::AArcoroxPlayerController()
 {
-	PrimaryActorTick.bCanEverTick = true;
-
 
 }
 
@@ -24,11 +22,4 @@ void AArcoroxPlayerController::BeginPlay()
 			HUDOverlay->SetVisibility(ESlateVisibility::Visible);
 		}
 	}
-}
-
-void AArcoroxPlayerController::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-
 }
