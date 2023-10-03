@@ -45,7 +45,9 @@ AArcoroxCharacter::AArcoroxCharacter() :
 	CameraInterpElevation(50.f),
 	//Default ammo amounts
 	Starting9mmAmmo(120),
-	Starting556Ammo(90)
+	Starting556Ammo(90),
+	//Combat state
+	CombatState(ECombatState::ECS_Unoccupied)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -176,32 +178,22 @@ void AArcoroxCharacter::Look(const FInputActionValue& Value)
 
 void AArcoroxCharacter::FireWeapon()
 {
-	if (EquippedWeapon == nullptr) return;
-	PlayFireSound();
-	const USkeletalMeshSocket* BarrelSocket = EquippedWeapon->GetItemMesh()->GetSocketByName("BarrelSocket");
-	if (BarrelSocket)
+	if (EquippedWeapon == nullptr || CombatState != ECombatState::ECS_Unoccupied) return;
+	if (WeaponHasAmmo())
 	{
-		const FTransform SocketTransform = BarrelSocket->GetSocketTransform(EquippedWeapon->GetItemMesh());
-		FVector BeamEnd;
-		SpawnMuzzleFlash(SocketTransform);
-		if (GetBeamEndLocation(SocketTransform.GetLocation(), BeamEnd))
-		{
-			SpawnImpactParticles(BeamEnd);
-			SpawnBeamParticles(SocketTransform, BeamEnd);
-		}
+		PlayFireSound();
+		SendBullet();
+		PlayGunfireMontage();
+		StartCrosshairShootTimer();
+		EquippedWeapon->DecrementAmmo();
+		StartAutoFireTimer();
 	}
-	PlayRandomMontageSection(HipFireMontage, HipFireMontageSections);
-	StartCrosshairShootTimer();
-	EquippedWeapon->DecrementAmmo();
 }
 
 void AArcoroxCharacter::FireButtonPressed()
 {
-	if (WeaponHasAmmo())
-	{
-		bFireButtonPressed = true;
-		StartAutoFireTimer();
-	}
+	bFireButtonPressed = true;
+	FireWeapon();
 }
 
 void AArcoroxCharacter::FireButtonReleased()
@@ -249,6 +241,22 @@ bool AArcoroxCharacter::GetBeamEndLocation(const FVector& BarrelSocketLocation, 
 		return true;
 	}
 	return false;
+}
+
+void AArcoroxCharacter::SendBullet()
+{
+	const USkeletalMeshSocket* BarrelSocket = EquippedWeapon->GetItemMesh()->GetSocketByName("BarrelSocket");
+	if (BarrelSocket)
+	{
+		const FTransform SocketTransform = BarrelSocket->GetSocketTransform(EquippedWeapon->GetItemMesh());
+		FVector BeamEnd;
+		SpawnMuzzleFlash(SocketTransform);
+		if (GetBeamEndLocation(SocketTransform.GetLocation(), BeamEnd))
+		{
+			SpawnImpactParticles(BeamEnd);
+			SpawnBeamParticles(SocketTransform, BeamEnd);
+		}
+	}
 }
 
 bool AArcoroxCharacter::CrosshairLineTrace(FHitResult& OutHit, FVector& OutHitLocation)
@@ -330,12 +338,8 @@ void AArcoroxCharacter::StartCrosshairShootTimer()
 
 void AArcoroxCharacter::StartAutoFireTimer()
 {
-	if (bShouldFire)
-	{
-		FireWeapon();
-		bShouldFire = false;
-		GetWorldTimerManager().SetTimer(AutoFireTimer, this, &AArcoroxCharacter::AutoFireReset, FireRate);
-	}
+	CombatState = ECombatState::ECS_Firing;
+	GetWorldTimerManager().SetTimer(AutoFireTimer, this, &AArcoroxCharacter::AutoFireReset, FireRate);
 }
 
 AWeapon* AArcoroxCharacter::SpawnDefaultWeapon()
@@ -392,10 +396,14 @@ bool AArcoroxCharacter::WeaponHasAmmo()
 
 void AArcoroxCharacter::AutoFireReset()
 {
+	CombatState = ECombatState::ECS_Unoccupied;
 	if (WeaponHasAmmo())
 	{
-		bShouldFire = true;
-		if (bFireButtonPressed) StartAutoFireTimer();
+		if (bFireButtonPressed) FireWeapon();
+	}
+	else
+	{
+		//Reload weapon
 	}
 }
 
@@ -443,6 +451,11 @@ void AArcoroxCharacter::PlayRandomMontageSection(UAnimMontage* Montage, const TA
 	if (SectionNames.Num() <= 0) return;
 	const int32 Section = FMath::RandRange(0, SectionNames.Num() - 1);
 	PlayMontageSection(Montage, SectionNames[Section]);
+}
+
+void AArcoroxCharacter::PlayGunfireMontage()
+{
+	PlayRandomMontageSection(HipFireMontage, HipFireMontageSections);
 }
 
 void AArcoroxCharacter::CameraZoomInterpolation(float DeltaTime)

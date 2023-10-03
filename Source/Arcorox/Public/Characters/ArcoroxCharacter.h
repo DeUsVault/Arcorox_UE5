@@ -18,6 +18,16 @@ class AItem;
 class AWeapon;
 
 UENUM(BlueprintType)
+enum class ECombatState : uint8
+{
+	ECS_Unoccupied UMETA(DisplayName = "Unoccupied"),
+	ECS_Firing UMETA(DisplayName = "Firing"),
+	ECS_Reloading UMETA(DisplayName = "Reloading"),
+
+	ECS_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
+UENUM(BlueprintType)
 enum class EAmmoType : uint8
 {
 	EAT_9mm UMETA(DisplayName = "9mm"),
@@ -65,6 +75,8 @@ protected:
 	void InteractButtonReleased();
 
 	bool GetBeamEndLocation(const FVector& BarrelSocketLocation, FVector& OutBeamLocation);
+	void SendBullet();
+
 	/* Line trace for items behind the crosshairs*/
 	bool CrosshairLineTrace(FHitResult& OutHit, FVector& OutHitLocation);
 	void CalculateCrosshairSpread(float DeltaTime);
@@ -129,6 +141,7 @@ private:
 	void SpawnBeamParticles(const FTransform& SocketTransform, const FVector& BeamEnd);
 	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
 	void PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames);
+	void PlayGunfireMontage();
 	void CameraZoomInterpolation(float DeltaTime);
 	void SetupEnhancedInput();
 	void SetLookScale();
@@ -221,6 +234,10 @@ private:
 	/* Default ammount of 5.56 ammo */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items, meta = (AllowPrivateAccess = "true"))
 	int32 Starting556Ammo;
+
+	/* Combat state of character */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	ECombatState CombatState;
 
 	//Camera field of view
 	float CameraDefaultFOV;
