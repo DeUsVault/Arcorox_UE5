@@ -194,7 +194,11 @@ void AArcoroxCharacter::FireWeapon()
 void AArcoroxCharacter::ReloadWeapon()
 {
 	if (EquippedWeapon == nullptr || CombatState != ECombatState::ECS_Unoccupied) return;
-	PlayReloadMontage();
+	if (CarryingAmmo())
+	{
+		CombatState = ECombatState::ECS_Reloading;
+		PlayReloadMontage();
+	}
 }
 
 void AArcoroxCharacter::FireButtonPressed()
@@ -406,6 +410,16 @@ bool AArcoroxCharacter::WeaponHasAmmo()
 	return false;
 }
 
+bool AArcoroxCharacter::CarryingAmmo()
+{
+	if (EquippedWeapon)
+	{
+		auto AmmoType = EquippedWeapon->GetAmmoType();
+		if (AmmoMap.Contains(AmmoType)) return AmmoMap[AmmoType] > 0;
+	}
+	return false;
+}
+
 void AArcoroxCharacter::AutoFireReset()
 {
 	CombatState = ECombatState::ECS_Unoccupied;
@@ -477,7 +491,7 @@ void AArcoroxCharacter::PlayGunfireMontage()
 
 void AArcoroxCharacter::PlayReloadMontage()
 {
-	PlayRandomMontageSection(ReloadMontage, ReloadMontageSections);
+	PlayMontageSection(ReloadMontage, EquippedWeapon->GetReloadMontageSection());
 }
 
 void AArcoroxCharacter::CameraZoomInterpolation(float DeltaTime)

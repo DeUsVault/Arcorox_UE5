@@ -101,6 +101,9 @@ protected:
 	/* Checks if the player's equipped weapon has ammo */
 	bool WeaponHasAmmo();
 
+	/* Checks if player has ammo of same type as equipped weapon */
+	bool CarryingAmmo();
+
 	UFUNCTION()
 	void AutoFireReset();
 
@@ -183,9 +186,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	TArray<FName> HipFireMontageSections;
-
-	UPROPERTY(EditAnywhere, Category = Combat)
-	TArray<FName> ReloadMontageSections;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	bool bAiming;
