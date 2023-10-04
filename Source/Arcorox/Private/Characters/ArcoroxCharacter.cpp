@@ -415,13 +415,18 @@ void AArcoroxCharacter::AutoFireReset()
 	}
 	else
 	{
-		//Reload weapon
+		ReloadWeapon();
 	}
 }
 
 void AArcoroxCharacter::FinishedCrosshairShootTimer()
 {
 	bFiringWeapon = false;
+}
+
+void AArcoroxCharacter::FinishReloading()
+{
+	CombatState = ECombatState::ECS_Unoccupied;
 }
 
 void AArcoroxCharacter::PlayFireSound()

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "Items/AmmoType.h"
 #include "ArcoroxCharacter.generated.h"
 
 //Forward declarations to avoid including unnecessary header files
@@ -25,15 +26,6 @@ enum class ECombatState : uint8
 	ECS_Reloading UMETA(DisplayName = "Reloading"),
 
 	ECS_MAX UMETA(DisplayName = "DefaultMAX")
-};
-
-UENUM(BlueprintType)
-enum class EAmmoType : uint8
-{
-	EAT_9mm UMETA(DisplayName = "9mm"),
-	EAT_556 UMETA(DisplayName = "5.56 x 45mm NATO"),
-
-	EAT_MAX UMETA(DisplayName = "DefaultMAX")
 };
 
 UCLASS()
@@ -114,6 +106,9 @@ protected:
 
 	UFUNCTION()
 	void FinishedCrosshairShootTimer();
+
+	UFUNCTION(BlueprintCallable)
+	void FinishReloading();
 
 	/* Enhanced Input */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
