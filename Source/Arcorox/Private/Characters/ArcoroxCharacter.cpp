@@ -119,6 +119,7 @@ void AArcoroxCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &AArcoroxCharacter::AimButtonReleased);
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AArcoroxCharacter::InteractButtonPressed);
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &AArcoroxCharacter::InteractButtonReleased);
+		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, this, &AArcoroxCharacter::ReloadButtonPressed);
 	}
 }
 
@@ -190,6 +191,12 @@ void AArcoroxCharacter::FireWeapon()
 	}
 }
 
+void AArcoroxCharacter::ReloadWeapon()
+{
+	if (EquippedWeapon == nullptr || CombatState != ECombatState::ECS_Unoccupied) return;
+	PlayReloadMontage();
+}
+
 void AArcoroxCharacter::FireButtonPressed()
 {
 	bFireButtonPressed = true;
@@ -219,6 +226,11 @@ void AArcoroxCharacter::InteractButtonPressed()
 void AArcoroxCharacter::InteractButtonReleased()
 {
 
+}
+
+void AArcoroxCharacter::ReloadButtonPressed()
+{
+	ReloadWeapon();
 }
 
 bool AArcoroxCharacter::GetBeamEndLocation(const FVector& BarrelSocketLocation, FVector& OutBeamLocation)
@@ -456,6 +468,11 @@ void AArcoroxCharacter::PlayRandomMontageSection(UAnimMontage* Montage, const TA
 void AArcoroxCharacter::PlayGunfireMontage()
 {
 	PlayRandomMontageSection(HipFireMontage, HipFireMontageSections);
+}
+
+void AArcoroxCharacter::PlayReloadMontage()
+{
+	PlayRandomMontageSection(ReloadMontage, ReloadMontageSections);
 }
 
 void AArcoroxCharacter::CameraZoomInterpolation(float DeltaTime)

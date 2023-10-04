@@ -66,13 +66,16 @@ protected:
 	/* Input callback functions */
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
-	void FireWeapon();
 	void FireButtonPressed();
 	void FireButtonReleased();
 	void AimButtonPressed();
 	void AimButtonReleased();
 	void InteractButtonPressed();
 	void InteractButtonReleased();
+	void ReloadButtonPressed();
+
+	void FireWeapon();
+	void ReloadWeapon();
 
 	bool GetBeamEndLocation(const FVector& BarrelSocketLocation, FVector& OutBeamLocation);
 	void SendBullet();
@@ -134,6 +137,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* InteractAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* ReloadAction;
+
 private:	
 	void PlayFireSound();
 	void SpawnMuzzleFlash(const FTransform& SocketTransform);
@@ -142,6 +148,7 @@ private:
 	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
 	void PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames);
 	void PlayGunfireMontage();
+	void PlayReloadMontage();
 	void CameraZoomInterpolation(float DeltaTime);
 	void SetupEnhancedInput();
 	void SetLookScale();
@@ -176,8 +183,14 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* HipFireMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* ReloadMontage;
+
 	UPROPERTY(EditAnywhere, Category = Combat)
 	TArray<FName> HipFireMontageSections;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	TArray<FName> ReloadMontageSections;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	bool bAiming;
