@@ -461,14 +461,13 @@ void AArcoroxCharacter::FinishReloading()
 
 void AArcoroxCharacter::GrabClip()
 {
-	if (EquippedWeapon == nullptr) return;
+	if (EquippedWeapon == nullptr || HandSceneComponent == nullptr) return;
 	int32 ClipBoneIndex{ EquippedWeapon->GetItemMesh()->GetBoneIndex(EquippedWeapon->GetClipBoneName()) };
 	WeaponClipTransform = EquippedWeapon->GetItemMesh()->GetBoneTransform(ClipBoneIndex);
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::KeepRelative, true);
 	HandSceneComponent->AttachToComponent(GetMesh(), AttachmentRules, FName(TEXT("hand_l")));
 	HandSceneComponent->SetWorldTransform(WeaponClipTransform);
 	EquippedWeapon->SetMovingClip(true);
-
 }
 
 void AArcoroxCharacter::ReleaseClip()
