@@ -72,11 +72,12 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
 	FName ClipBoneName;
 
+	/* Is character moving the clip(magazine) (reloading) */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
+	bool bMovingClip;
+
 	FTimerHandle ThrowWeaponTimer;
 	float ThrowWeaponTime;
 	bool bIsFalling;
-
-	/* Is character moving the clip(magazine) (reloading) */
-	bool bMovingClip;
 
 };
