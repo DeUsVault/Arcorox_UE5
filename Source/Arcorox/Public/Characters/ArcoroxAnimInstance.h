@@ -12,10 +12,13 @@ class ARCOROX_API UArcoroxAnimInstance : public UAnimInstance
 	GENERATED_BODY()
 	
 public:
+	UArcoroxAnimInstance();
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
 
 protected:
+	/* Handle turning in place properties */
+	void TurnInPlace();
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
@@ -41,4 +44,14 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	bool bAiming;
+
+	/* Offset between Character rotation yaw and the root bone yaw */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	float RootYawOffset;
+
+	/* Current character rotation yaw */
+	float CharacterRotationYaw;
+
+	/* Character rotation yaw from previous frame */
+	float CharacterRotationYawLastFrame;
 };
