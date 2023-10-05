@@ -457,6 +457,24 @@ void AArcoroxCharacter::FinishReloading()
 	}
 }
 
+void AArcoroxCharacter::GrabClip()
+{
+	if (EquippedWeapon == nullptr) return;
+	int32 ClipBoneIndex{ EquippedWeapon->GetItemMesh()->GetBoneIndex(EquippedWeapon->GetClipBoneName()) };
+	WeaponClipTransform = EquippedWeapon->GetItemMesh()->GetBoneTransform(ClipBoneIndex);
+	FAttachmentTransformRules AttachmentRules(EAttachmentRule::KeepRelative, true);
+	HandSceneComponent->AttachToComponent(GetMesh(), AttachmentRules, FName(TEXT("hand_l")));
+	HandSceneComponent->SetWorldTransform(WeaponClipTransform);
+	EquippedWeapon->SetMovingClip(true);
+
+}
+
+void AArcoroxCharacter::ReleaseClip()
+{
+	if (EquippedWeapon == nullptr) return;
+	EquippedWeapon->SetMovingClip(false);
+}
+
 void AArcoroxCharacter::PlayFireSound()
 {
 	if (FireSound) UGameplayStatics::PlaySound2D(this, FireSound);

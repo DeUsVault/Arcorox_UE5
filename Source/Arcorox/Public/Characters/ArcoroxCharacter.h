@@ -113,6 +113,14 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void FinishReloading();
 
+	/* Called in response to Grab Clip notify in the character Animation Blueprint */
+	UFUNCTION(BlueprintCallable)
+	void GrabClip();
+
+	/* Called in response to Release Clip notify in the character Animation Blueprint */
+	UFUNCTION(BlueprintCallable)
+	void ReleaseClip();
+
 	/* Enhanced Input */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputMappingContext* ArcoroxContext;
@@ -246,6 +254,14 @@ private:
 	/* Combat state of character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	ECombatState CombatState;
+
+	/* Initial transform of gun clip when reloading */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	FTransform WeaponClipTransform;
+
+	/* Scene component for character hand to move the gun clip along with */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	USceneComponent* HandSceneComponent;
 
 	//Camera field of view
 	float CameraDefaultFOV;

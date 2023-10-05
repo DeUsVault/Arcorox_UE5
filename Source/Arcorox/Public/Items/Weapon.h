@@ -39,6 +39,8 @@ public:
 	FORCEINLINE EWeaponType GetWeaponType() const { return WeaponType; }
 	FORCEINLINE EAmmoType GetAmmoType() const { return AmmoType; }
 	FORCEINLINE FName GetReloadMontageSection() const { return ReloadMontageSection; }
+	FORCEINLINE FName GetClipBoneName() const { return ClipBoneName; }
+	FORCEINLINE void SetMovingClip(bool Moving) { bMovingClip = Moving; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -66,8 +68,15 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
 	FName ReloadMontageSection;
 
+	/* Name of gun clip bone of the weapon mesh */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
+	FName ClipBoneName;
+
 	FTimerHandle ThrowWeaponTimer;
 	float ThrowWeaponTime;
 	bool bIsFalling;
+
+	/* Is character moving the clip(magazine) (reloading) */
+	bool bMovingClip;
 
 };
