@@ -445,11 +445,15 @@ void AArcoroxCharacter::FinishReloading()
 	const int32 MagEmptySpace = EquippedWeapon->GetMagazineCapacity() - EquippedWeapon->GetAmmo();
 	if (MagEmptySpace > CarriedAmmo)
 	{
-
+		EquippedWeapon->ReloadAmmo(CarriedAmmo);
+		CarriedAmmo = 0;
+		AmmoMap.Add(EquippedWeapon->GetAmmoType(), CarriedAmmo);
 	}
 	else
 	{
-
+		EquippedWeapon->ReloadAmmo(MagEmptySpace);
+		CarriedAmmo -= MagEmptySpace;
+		AmmoMap.Add(EquippedWeapon->GetAmmoType(), CarriedAmmo);
 	}
 }
 

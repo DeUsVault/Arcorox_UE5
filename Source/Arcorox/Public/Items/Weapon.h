@@ -31,7 +31,8 @@ public:
 	/* Decrements ammo for the weapon */
 	void DecrementAmmo();
 
-	void ReloadAmmo();
+	/* Increments Ammo by Amount */
+	void ReloadAmmo(int32 Amount);
 
 	FORCEINLINE int32 GetAmmo() const { return Ammo; }
 	FORCEINLINE int32 GetMagazineCapacity() const { return MagazineCapacity; }
