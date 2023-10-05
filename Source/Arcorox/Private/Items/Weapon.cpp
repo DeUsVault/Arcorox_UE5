@@ -8,6 +8,7 @@ AWeapon::AWeapon():
 	ThrowWeaponTime(0.7f),
 	bIsFalling(false),
 	Ammo(120),
+	MagazineCapacity(30),
 	WeaponType(EWeaponType::EWT_SubmachineGun),
 	AmmoType(EAmmoType::EAT_9mm),
 	ReloadMontageSection(FName(TEXT("Reload SMG")))

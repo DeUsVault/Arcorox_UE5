@@ -441,6 +441,16 @@ void AArcoroxCharacter::FinishedCrosshairShootTimer()
 void AArcoroxCharacter::FinishReloading()
 {
 	CombatState = ECombatState::ECS_Unoccupied;
+	int32 CarriedAmmo = AmmoMap[EquippedWeapon->GetAmmoType()];
+	const int32 MagEmptySpace = EquippedWeapon->GetMagazineCapacity() - EquippedWeapon->GetAmmo();
+	if (MagEmptySpace > CarriedAmmo)
+	{
+
+	}
+	else
+	{
+
+	}
 }
 
 void AArcoroxCharacter::PlayFireSound()
