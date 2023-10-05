@@ -55,6 +55,8 @@ public:
 
 	FORCEINLINE EItemState GetItemState() const { return ItemState; }
 	FORCEINLINE USkeletalMeshComponent* GetItemMesh() const { return ItemMesh; }
+	FORCEINLINE USoundBase* GetPickupSound() const { return PickupSound; }
+	FORCEINLINE USoundBase* GetEquipSound() const { return EquipSound; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -143,6 +145,14 @@ private:
 	/* Duration of timer and curve */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 	float ZCurveTime;
+
+	/* Sound for picking up the item */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	USoundBase* PickupSound;
+
+	/* Sound for equipping the item */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	USoundBase* EquipSound;
 
 	/* For interpolating item in X and Y directions */
 	float ItemInterpX;

@@ -145,6 +145,7 @@ FVector AArcoroxCharacter::GetCameraInterpLocation()
 
 void AArcoroxCharacter::GetPickupItem(AItem* Item)
 {
+	if (Item && Item->GetEquipSound()) UGameplayStatics::PlaySound2D(this, Item->GetEquipSound());
 	auto Weapon = Cast<AWeapon>(Item);
 	if (Weapon) SwapWeapon(Weapon);
 }
@@ -226,7 +227,11 @@ void AArcoroxCharacter::AimButtonReleased()
 
 void AArcoroxCharacter::InteractButtonPressed()
 {
-	if(TraceHitItem) TraceHitItem->StartItemCurve(this);
+	if (TraceHitItem)
+	{
+		TraceHitItem->StartItemCurve(this);
+		if (TraceHitItem->GetPickupSound()) UGameplayStatics::PlaySound2D(this, TraceHitItem->GetPickupSound());
+	}
 }
 
 void AArcoroxCharacter::InteractButtonReleased()
