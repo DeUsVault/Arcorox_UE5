@@ -15,7 +15,9 @@ UArcoroxAnimInstance::UArcoroxAnimInstance() :
 	bAiming(false),
 	CharacterRotationYaw(0.f),
 	CharacterRotationYawLastFrame(0.f),
-	RootYawOffset(0.f)
+	RootYawOffset(0.f),
+	RotationCurve(0.f),
+	RotationCurveLastFrame(0.f)
 {
 
 }
@@ -59,6 +61,30 @@ void UArcoroxAnimInstance::TurnInPlace()
 		CharacterRotationYawLastFrame = CharacterRotationYaw;
 		CharacterRotationYaw = ArcoroxCharacter->GetActorRotation().Yaw;
 		const float DeltaYaw{ CharacterRotationYaw - CharacterRotationYawLastFrame };
-		RootYawOffset -= DeltaYaw;
+		//Clamp RootYawOffset between [-180, 180]
+		RootYawOffset = UKismetMathLibrary::NormalizeAxis(RootYawOffset - DeltaYaw);
+		const float Turning{ GetCurveValue(TEXT("Turning")) };
+		if (Turning > 0)
+		{
+			RotationCurveLastFrame = RotationCurve;
+			RotationCurve = GetCurveValue(TEXT("Rotation"));
+			const float DeltaRotation{ RotationCurve - RotationCurveLastFrame };
+			//RootYawOffset > 0  Turning Left, otherwise  Turning Right
+			RootYawOffset > 0 ? RootYawOffset -= DeltaRotation : RootYawOffset += DeltaRotation;
+			const float ABSRootYawOffset{ FMath::Abs(RootYawOffset) };
+			if (ABSRootYawOffset > 90.f)
+			{
+				const float ExcessYaw{ ABSRootYawOffset - 90.f };
+				RootYawOffset > 0 ? RootYawOffset -= ExcessYaw : RootYawOffset += ExcessYaw;
+			}
+		}
+	}
+	else
+	{
+		RootYawOffset = 0.f;
+		CharacterRotationYaw = ArcoroxCharacter->GetActorRotation().Yaw;
+		CharacterRotationYawLastFrame = CharacterRotationYaw;
+		RotationCurveLastFrame = 0.f;
+		RotationCurve = 0.f;
 	}
 }

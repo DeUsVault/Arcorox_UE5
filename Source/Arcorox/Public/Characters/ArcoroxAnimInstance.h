@@ -54,4 +54,10 @@ private:
 
 	/* Character rotation yaw from previous frame */
 	float CharacterRotationYawLastFrame;
+
+	/* Rotation curve value of current frame */
+	float RotationCurve;
+
+	/* Rotation curve value from last frame */
+	float RotationCurveLastFrame;
 };
