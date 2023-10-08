@@ -197,7 +197,7 @@ void AArcoroxCharacter::FireWeapon()
 void AArcoroxCharacter::ReloadWeapon()
 {
 	if (EquippedWeapon == nullptr || CombatState != ECombatState::ECS_Unoccupied) return;
-	if (CarryingAmmo())
+	if (CarryingAmmo() && !EquippedWeapon->FullMagazine())
 	{
 		CombatState = ECombatState::ECS_Reloading;
 		PlayReloadMontage();

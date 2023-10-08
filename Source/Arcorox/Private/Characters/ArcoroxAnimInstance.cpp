@@ -17,7 +17,9 @@ UArcoroxAnimInstance::UArcoroxAnimInstance() :
 	CharacterRotationYawLastFrame(0.f),
 	RootYawOffset(0.f),
 	RotationCurve(0.f),
-	RotationCurveLastFrame(0.f)
+	RotationCurveLastFrame(0.f),
+	Pitch(0.f),
+	bReloading(false)
 {
 
 }
@@ -49,6 +51,8 @@ void UArcoroxAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		if (ArcoroxCharacter->GetVelocity().Size() > 0) LastMovementOffsetYaw = MovementOffsetYaw;
 
 		bAiming = ArcoroxCharacter->IsAiming();
+
+		bReloading = ArcoroxCharacter->GetCombatState() == ECombatState::ECS_Reloading;
 	}
 	TurnInPlace();
 }
@@ -56,6 +60,8 @@ void UArcoroxAnimInstance::NativeUpdateAnimation(float DeltaTime)
 void UArcoroxAnimInstance::TurnInPlace()
 {
 	if (ArcoroxCharacter == nullptr || ArcoroxCharacterMovement == nullptr) return;
+	Pitch = ArcoroxCharacter->GetBaseAimRotation().Pitch;
+
 	if (Speed <= 0)
 	{
 		CharacterRotationYawLastFrame = CharacterRotationYaw;

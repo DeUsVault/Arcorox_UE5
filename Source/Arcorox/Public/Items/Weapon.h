@@ -34,6 +34,9 @@ public:
 	/* Increments Ammo by Amount */
 	void ReloadAmmo(int32 Amount);
 
+	/* Is the gun magazine full */
+	bool FullMagazine();
+
 	FORCEINLINE int32 GetAmmo() const { return Ammo; }
 	FORCEINLINE int32 GetMagazineCapacity() const { return MagazineCapacity; }
 	FORCEINLINE EWeaponType GetWeaponType() const { return WeaponType; }
