@@ -67,8 +67,15 @@ void UArcoroxAnimInstance::TurnInPlace()
 {
 	if (ArcoroxCharacter == nullptr || ArcoroxCharacterMovement == nullptr) return;
 	Pitch = ArcoroxCharacter->GetBaseAimRotation().Pitch;
-
-	if (Speed <= 0)
+	if (Speed > 0 || bIsFalling)
+	{
+		RootYawOffset = 0.f;
+		CharacterRotationYaw = ArcoroxCharacter->GetActorRotation().Yaw;
+		CharacterRotationYawLastFrame = CharacterRotationYaw;
+		RotationCurveLastFrame = 0.f;
+		RotationCurve = 0.f;
+	}
+	else
 	{
 		CharacterRotationYawLastFrame = CharacterRotationYaw;
 		CharacterRotationYaw = ArcoroxCharacter->GetActorRotation().Yaw;
@@ -90,13 +97,5 @@ void UArcoroxAnimInstance::TurnInPlace()
 				RootYawOffset > 0 ? RootYawOffset -= ExcessYaw : RootYawOffset += ExcessYaw;
 			}
 		}
-	}
-	else
-	{
-		RootYawOffset = 0.f;
-		CharacterRotationYaw = ArcoroxCharacter->GetActorRotation().Yaw;
-		CharacterRotationYawLastFrame = CharacterRotationYaw;
-		RotationCurveLastFrame = 0.f;
-		RotationCurve = 0.f;
 	}
 }
