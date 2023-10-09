@@ -28,8 +28,11 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
 
 protected:
-	/* Handle turning in place properties */
+	/* Handle turning in place calculations and properties */
 	void TurnInPlace();
+
+	/* Handle calculations for leaning while running */
+	void Lean(float DeltaTime);
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
@@ -72,15 +75,26 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turn In Place", meta = (AllowPrivateAccess = "true"))
 	EOffsetState OffsetState;
 
-	/* Current character rotation yaw */
-	float CharacterRotationYaw;
+	/* Delta yaw for leaning functionality (Yaw from current frame - yaw of last frame -> interpolated) */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Lean, meta = (AllowPrivateAccess = "true"))
+	float DeltaYaw;
 
-	/* Character rotation yaw from previous frame */
-	float CharacterRotationYawLastFrame;
+	/* Current character rotation yaw for turning in place functionality */
+	float TIPCharacterRotationYaw;
+
+	/* Character rotation yaw from previous frame for turning in place functionality */
+	float TIPCharacterRotationYawLastFrame;
 
 	/* Rotation curve value of current frame */
 	float RotationCurve;
 
 	/* Rotation curve value from last frame */
 	float RotationCurveLastFrame;
+
+	/* Character rotation yaw */
+	float CharacterRotationYaw;
+
+	/* Character rotation yaw last frame */
+	float CharacterRotationYawLastFrame;
+
 };

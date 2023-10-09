@@ -13,14 +13,17 @@ UArcoroxAnimInstance::UArcoroxAnimInstance() :
 	MovementOffsetYaw(0.f),
 	LastMovementOffsetYaw(0.f),
 	bAiming(false),
-	CharacterRotationYaw(0.f),
-	CharacterRotationYawLastFrame(0.f),
+	TIPCharacterRotationYaw(0.f),
+	TIPCharacterRotationYawLastFrame(0.f),
 	RootYawOffset(0.f),
 	RotationCurve(0.f),
+	CharacterRotationYaw(0.f),
+	CharacterRotationYawLastFrame(0.f),
 	RotationCurveLastFrame(0.f),
 	Pitch(0.f),
 	bReloading(false),
-	OffsetState(EOffsetState::EOS_Hip)
+	OffsetState(EOffsetState::EOS_Hip),
+	DeltaYaw(0.f)
 {
 
 }
@@ -61,6 +64,7 @@ void UArcoroxAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	}
 	TurnInPlace();
+	Lean(DeltaTime);
 }
 
 void UArcoroxAnimInstance::TurnInPlace()
@@ -70,18 +74,18 @@ void UArcoroxAnimInstance::TurnInPlace()
 	if (Speed > 0 || bIsFalling)
 	{
 		RootYawOffset = 0.f;
-		CharacterRotationYaw = ArcoroxCharacter->GetActorRotation().Yaw;
-		CharacterRotationYawLastFrame = CharacterRotationYaw;
+		TIPCharacterRotationYaw = ArcoroxCharacter->GetActorRotation().Yaw;
+		TIPCharacterRotationYawLastFrame = TIPCharacterRotationYaw;
 		RotationCurveLastFrame = 0.f;
 		RotationCurve = 0.f;
 	}
 	else
 	{
-		CharacterRotationYawLastFrame = CharacterRotationYaw;
-		CharacterRotationYaw = ArcoroxCharacter->GetActorRotation().Yaw;
-		const float DeltaYaw{ CharacterRotationYaw - CharacterRotationYawLastFrame };
+		TIPCharacterRotationYawLastFrame = TIPCharacterRotationYaw;
+		TIPCharacterRotationYaw = ArcoroxCharacter->GetActorRotation().Yaw;
+		const float TIPDeltaYaw{ TIPCharacterRotationYaw - TIPCharacterRotationYawLastFrame };
 		//Clamp RootYawOffset between [-180, 180]
-		RootYawOffset = UKismetMathLibrary::NormalizeAxis(RootYawOffset - DeltaYaw);
+		RootYawOffset = UKismetMathLibrary::NormalizeAxis(RootYawOffset - TIPDeltaYaw);
 		const float Turning{ GetCurveValue(TEXT("Turning")) };
 		if (Turning > 0)
 		{
@@ -98,4 +102,14 @@ void UArcoroxAnimInstance::TurnInPlace()
 			}
 		}
 	}
+}
+
+void UArcoroxAnimInstance::Lean(float DeltaTime)
+{
+	if (ArcoroxCharacter == nullptr || ArcoroxCharacterMovement == nullptr) return;
+	CharacterRotationYawLastFrame = CharacterRotationYaw;
+	CharacterRotationYaw = ArcoroxCharacter->GetActorRotation().Yaw;
+	const float Target{ (CharacterRotationYaw - CharacterRotationYawLastFrame) / DeltaTime };
+	const float Interpolation{ FMath::FInterpTo<float>(DeltaYaw, Target, DeltaTime, 6.f) };
+	DeltaYaw = FMath::Clamp(Interpolation, -90.f, 90.f);
 }
