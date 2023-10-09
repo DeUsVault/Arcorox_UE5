@@ -19,7 +19,8 @@ UArcoroxAnimInstance::UArcoroxAnimInstance() :
 	RotationCurve(0.f),
 	RotationCurveLastFrame(0.f),
 	Pitch(0.f),
-	bReloading(false)
+	bReloading(false),
+	OffsetState(EOffsetState::EOS_Hip)
 {
 
 }
@@ -50,9 +51,14 @@ void UArcoroxAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		MovementOffsetYaw = UKismetMathLibrary::NormalizedDeltaRotator(MovementRotation, AimRotation).Yaw;
 		if (ArcoroxCharacter->GetVelocity().Size() > 0) LastMovementOffsetYaw = MovementOffsetYaw;
 
+		bReloading = ArcoroxCharacter->GetCombatState() == ECombatState::ECS_Reloading;
 		bAiming = ArcoroxCharacter->IsAiming();
 
-		bReloading = ArcoroxCharacter->GetCombatState() == ECombatState::ECS_Reloading;
+		if (bReloading) OffsetState = EOffsetState::EOS_Reloading;
+		else if (bIsFalling) OffsetState = EOffsetState::EOS_InAir;
+		else if (bAiming) OffsetState = EOffsetState::EOS_Aiming;
+		else OffsetState = EOffsetState::EOS_Hip;
+
 	}
 	TurnInPlace();
 }

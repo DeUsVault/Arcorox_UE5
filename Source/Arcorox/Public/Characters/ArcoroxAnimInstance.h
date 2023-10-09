@@ -6,6 +6,17 @@
 #include "Animation/AnimInstance.h"
 #include "ArcoroxAnimInstance.generated.h"
 
+UENUM(BlueprintType)
+enum class EOffsetState : uint8
+{
+	EOS_Aiming UMETA(DisplayName = "Aiming"),
+	EOS_Hip UMETA(DisplayName = "Hip"),
+	EOS_Reloading UMETA(DisplayName = "Reloading"),
+	EOS_InAir UMETA(DisplayName = "InAir"),
+	
+	EOS_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
 UCLASS()
 class ARCOROX_API UArcoroxAnimInstance : public UAnimInstance
 {
@@ -56,6 +67,10 @@ private:
 	/* Is character in reload animation */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turn In Place", meta = (AllowPrivateAccess = "true"))
 	bool bReloading;
+
+	/* State to determine which Aim Offset to use */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turn In Place", meta = (AllowPrivateAccess = "true"))
+	EOffsetState OffsetState;
 
 	/* Current character rotation yaw */
 	float CharacterRotationYaw;
