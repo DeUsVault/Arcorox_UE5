@@ -91,10 +91,10 @@ private:
 	/* Rotation curve value from last frame */
 	float RotationCurveLastFrame;
 
-	/* Character rotation yaw */
-	float CharacterRotationYaw;
+	/* Character rotation */
+	FRotator CharacterRotation;
 
-	/* Character rotation yaw last frame */
-	float CharacterRotationYawLastFrame;
+	/* Character rotation last frame */
+	FRotator CharacterRotationLastFrame;
 
 };

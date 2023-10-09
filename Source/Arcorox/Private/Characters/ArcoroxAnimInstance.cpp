@@ -17,8 +17,8 @@ UArcoroxAnimInstance::UArcoroxAnimInstance() :
 	TIPCharacterRotationYawLastFrame(0.f),
 	RootYawOffset(0.f),
 	RotationCurve(0.f),
-	CharacterRotationYaw(0.f),
-	CharacterRotationYawLastFrame(0.f),
+	CharacterRotation(FRotator(0.f)),
+	CharacterRotationLastFrame(FRotator(0.f)),
 	RotationCurveLastFrame(0.f),
 	Pitch(0.f),
 	bReloading(false),
@@ -107,9 +107,10 @@ void UArcoroxAnimInstance::TurnInPlace()
 void UArcoroxAnimInstance::Lean(float DeltaTime)
 {
 	if (ArcoroxCharacter == nullptr || ArcoroxCharacterMovement == nullptr) return;
-	CharacterRotationYawLastFrame = CharacterRotationYaw;
-	CharacterRotationYaw = ArcoroxCharacter->GetActorRotation().Yaw;
-	const float Target{ (CharacterRotationYaw - CharacterRotationYawLastFrame) / DeltaTime };
-	const float Interpolation{ FMath::FInterpTo<float>(DeltaYaw, Target, DeltaTime, 6.f) };
-	DeltaYaw = FMath::Clamp(Interpolation, -90.f, 90.f);
+	CharacterRotationLastFrame = CharacterRotation;
+	CharacterRotation = ArcoroxCharacter->GetActorRotation();
+	const FRotator DeltaRotation{ UKismetMathLibrary::NormalizedDeltaRotator(CharacterRotation, CharacterRotationLastFrame) };
+	const float Target = DeltaRotation.Yaw / DeltaTime;
+	const float Interpolation{ FMath::FInterpTo<float>(DeltaYaw, Target, DeltaTime, 1.f) };
+	DeltaYaw = FMath::Clamp(Interpolation, -85.f, 85.f);
 }
