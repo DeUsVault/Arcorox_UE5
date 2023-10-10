@@ -79,6 +79,10 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Lean, meta = (AllowPrivateAccess = "true"))
 	float DeltaYaw;
 
+	/* Is character crouching */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Crouching, meta = (AllowPrivateAccess = "true"))
+	bool bCrouching;
+
 	/* Current character rotation yaw for turning in place functionality */
 	float TIPCharacterRotationYaw;
 

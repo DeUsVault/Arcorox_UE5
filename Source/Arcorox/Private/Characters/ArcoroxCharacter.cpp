@@ -47,7 +47,9 @@ AArcoroxCharacter::AArcoroxCharacter() :
 	Starting9mmAmmo(120),
 	Starting556Ammo(90),
 	//Combat state
-	CombatState(ECombatState::ECS_Unoccupied)
+	CombatState(ECombatState::ECS_Unoccupied),
+	//Crouching
+	bCrouching(false)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -122,6 +124,7 @@ void AArcoroxCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AArcoroxCharacter::InteractButtonPressed);
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &AArcoroxCharacter::InteractButtonReleased);
 		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, this, &AArcoroxCharacter::ReloadButtonPressed);
+		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &AArcoroxCharacter::CrouchButtonPressed);
 	}
 }
 
@@ -242,6 +245,14 @@ void AArcoroxCharacter::InteractButtonReleased()
 void AArcoroxCharacter::ReloadButtonPressed()
 {
 	ReloadWeapon();
+}
+
+void AArcoroxCharacter::CrouchButtonPressed()
+{
+	if (GetCharacterMovement())
+	{
+		if (!GetCharacterMovement()->IsFalling()) bCrouching = !bCrouching;
+	}
 }
 
 bool AArcoroxCharacter::GetBeamEndLocation(const FVector& BarrelSocketLocation, FVector& OutBeamLocation)

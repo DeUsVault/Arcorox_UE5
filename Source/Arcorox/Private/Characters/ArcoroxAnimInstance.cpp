@@ -23,7 +23,8 @@ UArcoroxAnimInstance::UArcoroxAnimInstance() :
 	Pitch(0.f),
 	bReloading(false),
 	OffsetState(EOffsetState::EOS_Hip),
-	DeltaYaw(0.f)
+	DeltaYaw(0.f),
+	bCrouching(false)
 {
 
 }
@@ -48,6 +49,7 @@ void UArcoroxAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		Speed = UKismetMathLibrary::VSizeXY(ArcoroxCharacterMovement->Velocity);
 		bIsFalling = ArcoroxCharacterMovement->IsFalling();
 		bIsAccelerating = ArcoroxCharacterMovement->GetCurrentAcceleration().Size() > 0.f;
+		bCrouching = ArcoroxCharacter->IsCrouching();
 
 		FRotator AimRotation = ArcoroxCharacter->GetBaseAimRotation();
 		FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(ArcoroxCharacter->GetVelocity());

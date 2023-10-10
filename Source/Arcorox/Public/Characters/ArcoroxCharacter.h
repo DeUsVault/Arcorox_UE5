@@ -53,6 +53,7 @@ public:
 	FORCEINLINE bool IsAiming() const { return bAiming; }
 	FORCEINLINE int8 GetOverlappedItemCount() const { return OverlappedItemCount; }
 	FORCEINLINE ECombatState GetCombatState() const { return CombatState; }
+	FORCEINLINE bool IsCrouching() const { return bCrouching; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -67,6 +68,7 @@ protected:
 	void InteractButtonPressed();
 	void InteractButtonReleased();
 	void ReloadButtonPressed();
+	void CrouchButtonPressed();
 
 	void FireWeapon();
 	void ReloadWeapon();
@@ -147,6 +149,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* ReloadAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* CrouchAction;
 
 private:	
 	void PlayFireSound();
@@ -264,6 +269,10 @@ private:
 	/* Scene component for character hand to move the gun clip along with */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	USceneComponent* HandSceneComponent;
+
+	/* Is character crouching */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	bool bCrouching;
 
 	//Camera field of view
 	float CameraDefaultFOV;
