@@ -9,6 +9,7 @@
 #include "EnhancedInputComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -52,7 +53,13 @@ AArcoroxCharacter::AArcoroxCharacter() :
 	bCrouching(false),
 	//Movement speed
 	DefaultMovementSpeed(650.f),
-	CrouchMovementSpeed(300.f)
+	CrouchMovementSpeed(300.f),
+	//Capsule half height
+	DefaultCapsuleHalfHeight(88.f),
+	CrouchingCapsuleHalfHeight(44.f),
+	//Ground friction
+	DefaultGroundFriction(2.f),
+	CrouchingGroundFriction(100.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -70,7 +77,7 @@ AArcoroxCharacter::AArcoroxCharacter() :
 	CameraBoom->SetupAttachment(GetRootComponent());
 	CameraBoom->TargetArmLength = 200.f;
 	CameraBoom->bUsePawnControlRotation = true;
-	CameraBoom->SocketOffset = FVector(0.f, 50.f, 70.f);
+	CameraBoom->SocketOffset = FVector(0.f, 50.f, 50.f);
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
@@ -105,8 +112,8 @@ void AArcoroxCharacter::Tick(float DeltaTime)
 	CameraZoomInterpolation(DeltaTime);
 	SetLookScale();
 	CalculateCrosshairSpread(DeltaTime);
-
 	ItemTrace();
+	InterpolateCapsuleHalfHeight(DeltaTime);
 }
 
 void AArcoroxCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -258,11 +265,17 @@ void AArcoroxCharacter::ReloadButtonPressed()
 
 void AArcoroxCharacter::CrouchButtonPressed()
 {
-	if (GetCharacterMovement())
+	if (GetCharacterMovement() == nullptr) return;
+	if (!GetCharacterMovement()->IsFalling()) bCrouching = !bCrouching;
+	if (bCrouching)
 	{
-		if (!GetCharacterMovement()->IsFalling()) bCrouching = !bCrouching;
-		if (bCrouching) GetCharacterMovement()->MaxWalkSpeed = CrouchMovementSpeed;
-		else GetCharacterMovement()->MaxWalkSpeed = DefaultMovementSpeed;
+		GetCharacterMovement()->MaxWalkSpeed = CrouchMovementSpeed;
+		GetCharacterMovement()->GroundFriction = CrouchingGroundFriction;
+	}
+	else
+	{
+		GetCharacterMovement()->MaxWalkSpeed = DefaultMovementSpeed;
+		GetCharacterMovement()->GroundFriction = DefaultGroundFriction;
 	}
 }
 
@@ -447,6 +460,20 @@ bool AArcoroxCharacter::CarryingAmmo()
 		if (AmmoMap.Contains(AmmoType)) return AmmoMap[AmmoType] > 0;
 	}
 	return false;
+}
+
+void AArcoroxCharacter::InterpolateCapsuleHalfHeight(float DeltaTime)
+{
+	if (GetCapsuleComponent() == nullptr || GetMesh() == nullptr) return;
+	const float CurrentCapsuleHalfHeight{ GetCapsuleComponent()->GetScaledCapsuleHalfHeight() };
+	float TargetCapsuleHalfHeight;
+	bCrouching ? TargetCapsuleHalfHeight = CrouchingCapsuleHalfHeight : TargetCapsuleHalfHeight = DefaultCapsuleHalfHeight;
+	const float InterpolatedCapsuleHalfHeight{ FMath::FInterpTo<float>(CurrentCapsuleHalfHeight, TargetCapsuleHalfHeight, DeltaTime, 20.f) };
+	//Negative if crouching, positive if standing
+	const float DeltaCapsuleHalfHeight{ InterpolatedCapsuleHalfHeight - CurrentCapsuleHalfHeight };
+	const FVector MeshOffset{ 0.f, 0.f, -DeltaCapsuleHalfHeight };
+	GetMesh()->AddLocalOffset(MeshOffset);
+	GetCapsuleComponent()->SetCapsuleHalfHeight(InterpolatedCapsuleHalfHeight);
 }
 
 void AArcoroxCharacter::AutoFireReset()

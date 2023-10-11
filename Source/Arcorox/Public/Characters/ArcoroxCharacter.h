@@ -108,6 +108,9 @@ protected:
 	/* Checks if player has ammo of same type as equipped weapon */
 	bool CarryingAmmo();
 
+	/* Interpolates Capsule half height when going between standing and crouching */
+	void InterpolateCapsuleHalfHeight(float DeltaTime);
+
 	UFUNCTION()
 	void AutoFireReset();
 
@@ -281,6 +284,22 @@ private:
 	/* Movement speed when crouching */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	float CrouchMovementSpeed;
+
+	/* Capsule half height when standing */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	float DefaultCapsuleHalfHeight;
+
+	/* Capsule half height when crouching */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	float CrouchingCapsuleHalfHeight;
+
+	/* Ground friction when standing */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	float DefaultGroundFriction;
+
+	/* Ground friction when crouching */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	float CrouchingGroundFriction;
 
 	//Camera field of view
 	float CameraDefaultFOV;
