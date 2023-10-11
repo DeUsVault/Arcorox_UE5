@@ -274,6 +274,14 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	bool bCrouching;
 
+	/* Default movement speed */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	float DefaultMovementSpeed;
+
+	/* Movement speed when crouching */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	float CrouchMovementSpeed;
+
 	//Camera field of view
 	float CameraDefaultFOV;
 	float CameraZoomedFOV;

@@ -49,7 +49,10 @@ AArcoroxCharacter::AArcoroxCharacter() :
 	//Combat state
 	CombatState(ECombatState::ECS_Unoccupied),
 	//Crouching
-	bCrouching(false)
+	bCrouching(false),
+	//Movement speed
+	DefaultMovementSpeed(650.f),
+	CrouchMovementSpeed(300.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -90,8 +93,8 @@ void AArcoroxCharacter::BeginPlay()
 		CameraCurrentFOV = CameraDefaultFOV;
 	}
 
+	if (GetCharacterMovement()) GetCharacterMovement()->MaxWalkSpeed = DefaultMovementSpeed;
 	EquipWeapon(SpawnDefaultWeapon());
-
 	InitializeAmmoMap();
 }
 
@@ -130,6 +133,12 @@ void AArcoroxCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 void AArcoroxCharacter::Jump()
 {
+	if (bCrouching)
+	{
+		bCrouching = false;
+		if (GetCharacterMovement()) GetCharacterMovement()->MaxWalkSpeed = DefaultMovementSpeed;
+		return;
+	}
 	Super::Jump();
 }
 
@@ -252,6 +261,8 @@ void AArcoroxCharacter::CrouchButtonPressed()
 	if (GetCharacterMovement())
 	{
 		if (!GetCharacterMovement()->IsFalling()) bCrouching = !bCrouching;
+		if (bCrouching) GetCharacterMovement()->MaxWalkSpeed = CrouchMovementSpeed;
+		else GetCharacterMovement()->MaxWalkSpeed = DefaultMovementSpeed;
 	}
 }
 
