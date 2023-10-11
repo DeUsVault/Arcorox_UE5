@@ -24,7 +24,9 @@ UArcoroxAnimInstance::UArcoroxAnimInstance() :
 	bReloading(false),
 	OffsetState(EOffsetState::EOS_Hip),
 	DeltaYaw(0.f),
-	bCrouching(false)
+	bCrouching(false),
+	RecoilScale(1.f),
+	bTurningInPlace(false)
 {
 
 }
@@ -91,6 +93,7 @@ void UArcoroxAnimInstance::TurnInPlace()
 		const float Turning{ GetCurveValue(TEXT("Turning")) };
 		if (Turning > 0)
 		{
+			bTurningInPlace = true;
 			RotationCurveLastFrame = RotationCurve;
 			RotationCurve = GetCurveValue(TEXT("Rotation"));
 			const float DeltaRotation{ RotationCurve - RotationCurveLastFrame };
@@ -103,7 +106,9 @@ void UArcoroxAnimInstance::TurnInPlace()
 				RootYawOffset > 0 ? RootYawOffset -= ExcessYaw : RootYawOffset += ExcessYaw;
 			}
 		}
+		else bTurningInPlace = false;
 	}
+	SetRecoilScale();
 }
 
 void UArcoroxAnimInstance::Lean(float DeltaTime)
@@ -115,4 +120,26 @@ void UArcoroxAnimInstance::Lean(float DeltaTime)
 	const float Target = DeltaRotation.Yaw / DeltaTime;
 	const float Interpolation{ FMath::FInterpTo<float>(DeltaYaw, Target, DeltaTime, 1.f) };
 	DeltaYaw = FMath::Clamp(Interpolation, -85.f, 85.f);
+}
+
+void UArcoroxAnimInstance::SetRecoilScale()
+{
+	if (bTurningInPlace)
+	{
+		if (bReloading) RecoilScale = 1.f;
+		else RecoilScale = 0.f;
+	}
+	else
+	{
+		if (bCrouching)
+		{
+			if (bReloading) RecoilScale = 1.f;
+			else RecoilScale = 0.1f;
+		}
+		else
+		{
+			if (bAiming || bReloading) RecoilScale = 1.f;
+			else RecoilScale = 0.5f;
+		}
+	}
 }

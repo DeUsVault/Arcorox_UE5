@@ -35,6 +35,8 @@ protected:
 	void Lean(float DeltaTime);
 
 private:
+	void SetRecoilScale();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	class AArcoroxCharacter* ArcoroxCharacter;
 
@@ -82,6 +84,14 @@ private:
 	/* Is character crouching */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Crouching, meta = (AllowPrivateAccess = "true"))
 	bool bCrouching;
+
+	/* Scale for recoil to adjust recoil for crouching and aiming */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	float RecoilScale;
+
+	/* Is the character turning in place */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Turn In Place", meta = (AllowPrivateAccess = "true"))
+	bool bTurningInPlace;
 
 	/* Current character rotation yaw for turning in place functionality */
 	float TIPCharacterRotationYaw;
