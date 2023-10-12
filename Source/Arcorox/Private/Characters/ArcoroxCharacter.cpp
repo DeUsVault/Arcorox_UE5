@@ -237,11 +237,13 @@ void AArcoroxCharacter::FireButtonReleased()
 void AArcoroxCharacter::AimButtonPressed()
 {
 	bAiming = true;
+	if (GetCharacterMovement()) GetCharacterMovement()->MaxWalkSpeed = CrouchMovementSpeed;
 }
 
 void AArcoroxCharacter::AimButtonReleased()
 {
 	bAiming = false;
+	if (GetCharacterMovement() && !bCrouching) GetCharacterMovement()->MaxWalkSpeed = DefaultMovementSpeed;
 }
 
 void AArcoroxCharacter::InteractButtonPressed()
@@ -274,7 +276,7 @@ void AArcoroxCharacter::CrouchButtonPressed()
 	}
 	else
 	{
-		GetCharacterMovement()->MaxWalkSpeed = DefaultMovementSpeed;
+		if (!bAiming) GetCharacterMovement()->MaxWalkSpeed = DefaultMovementSpeed;
 		GetCharacterMovement()->GroundFriction = DefaultGroundFriction;
 	}
 }
