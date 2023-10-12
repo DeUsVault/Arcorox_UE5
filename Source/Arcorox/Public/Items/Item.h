@@ -64,11 +64,11 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	/* Sets Item properties based on ItemState */
+	virtual void SetItemProperties(EItemState State);
+
 	/* Sets ActiveStars boolean array based on item rarity */
 	void SetActiveStars();
-
-	/* Sets Item properties based on ItemState */
-	void SetItemProperties(EItemState State);
 
 	/* Interpolates Item when in interpolation state */
 	void ItemInterpolation(float DeltaTime);

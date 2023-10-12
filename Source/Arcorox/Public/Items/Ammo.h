@@ -17,10 +17,15 @@ public:
 	AAmmo();
 	virtual void Tick(float DeltaTime);
 
+	void DisableAmmoMeshCollision();
+
 	FORCEINLINE UStaticMeshComponent* GetAmmoMesh() const { return AmmoMesh; }
 
 protected:
 	virtual void BeginPlay();
+
+	/* Override of AItem::SetItemProperties(EItemState State) */
+	virtual void SetItemProperties(EItemState State) override;
 
 private:
 	/* Ammo static mesh */

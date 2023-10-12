@@ -30,3 +30,47 @@ void AAmmo::BeginPlay()
 {
 	Super::BeginPlay();
 }
+
+void AAmmo::SetItemProperties(EItemState State)
+{
+	Super::SetItemProperties(State);
+
+	switch (State)
+	{
+	case EItemState::EIS_Pickup:
+		AmmoMesh->SetSimulatePhysics(false);
+		AmmoMesh->SetEnableGravity(false);
+		AmmoMesh->SetVisibility(true);
+		DisableAmmoMeshCollision();
+		break;
+	case EItemState::EIS_Equipped:
+		AmmoMesh->SetSimulatePhysics(false);
+		AmmoMesh->SetEnableGravity(false);
+		AmmoMesh->SetVisibility(true);
+		DisableAmmoMeshCollision();
+		break;
+	case EItemState::EIS_Falling:
+		AmmoMesh->SetSimulatePhysics(true);
+		AmmoMesh->SetEnableGravity(true);
+		AmmoMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		AmmoMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		AmmoMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+		break;
+	case EItemState::EIS_EquipInterpolating:
+		AmmoMesh->SetSimulatePhysics(false);
+		AmmoMesh->SetEnableGravity(false);
+		AmmoMesh->SetVisibility(true);
+		DisableAmmoMeshCollision();
+		break;
+	}
+}
+
+
+void AAmmo::DisableAmmoMeshCollision()
+{
+	if (AmmoMesh)
+	{
+		AmmoMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		AmmoMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+}
