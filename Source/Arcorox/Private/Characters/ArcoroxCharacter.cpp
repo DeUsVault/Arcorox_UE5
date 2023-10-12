@@ -21,13 +21,13 @@ AArcoroxCharacter::AArcoroxCharacter() :
 	bAiming(false),
 	//Camera field of view
 	CameraDefaultFOV(0.f),
-	CameraZoomedFOV(35.f),
+	CameraZoomedFOV(25.f),
 	CameraCurrentFOV(0.f),
 	ZoomInterpolationSpeed(25.f),
 	//Look sensitivity
 	LookScale(1.f),
 	HipLookScale(1.f),
-	AimingLookScale(0.25f),
+	AimingLookScale(0.6f),
 	//Crosshair spread
 	CrosshairSpreadMultiplier(0.f),
 	CrosshairVelocityFactor(0.f),
@@ -75,9 +75,9 @@ AArcoroxCharacter::AArcoroxCharacter() :
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(GetRootComponent());
-	CameraBoom->TargetArmLength = 200.f;
+	CameraBoom->TargetArmLength = 240.f;
 	CameraBoom->bUsePawnControlRotation = true;
-	CameraBoom->SocketOffset = FVector(0.f, 50.f, 50.f);
+	CameraBoom->SocketOffset = FVector(0.f, 35.f, 80.f);
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);

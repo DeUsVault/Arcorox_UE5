@@ -301,9 +301,15 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	float CrouchingGroundFriction;
 
-	//Camera field of view
+	/* Default camera field of view */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	float CameraDefaultFOV;
+
+	/* Camera field of view when aiming */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	float CameraZoomedFOV;
+
+	/* Current camera field of view this frame */
 	float CameraCurrentFOV;
 
 	//Crosshair spread
