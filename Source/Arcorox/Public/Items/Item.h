@@ -55,6 +55,9 @@ public:
 
 	FORCEINLINE EItemState GetItemState() const { return ItemState; }
 	FORCEINLINE USkeletalMeshComponent* GetItemMesh() const { return ItemMesh; }
+	FORCEINLINE UBoxComponent* GetCollisionBox() const { return CollisionBox; }
+	FORCEINLINE USphereComponent* GetOverlapSphere() const { return OverlapSphere; }
+	FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
 	FORCEINLINE USoundBase* GetPickupSound() const { return PickupSound; }
 	FORCEINLINE USoundBase* GetEquipSound() const { return EquipSound; }
 
