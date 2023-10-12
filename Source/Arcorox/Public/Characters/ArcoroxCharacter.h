@@ -111,6 +111,9 @@ protected:
 	/* Interpolates Capsule half height when going between standing and crouching */
 	void InterpolateCapsuleHalfHeight(float DeltaTime);
 
+	void Aim();
+	void StopAiming();
+
 	UFUNCTION()
 	void AutoFireReset();
 
@@ -311,6 +314,9 @@ private:
 
 	/* Current camera field of view this frame */
 	float CameraCurrentFOV;
+
+	/* Is the player pressing the aim button */
+	bool bAimButtonPressed;
 
 	//Crosshair spread
 	float ShootTimeDuration;

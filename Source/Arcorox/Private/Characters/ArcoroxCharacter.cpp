@@ -19,6 +19,7 @@
 AArcoroxCharacter::AArcoroxCharacter() :
 	//Is Aiming
 	bAiming(false),
+	bAimButtonPressed(false),
 	//Camera field of view
 	CameraDefaultFOV(0.f),
 	CameraZoomedFOV(25.f),
@@ -218,6 +219,7 @@ void AArcoroxCharacter::ReloadWeapon()
 	if (EquippedWeapon == nullptr || CombatState != ECombatState::ECS_Unoccupied) return;
 	if (CarryingAmmo() && !EquippedWeapon->FullMagazine())
 	{
+		if (bAiming) StopAiming();
 		CombatState = ECombatState::ECS_Reloading;
 		PlayReloadMontage();
 	}
@@ -236,14 +238,14 @@ void AArcoroxCharacter::FireButtonReleased()
 
 void AArcoroxCharacter::AimButtonPressed()
 {
-	bAiming = true;
-	if (GetCharacterMovement()) GetCharacterMovement()->MaxWalkSpeed = CrouchMovementSpeed;
+	bAimButtonPressed = true;
+	if (CombatState != ECombatState::ECS_Reloading) Aim();
 }
 
 void AArcoroxCharacter::AimButtonReleased()
 {
-	bAiming = false;
-	if (GetCharacterMovement() && !bCrouching) GetCharacterMovement()->MaxWalkSpeed = DefaultMovementSpeed;
+	bAimButtonPressed = false;
+	StopAiming();
 }
 
 void AArcoroxCharacter::InteractButtonPressed()
@@ -478,6 +480,18 @@ void AArcoroxCharacter::InterpolateCapsuleHalfHeight(float DeltaTime)
 	GetCapsuleComponent()->SetCapsuleHalfHeight(InterpolatedCapsuleHalfHeight);
 }
 
+void AArcoroxCharacter::Aim()
+{
+	bAiming = true;
+	if (GetCharacterMovement()) GetCharacterMovement()->MaxWalkSpeed = CrouchMovementSpeed;
+}
+
+void AArcoroxCharacter::StopAiming()
+{
+	bAiming = false;
+	if (GetCharacterMovement() && !bCrouching) GetCharacterMovement()->MaxWalkSpeed = DefaultMovementSpeed;
+}
+
 void AArcoroxCharacter::AutoFireReset()
 {
 	CombatState = ECombatState::ECS_Unoccupied;
@@ -499,6 +513,7 @@ void AArcoroxCharacter::FinishedCrosshairShootTimer()
 void AArcoroxCharacter::FinishReloading()
 {
 	CombatState = ECombatState::ECS_Unoccupied;
+	if (bAimButtonPressed) Aim();
 	int32 CarriedAmmo = AmmoMap[EquippedWeapon->GetAmmoType()];
 	const int32 MagEmptySpace = EquippedWeapon->GetMagazineCapacity() - EquippedWeapon->GetAmmo();
 	if (MagEmptySpace > CarriedAmmo)
