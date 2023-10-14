@@ -4,6 +4,7 @@
 #include "Characters/ArcoroxCharacter.h"
 #include "Items/Item.h"
 #include "Items/Weapon.h"
+#include "Items/Ammo.h"
 #include "InputMappingContext.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
@@ -168,6 +169,8 @@ void AArcoroxCharacter::GetPickupItem(AItem* Item)
 	if (Item && Item->GetEquipSound()) UGameplayStatics::PlaySound2D(this, Item->GetEquipSound());
 	auto Weapon = Cast<AWeapon>(Item);
 	if (Weapon) SwapWeapon(Weapon);
+	auto Ammo = Cast<AAmmo>(Item);
+	if (Ammo) PickupAmmo(Ammo);
 }
 
 float AArcoroxCharacter::GetCrosshairSpreadMultiplier() const
@@ -490,6 +493,22 @@ void AArcoroxCharacter::StopAiming()
 {
 	bAiming = false;
 	if (GetCharacterMovement() && !bCrouching) GetCharacterMovement()->MaxWalkSpeed = DefaultMovementSpeed;
+}
+
+void AArcoroxCharacter::PickupAmmo(AAmmo* Ammo)
+{
+	if (Ammo == nullptr) return;
+	if (AmmoMap.Contains(Ammo->GetAmmoType()))
+	{
+		int32 CurrentAmmoCount{ AmmoMap[Ammo->GetAmmoType()] };
+		CurrentAmmoCount += Ammo->GetItemCount();
+		AmmoMap[Ammo->GetAmmoType()] = CurrentAmmoCount;
+	}
+	if (EquippedWeapon && EquippedWeapon->GetAmmoType() == Ammo->GetAmmoType())
+	{
+		if (!WeaponHasAmmo()) ReloadWeapon();
+	}
+	Ammo->Destroy();
 }
 
 void AArcoroxCharacter::AutoFireReset()

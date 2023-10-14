@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Items/Item.h"
+#include "Items/AmmoType.h"
 #include "Ammo.generated.h"
 
 class UStaticMeshComponent;
@@ -20,6 +21,7 @@ public:
 	void DisableAmmoMeshCollision();
 
 	FORCEINLINE UStaticMeshComponent* GetAmmoMesh() const { return AmmoMesh; }
+	FORCEINLINE EAmmoType GetAmmoType() const { return AmmoType; }
 
 protected:
 	virtual void BeginPlay();
@@ -29,8 +31,11 @@ protected:
 
 private:
 	/* Ammo static mesh */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ammo Properties", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Ammo, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* AmmoMesh;
 
+	/* Ammo type */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ammo, meta = (AllowPrivateAccess = "true"))
+	EAmmoType AmmoType;
 
 };

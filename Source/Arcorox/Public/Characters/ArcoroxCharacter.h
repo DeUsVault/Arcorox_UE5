@@ -17,6 +17,7 @@ class UParticleSystem;
 class UAnimMontage;
 class AItem;
 class AWeapon;
+class AAmmo;
 
 UENUM(BlueprintType)
 enum class ECombatState : uint8
@@ -113,6 +114,9 @@ protected:
 
 	void Aim();
 	void StopAiming();
+
+	/* Pick up the ammo and increment the ammo map */
+	void PickupAmmo(AAmmo* Ammo);
 
 	UFUNCTION()
 	void AutoFireReset();
