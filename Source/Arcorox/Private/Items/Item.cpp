@@ -7,6 +7,7 @@
 #include "Components/WidgetComponent.h"
 #include "Components/SphereComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 AItem::AItem() :
 	ItemName(FString("Item")),
@@ -254,5 +255,11 @@ void AItem::StartItemCurve(AArcoroxCharacter* Character)
 	InterpInitialYawOffset = ItemYaw - CameraYaw;
 	bIsInterpolating = true;
 	SetItemState(EItemState::EIS_EquipInterpolating);
+	PlayPickupSound();
 	GetWorldTimerManager().SetTimer(ItemInterpolationTimer, this, &AItem::FinishInterpolating, ZCurveTime);
+}
+
+void AItem::PlayPickupSound()
+{
+	if (PickupSound) UGameplayStatics::PlaySound2D(this, PickupSound);
 }

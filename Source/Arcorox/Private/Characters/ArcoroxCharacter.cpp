@@ -87,6 +87,21 @@ AArcoroxCharacter::AArcoroxCharacter() :
 
 	HandSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("HandSceneComponent"));
 
+	WeaponInterpComp = CreateDefaultSubobject<USceneComponent>(TEXT("Weapon Interpolation Component"));
+	WeaponInterpComp->SetupAttachment(GetCamera());
+	InterpComp1 = CreateDefaultSubobject<USceneComponent>(TEXT("Interpolation Component 1"));
+	InterpComp1->SetupAttachment(GetCamera());
+	InterpComp2 = CreateDefaultSubobject<USceneComponent>(TEXT("Interpolation Component 2"));
+	InterpComp2->SetupAttachment(GetCamera());
+	InterpComp3 = CreateDefaultSubobject<USceneComponent>(TEXT("Interpolation Component 3"));
+	InterpComp3->SetupAttachment(GetCamera());
+	InterpComp4 = CreateDefaultSubobject<USceneComponent>(TEXT("Interpolation Component 4"));
+	InterpComp4->SetupAttachment(GetCamera());
+	InterpComp5 = CreateDefaultSubobject<USceneComponent>(TEXT("Interpolation Component 5"));
+	InterpComp5->SetupAttachment(GetCamera());
+	InterpComp6 = CreateDefaultSubobject<USceneComponent>(TEXT("Interpolation Component 6"));
+	InterpComp6->SetupAttachment(GetCamera());
+
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 }
 
@@ -253,11 +268,7 @@ void AArcoroxCharacter::AimButtonReleased()
 
 void AArcoroxCharacter::InteractButtonPressed()
 {
-	if (TraceHitItem)
-	{
-		TraceHitItem->StartItemCurve(this);
-		if (TraceHitItem->GetPickupSound()) UGameplayStatics::PlaySound2D(this, TraceHitItem->GetPickupSound());
-	}
+	if (TraceHitItem) TraceHitItem->StartItemCurve(this);
 }
 
 void AArcoroxCharacter::InteractButtonReleased()

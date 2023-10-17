@@ -8,6 +8,7 @@
 #include "Ammo.generated.h"
 
 class UStaticMeshComponent;
+class USphereComponent;
 
 UCLASS()
 class ARCOROX_API AAmmo : public AItem
@@ -29,6 +30,10 @@ protected:
 	/* Override of AItem::SetItemProperties(EItemState State) */
 	virtual void SetItemProperties(EItemState State) override;
 
+	/* Callback for Sphere Component OnComponentBeginOverlap() */
+	UFUNCTION()
+	void AmmoSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 private:
 	/* Ammo static mesh */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Ammo, meta = (AllowPrivateAccess = "true"))
@@ -41,4 +46,8 @@ private:
 	/* Texture for ammo icon */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ammo, meta = (AllowPrivateAccess = "true"))
 	UTexture2D* AmmoIconTexture;
+
+	/* Sphere component form picking up ammo on overlap */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Ammo, meta = (AllowPrivateAccess = "true"))
+	USphereComponent* AmmoCollisionSphere;
 };

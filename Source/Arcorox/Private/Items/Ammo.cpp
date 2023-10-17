@@ -6,6 +6,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Characters/ArcoroxCharacter.h"
 
 AAmmo::AAmmo()
 {
@@ -15,10 +16,12 @@ AAmmo::AAmmo()
 	SetRootComponent(AmmoMesh);
 
 	GetCollisionBox()->SetupAttachment(GetRootComponent());
-
 	GetOverlapSphere()->SetupAttachment(GetRootComponent());
-
 	GetPickupWidget()->SetupAttachment(GetRootComponent());
+
+	AmmoCollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("AmmoCollisionSphere"));
+	AmmoCollisionSphere->SetupAttachment(GetRootComponent());
+	AmmoCollisionSphere->SetSphereRadius(50.f);
 }
 
 void AAmmo::Tick(float DeltaTime)
@@ -29,6 +32,8 @@ void AAmmo::Tick(float DeltaTime)
 void AAmmo::BeginPlay()
 {
 	Super::BeginPlay();
+
+	AmmoCollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AAmmo::AmmoSphereOverlap);
 }
 
 void AAmmo::SetItemProperties(EItemState State)
@@ -65,6 +70,18 @@ void AAmmo::SetItemProperties(EItemState State)
 	}
 }
 
+void AAmmo::AmmoSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor)
+	{
+		AArcoroxCharacter* OverlappedCharacter = Cast<AArcoroxCharacter>(OtherActor);
+		if (OverlappedCharacter)
+		{
+			StartItemCurve(OverlappedCharacter);
+			AmmoCollisionSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		}
+	}
+}
 
 void AAmmo::DisableAmmoMeshCollision()
 {
