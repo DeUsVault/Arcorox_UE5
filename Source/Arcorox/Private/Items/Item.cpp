@@ -20,7 +20,8 @@ AItem::AItem() :
 	bIsInterpolating(false),
 	ItemInterpX(30.f),
 	ItemInterpY(30.f),
-	InterpInitialYawOffset(0.f)
+	InterpInitialYawOffset(0.f),
+	ItemType(EItemType::EIT_MAX)
 {
 	PrimaryActorTick.bCanEverTick = true;
 

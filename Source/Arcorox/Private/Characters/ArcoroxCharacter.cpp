@@ -120,6 +120,7 @@ void AArcoroxCharacter::BeginPlay()
 	if (GetCharacterMovement()) GetCharacterMovement()->MaxWalkSpeed = DefaultMovementSpeed;
 	EquipWeapon(SpawnDefaultWeapon());
 	InitializeAmmoMap();
+	InitializeInterpLocations();
 }
 
 void AArcoroxCharacter::Tick(float DeltaTime)
@@ -186,6 +187,12 @@ void AArcoroxCharacter::GetPickupItem(AItem* Item)
 	if (Weapon) SwapWeapon(Weapon);
 	auto Ammo = Cast<AAmmo>(Item);
 	if (Ammo) PickupAmmo(Ammo);
+}
+
+FInterpLocation AArcoroxCharacter::GetInterpLocation(int32 Index) const
+{
+	if(InterpLocations.Num() >= Index) return InterpLocations[Index];
+	return FInterpLocation();
 }
 
 float AArcoroxCharacter::GetCrosshairSpreadMultiplier() const
@@ -520,6 +527,17 @@ void AArcoroxCharacter::PickupAmmo(AAmmo* Ammo)
 		if (!WeaponHasAmmo()) ReloadWeapon();
 	}
 	Ammo->Destroy();
+}
+
+void AArcoroxCharacter::InitializeInterpLocations()
+{
+	InterpLocations.Add(FInterpLocation{ WeaponInterpComp, 0 });
+	InterpLocations.Add(FInterpLocation{ InterpComp1, 0 });
+	InterpLocations.Add(FInterpLocation{ InterpComp2, 0 });
+	InterpLocations.Add(FInterpLocation{ InterpComp3, 0 });
+	InterpLocations.Add(FInterpLocation{ InterpComp4, 0 });
+	InterpLocations.Add(FInterpLocation{ InterpComp5, 0 });
+	InterpLocations.Add(FInterpLocation{ InterpComp6, 0 });
 }
 
 void AArcoroxCharacter::AutoFireReset()

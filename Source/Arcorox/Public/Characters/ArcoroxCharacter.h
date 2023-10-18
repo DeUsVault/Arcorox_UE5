@@ -29,6 +29,20 @@ enum class ECombatState : uint8
 	ECS_MAX UMETA(DisplayName = "DefaultMAX")
 };
 
+USTRUCT(BlueprintType)
+struct FInterpLocation
+{
+	GENERATED_BODY()
+
+	/* Scene component for interpolation location */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	USceneComponent* SceneComponent;
+
+	/* Number of items interpolating to scene component */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	int32 ItemCount;
+};
+
 UCLASS()
 class ARCOROX_API AArcoroxCharacter : public ACharacter
 {
@@ -45,6 +59,8 @@ public:
 	FVector GetCameraInterpLocation();
 
 	void GetPickupItem(AItem* Item);
+
+	FInterpLocation GetInterpLocation(int32 Index) const;
 
 	UFUNCTION(BlueprintCallable)
 	float GetCrosshairSpreadMultiplier() const;
@@ -117,6 +133,8 @@ protected:
 
 	/* Pick up the ammo and increment the ammo map */
 	void PickupAmmo(AAmmo* Ammo);
+
+	void InitializeInterpLocations();
 
 	UFUNCTION()
 	void AutoFireReset();
@@ -300,6 +318,10 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Interpolation, meta = (AllowPrivateAccess = "true"))
 	USceneComponent* InterpComp6;
+
+	/* TArray of interpolation location structs */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Interpolation, meta = (AllowPrivateAccess = "true"))
+	TArray<FInterpLocation> InterpLocations;
 
 	/* Is character crouching */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))

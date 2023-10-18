@@ -36,6 +36,15 @@ enum class EItemRarity : uint8
 	EIR_MAX UMETA(DisplayName = "DefaultMAX")
 };
 
+UENUM(BlueprintType)
+enum class EItemType : uint8
+{
+	EIT_Weapon UMETA(DisplayName = "Weapon"),
+	EIT_Ammo UMETA(DisplayName = "Ammo"),
+
+	EIT_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
 UCLASS()
 class ARCOROX_API AItem : public AActor
 {
@@ -62,6 +71,7 @@ public:
 	FORCEINLINE USoundBase* GetPickupSound() const { return PickupSound; }
 	FORCEINLINE USoundBase* GetEquipSound() const { return EquipSound; }
 	FORCEINLINE int32 GetItemCount() const { return ItemCount; }
+	FORCEINLINE EItemType GetItemType() const { return ItemType; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -158,6 +168,10 @@ private:
 	/* Sound for equipping the item */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 	USoundBase* EquipSound;
+
+	/* Type of Item (Weapon or Ammo) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	EItemType ItemType;
 
 	/* For interpolating item in X and Y directions */
 	float ItemInterpX;
