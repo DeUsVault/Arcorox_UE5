@@ -34,7 +34,7 @@ void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
-
+	SetItemType(EItemType::EIT_Weapon);
 }
 
 void AWeapon::ThrowWeapon()

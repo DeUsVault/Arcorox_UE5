@@ -173,13 +173,6 @@ void AArcoroxCharacter::IncrementOverlappedItemCount(int8 Amount)
 	bShouldTraceForItems = OverlappedItemCount > 0;
 }
 
-FVector AArcoroxCharacter::GetCameraInterpLocation()
-{
-	const FVector CameraLocation{ Camera->GetComponentLocation() };
-	const FVector CameraForward{ Camera->GetForwardVector() };
-	return CameraLocation + (CameraForward * CameraInterpDistance) + (FVector(0.f, 0.f, CameraInterpElevation));
-}
-
 void AArcoroxCharacter::GetPickupItem(AItem* Item)
 {
 	if (Item && Item->GetEquipSound()) UGameplayStatics::PlaySound2D(this, Item->GetEquipSound());
@@ -189,10 +182,20 @@ void AArcoroxCharacter::GetPickupItem(AItem* Item)
 	if (Ammo) PickupAmmo(Ammo);
 }
 
-FInterpLocation AArcoroxCharacter::GetInterpLocation(int32 Index) const
+FInterpLocation AArcoroxCharacter::GetInterpLocation(int32 Index)
 {
 	if(InterpLocations.Num() >= Index) return InterpLocations[Index];
 	return FInterpLocation();
+}
+
+void AArcoroxCharacter::IncrementInterpLocationItemCount(int32 Index)
+{
+	if (InterpLocations.Num() >= Index) InterpLocations[Index].ItemCount++;
+}
+
+void AArcoroxCharacter::DecrementInterpLocationItemCount(int32 Index)
+{
+	if (InterpLocations.Num() >= Index) InterpLocations[Index].ItemCount--;
 }
 
 float AArcoroxCharacter::GetCrosshairSpreadMultiplier() const
@@ -538,6 +541,21 @@ void AArcoroxCharacter::InitializeInterpLocations()
 	InterpLocations.Add(FInterpLocation{ InterpComp4, 0 });
 	InterpLocations.Add(FInterpLocation{ InterpComp5, 0 });
 	InterpLocations.Add(FInterpLocation{ InterpComp6, 0 });
+}
+
+int32 AArcoroxCharacter::GetInterpLocationIndex()
+{
+	int32 TargetIndex = 1;
+	int32 LowestItemCount = INT_MAX;
+	for (int32 i = 1; i < InterpLocations.Num(); i++)
+	{
+		if (InterpLocations[i].ItemCount < LowestItemCount)
+		{
+			LowestItemCount = InterpLocations[i].ItemCount;
+			TargetIndex = i;
+		}
+	}
+	return TargetIndex;
 }
 
 void AArcoroxCharacter::AutoFireReset()

@@ -72,6 +72,7 @@ public:
 	FORCEINLINE USoundBase* GetEquipSound() const { return EquipSound; }
 	FORCEINLINE int32 GetItemCount() const { return ItemCount; }
 	FORCEINLINE EItemType GetItemType() const { return ItemType; }
+	FORCEINLINE void SetItemType(EItemType Type) { ItemType = Type; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -87,6 +88,9 @@ protected:
 
 	/* Callback for end of ItemInterpolationTimer */
 	void FinishInterpolating();
+
+	/* Get interpolation location based on item type and interp location index */
+	FVector GetInterpLocation();
 
 	/* Callback for Sphere Component OnComponentBeginOverlap */
 	UFUNCTION()
@@ -145,10 +149,6 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 	FVector ItemInterpStartLocation;
 
-	/* Target location in front of camera for item interpolation */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
-	FVector CameraTargetInterpLocation;
-
 	/* Is the item interpolating */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 	bool bIsInterpolating;
@@ -172,6 +172,10 @@ private:
 	/* Type of Item (Weapon or Ammo) */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 	EItemType ItemType;
+
+	/* Index for interp location array that item will interp to */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	int32 InterpLocationIndex;
 
 	/* For interpolating item in X and Y directions */
 	float ItemInterpX;

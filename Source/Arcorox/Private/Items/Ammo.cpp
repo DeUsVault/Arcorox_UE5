@@ -33,6 +33,7 @@ void AAmmo::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetItemType(EItemType::EIT_Ammo);
 	AmmoCollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AAmmo::AmmoSphereOverlap);
 }
 

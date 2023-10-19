@@ -16,12 +16,12 @@ AItem::AItem() :
 	ItemState(EItemState::EIS_Pickup),
 	ZCurveTime(0.7f),
 	ItemInterpStartLocation(FVector(0.f)),
-	CameraTargetInterpLocation(FVector(0.f)),
 	bIsInterpolating(false),
 	ItemInterpX(30.f),
 	ItemInterpY(30.f),
 	InterpInitialYawOffset(0.f),
-	ItemType(EItemType::EIT_MAX)
+	ItemType(EItemType::EIT_MAX),
+	InterpLocationIndex(1)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -165,8 +165,7 @@ void AItem::ItemInterpolation(float DeltaTime)
 		//Initial location of Item when timer started
 		FVector ItemLocation = ItemInterpStartLocation;
 		//Target location in front of camera
-		CameraTargetInterpLocation = ArcoroxCharacter->GetCameraInterpLocation();
-		const FVector CameraInterpLocation = CameraTargetInterpLocation;
+		const FVector CameraInterpLocation = GetInterpLocation();
 		//Vector from Item to CameraInterpLocation, X and Y components zeroed out
 		const FVector ItemToCamera{ FVector(0.f, 0.f, (CameraInterpLocation - ItemLocation).Z) };
 		//Scale factor for curve value
@@ -198,9 +197,23 @@ void AItem::ItemInterpolation(float DeltaTime)
 void AItem::FinishInterpolating()
 {
 	bIsInterpolating = false;
-	if (ArcoroxCharacter) ArcoroxCharacter->GetPickupItem(this);
+	if (ArcoroxCharacter)
+	{
+		ArcoroxCharacter->DecrementInterpLocationItemCount(InterpLocationIndex);
+		ArcoroxCharacter->GetPickupItem(this);
+	}
 	//Scale item to original size
 	SetActorScale3D(FVector(1.f));
+}
+
+FVector AItem::GetInterpLocation()
+{
+	if (ArcoroxCharacter)
+	{
+		if (ItemType == EItemType::EIT_Ammo) return ArcoroxCharacter->GetInterpLocation(InterpLocationIndex).SceneComponent->GetComponentLocation();
+		else if (ItemType == EItemType::EIT_Weapon) return ArcoroxCharacter->GetInterpLocation(0).SceneComponent->GetComponentLocation();
+	}
+	return FVector(0.f);
 }
 
 void AItem::ShowPickupWidget()
@@ -250,6 +263,8 @@ void AItem::StartItemCurve(AArcoroxCharacter* Character)
 {
 	ArcoroxCharacter = Character;
 	if (!ArcoroxCharacter->GetCamera()) return;
+	InterpLocationIndex = ArcoroxCharacter->GetInterpLocationIndex();
+	ArcoroxCharacter->IncrementInterpLocationItemCount(InterpLocationIndex);
 	ItemInterpStartLocation = GetActorLocation();
 	const float CameraYaw = ArcoroxCharacter->GetCamera()->GetComponentRotation().Yaw;
 	const float ItemYaw = GetActorRotation().Yaw;

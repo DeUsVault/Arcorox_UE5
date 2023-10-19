@@ -56,11 +56,18 @@ public:
 
 	void IncrementOverlappedItemCount(int8 Amount);
 
-	FVector GetCameraInterpLocation();
-
 	void GetPickupItem(AItem* Item);
 
-	FInterpLocation GetInterpLocation(int32 Index) const;
+	FInterpLocation GetInterpLocation(int32 Index);
+
+	/* Returns index in interp locations array with lowest item count */
+	int32 GetInterpLocationIndex();
+
+	/* Increment item count of specified element of interp locations array */
+	void IncrementInterpLocationItemCount(int32 Index);
+
+	/* Decrement item count of specified element of interp locations array */
+	void DecrementInterpLocationItemCount(int32 Index);
 
 	UFUNCTION(BlueprintCallable)
 	float GetCrosshairSpreadMultiplier() const;
