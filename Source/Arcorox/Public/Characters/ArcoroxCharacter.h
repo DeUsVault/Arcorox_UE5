@@ -69,6 +69,10 @@ public:
 	/* Decrement item count of specified element of interp locations array */
 	void DecrementInterpLocationItemCount(int32 Index);
 
+	/* Start sound timers */
+	void StartPickupSoundTimer();
+	void StartEquipSoundTimer();
+
 	UFUNCTION(BlueprintCallable)
 	float GetCrosshairSpreadMultiplier() const;
 
@@ -78,6 +82,8 @@ public:
 	FORCEINLINE int8 GetOverlappedItemCount() const { return OverlappedItemCount; }
 	FORCEINLINE ECombatState GetCombatState() const { return CombatState; }
 	FORCEINLINE bool IsCrouching() const { return bCrouching; }
+	FORCEINLINE bool ShouldPlayPickupSound() const { return bShouldPlayPickupSound; }
+	FORCEINLINE bool ShouldPlayEquipSound() const { return bShouldPlayEquipSound; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -200,6 +206,8 @@ private:
 	void CameraZoomInterpolation(float DeltaTime);
 	void SetupEnhancedInput();
 	void SetLookScale();
+	void ResetPickupSoundTimer();
+	void ResetEquipSoundTimer();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;
@@ -366,6 +374,14 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	float CameraZoomedFOV;
 
+	/* Time to wait between playing pickup sounds */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
+	float PickupSoundTime;
+
+	/* Time to wait between playing equip sounds */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
+	float EquipSoundTime;
+
 	/* Current camera field of view this frame */
 	float CameraCurrentFOV;
 
@@ -385,4 +401,10 @@ private:
 
 	bool bShouldTraceForItems;
 	int8 OverlappedItemCount;
+
+	/* Sound timer properties */
+	FTimerHandle PickupSoundTimer;
+	FTimerHandle EquipSoundTimer;
+	bool bShouldPlayPickupSound;
+	bool bShouldPlayEquipSound;
 };

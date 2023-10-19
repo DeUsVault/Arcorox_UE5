@@ -62,6 +62,7 @@ public:
 	void SetItemState(EItemState State);
 	void StartItemCurve(AArcoroxCharacter* Character);
 	void PlayPickupSound();
+	void PlayEquipSound();
 
 	FORCEINLINE EItemState GetItemState() const { return ItemState; }
 	FORCEINLINE USkeletalMeshComponent* GetItemMesh() const { return ItemMesh; }

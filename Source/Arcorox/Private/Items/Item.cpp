@@ -277,5 +277,20 @@ void AItem::StartItemCurve(AArcoroxCharacter* Character)
 
 void AItem::PlayPickupSound()
 {
-	if (PickupSound) UGameplayStatics::PlaySound2D(this, PickupSound);
+	if (ArcoroxCharacter == nullptr || PickupSound == nullptr) return;
+	if (ArcoroxCharacter->ShouldPlayPickupSound())
+	{
+		UGameplayStatics::PlaySound2D(this, PickupSound);
+		ArcoroxCharacter->StartPickupSoundTimer();
+	}
+}
+
+void AItem::PlayEquipSound()
+{
+	if (ArcoroxCharacter == nullptr || EquipSound == nullptr) return;
+	if (ArcoroxCharacter->ShouldPlayEquipSound())
+	{
+		UGameplayStatics::PlaySound2D(this, EquipSound);
+		ArcoroxCharacter->StartEquipSoundTimer();
+	}
 }

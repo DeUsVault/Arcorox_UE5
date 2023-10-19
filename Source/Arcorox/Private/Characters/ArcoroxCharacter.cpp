@@ -61,7 +61,12 @@ AArcoroxCharacter::AArcoroxCharacter() :
 	CrouchingCapsuleHalfHeight(44.f),
 	//Ground friction
 	DefaultGroundFriction(2.f),
-	CrouchingGroundFriction(100.f)
+	CrouchingGroundFriction(100.f),
+	//Sound timer properties
+	bShouldPlayPickupSound(true),
+	bShouldPlayEquipSound(true),
+	PickupSoundTime(0.2f),
+	EquipSoundTime(0.2f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -175,7 +180,7 @@ void AArcoroxCharacter::IncrementOverlappedItemCount(int8 Amount)
 
 void AArcoroxCharacter::GetPickupItem(AItem* Item)
 {
-	if (Item && Item->GetEquipSound()) UGameplayStatics::PlaySound2D(this, Item->GetEquipSound());
+	if (Item) Item->PlayEquipSound();
 	auto Weapon = Cast<AWeapon>(Item);
 	if (Weapon) SwapWeapon(Weapon);
 	auto Ammo = Cast<AAmmo>(Item);
@@ -196,6 +201,18 @@ void AArcoroxCharacter::IncrementInterpLocationItemCount(int32 Index)
 void AArcoroxCharacter::DecrementInterpLocationItemCount(int32 Index)
 {
 	if (InterpLocations.Num() >= Index) InterpLocations[Index].ItemCount--;
+}
+
+void AArcoroxCharacter::StartPickupSoundTimer()
+{
+	bShouldPlayPickupSound = false;
+	GetWorldTimerManager().SetTimer(PickupSoundTimer, this, &AArcoroxCharacter::ResetPickupSoundTimer, PickupSoundTime);
+}
+
+void AArcoroxCharacter::StartEquipSoundTimer()
+{
+	bShouldPlayEquipSound = false;
+	GetWorldTimerManager().SetTimer(EquipSoundTimer, this, &AArcoroxCharacter::ResetEquipSoundTimer, EquipSoundTime);
 }
 
 float AArcoroxCharacter::GetCrosshairSpreadMultiplier() const
@@ -696,4 +713,14 @@ void AArcoroxCharacter::SetLookScale()
 {
 	if (bAiming) LookScale = AimingLookScale;
 	else LookScale = HipLookScale;
+}
+
+void AArcoroxCharacter::ResetPickupSoundTimer()
+{
+	bShouldPlayPickupSound = true;
+}
+
+void AArcoroxCharacter::ResetEquipSoundTimer()
+{
+	bShouldPlayEquipSound = true;
 }
