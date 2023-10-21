@@ -21,7 +21,8 @@ AItem::AItem() :
 	ItemInterpY(30.f),
 	InterpInitialYawOffset(0.f),
 	ItemType(EItemType::EIT_MAX),
-	InterpLocationIndex(1)
+	InterpLocationIndex(1),
+	MaterialIndex(0)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -64,6 +65,16 @@ void AItem::BeginPlay()
 	SetItemProperties(ItemState);
 
 	InitializeCustomDepth();
+}
+
+void AItem::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	if (MaterialInstance)
+	{
+
+	}
 }
 
 void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
