@@ -62,6 +62,8 @@ void AItem::BeginPlay()
 	OverlapSphere->OnComponentEndOverlap.AddDynamic(this, &AItem::OnSphereEndOverlap);
 
 	SetItemProperties(ItemState);
+
+	InitializeCustomDepth();
 }
 
 void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -214,6 +216,21 @@ FVector AItem::GetInterpLocation()
 		else if (ItemType == EItemType::EIT_Weapon) return ArcoroxCharacter->GetInterpLocation(0).SceneComponent->GetComponentLocation();
 	}
 	return FVector(0.f);
+}
+
+void AItem::EnableCustomDepth()
+{
+	if (ItemMesh) ItemMesh->SetRenderCustomDepth(true);
+}
+
+void AItem::DisableCustomDepth()
+{
+	if (ItemMesh) ItemMesh->SetRenderCustomDepth(false);
+}
+
+void AItem::InitializeCustomDepth()
+{
+	DisableCustomDepth();
 }
 
 void AItem::ShowPickupWidget()

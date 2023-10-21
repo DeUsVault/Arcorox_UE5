@@ -19,6 +19,9 @@ public:
 	AAmmo();
 	virtual void Tick(float DeltaTime);
 
+	virtual void EnableCustomDepth() override;
+	virtual void DisableCustomDepth() override;
+
 	void DisableAmmoMeshCollision();
 
 	FORCEINLINE UStaticMeshComponent* GetAmmoMesh() const { return AmmoMesh; }

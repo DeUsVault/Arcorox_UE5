@@ -417,11 +417,19 @@ void AArcoroxCharacter::ItemTrace()
 		if (CrosshairLineTrace(ItemTraceResult, HitLocation))
 		{
 			TraceHitItem = Cast<AItem>(ItemTraceResult.GetActor());
-			if (TraceHitItem) TraceHitItem->ShowPickupWidget();
+			if (TraceHitItem)
+			{
+				TraceHitItem->ShowPickupWidget();
+				TraceHitItem->EnableCustomDepth();
+			}
 			
 			if (TraceHitItemLastFrame)
 			{
-				if (TraceHitItem != TraceHitItemLastFrame) TraceHitItemLastFrame->HidePickupWidget();
+				if (TraceHitItem != TraceHitItemLastFrame)
+				{
+					TraceHitItemLastFrame->HidePickupWidget();
+					TraceHitItemLastFrame->DisableCustomDepth();
+				}
 			}
 			TraceHitItemLastFrame = TraceHitItem;
 		}
@@ -429,6 +437,7 @@ void AArcoroxCharacter::ItemTrace()
 	else if (TraceHitItemLastFrame)
 	{
 		TraceHitItemLastFrame->HidePickupWidget();
+		TraceHitItemLastFrame->DisableCustomDepth();
 		TraceHitItemLastFrame = nullptr;
 	}
 }

@@ -54,6 +54,10 @@ public:
 	AItem();
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void EnableCustomDepth();
+	virtual void DisableCustomDepth();
+	virtual void InitializeCustomDepth();
+
 	void ShowPickupWidget();
 	void HidePickupWidget();
 	void DisableSphereCollision();
