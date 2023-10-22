@@ -49,6 +49,7 @@ void AWeapon::ThrowWeapon()
 	ImpulseVector *= 10000.f;
 	GetItemMesh()->AddImpulse(ImpulseVector);
 	bIsFalling = true;
+	EnableGlowMaterial();
 	GetWorldTimerManager().SetTimer(ThrowWeaponTimer, this, &AWeapon::StopFalling, ThrowWeaponTime);
 }
 

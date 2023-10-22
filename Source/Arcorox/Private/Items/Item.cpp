@@ -22,7 +22,8 @@ AItem::AItem() :
 	InterpInitialYawOffset(0.f),
 	ItemType(EItemType::EIT_MAX),
 	InterpLocationIndex(1),
-	MaterialIndex(0)
+	MaterialIndex(0),
+	bCanChangeCustomDepth(true)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -73,8 +74,10 @@ void AItem::OnConstruction(const FTransform& Transform)
 
 	if (MaterialInstance)
 	{
-
+		DynamicMaterialInstance = UMaterialInstanceDynamic::Create(MaterialInstance, this);
+		ItemMesh->SetMaterial(MaterialIndex, DynamicMaterialInstance);
 	}
+	EnableGlowMaterial();
 }
 
 void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -217,6 +220,9 @@ void AItem::FinishInterpolating()
 	}
 	//Scale item to original size
 	SetActorScale3D(FVector(1.f));
+	bCanChangeCustomDepth = true;
+	DisableGlowMaterial();
+	DisableCustomDepth();
 }
 
 FVector AItem::GetInterpLocation()
@@ -229,14 +235,24 @@ FVector AItem::GetInterpLocation()
 	return FVector(0.f);
 }
 
+void AItem::EnableGlowMaterial()
+{
+	if (DynamicMaterialInstance) DynamicMaterialInstance->SetScalarParameterValue(TEXT("GlowBlendAlpha"), 0);
+}
+
+void AItem::DisableGlowMaterial()
+{
+	if (DynamicMaterialInstance) DynamicMaterialInstance->SetScalarParameterValue(TEXT("GlowBlendAlpha"), 1);
+}
+
 void AItem::EnableCustomDepth()
 {
-	if (ItemMesh) ItemMesh->SetRenderCustomDepth(true);
+	if(bCanChangeCustomDepth && ItemMesh) ItemMesh->SetRenderCustomDepth(true);
 }
 
 void AItem::DisableCustomDepth()
 {
-	if (ItemMesh) ItemMesh->SetRenderCustomDepth(false);
+	if(bCanChangeCustomDepth && ItemMesh) ItemMesh->SetRenderCustomDepth(false);
 }
 
 void AItem::InitializeCustomDepth()
@@ -300,6 +316,7 @@ void AItem::StartItemCurve(AArcoroxCharacter* Character)
 	bIsInterpolating = true;
 	SetItemState(EItemState::EIS_EquipInterpolating);
 	PlayPickupSound();
+	bCanChangeCustomDepth = false;
 	GetWorldTimerManager().SetTimer(ItemInterpolationTimer, this, &AItem::FinishInterpolating, ZCurveTime);
 }
 

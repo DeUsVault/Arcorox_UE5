@@ -68,6 +68,9 @@ public:
 	void PlayPickupSound();
 	void PlayEquipSound();
 
+	void EnableGlowMaterial();
+	void DisableGlowMaterial();
+
 	FORCEINLINE EItemState GetItemState() const { return ItemState; }
 	FORCEINLINE USkeletalMeshComponent* GetItemMesh() const { return ItemMesh; }
 	FORCEINLINE UBoxComponent* GetCollisionBox() const { return CollisionBox; }
@@ -205,5 +208,8 @@ private:
 
 	/* Initial offset of Yaw between Item and Camera */
 	float InterpInitialYawOffset;
+
+	/* To enable and disable outline effect while interpolating */
+	bool bCanChangeCustomDepth;
 
 };

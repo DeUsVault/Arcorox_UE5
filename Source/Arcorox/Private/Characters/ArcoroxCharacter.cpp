@@ -124,6 +124,11 @@ void AArcoroxCharacter::BeginPlay()
 
 	if (GetCharacterMovement()) GetCharacterMovement()->MaxWalkSpeed = DefaultMovementSpeed;
 	EquipWeapon(SpawnDefaultWeapon());
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->DisableGlowMaterial();
+		EquippedWeapon->DisableCustomDepth();
+	}
 	InitializeAmmoMap();
 	InitializeInterpLocations();
 }
