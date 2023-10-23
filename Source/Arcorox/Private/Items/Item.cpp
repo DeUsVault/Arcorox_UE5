@@ -8,6 +8,7 @@
 #include "Components/SphereComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Curves/CurveVector.h"
 
 AItem::AItem() :
 	ItemName(FString("Item")),
@@ -23,7 +24,11 @@ AItem::AItem() :
 	ItemType(EItemType::EIT_MAX),
 	InterpLocationIndex(1),
 	MaterialIndex(0),
-	bCanChangeCustomDepth(true)
+	bCanChangeCustomDepth(true),
+	MaterialPulseCurveTime(5.f),
+	GlowAmount(150.f),
+	FresnelExponent(3.f),
+	FresnelReflectFraction(4.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -50,6 +55,8 @@ void AItem::Tick(float DeltaTime)
 
 	//Interpolate item when in interpolating state 
 	ItemInterpolation(DeltaTime);
+
+	UpdateMaterialPulse();
 }
 
 void AItem::BeginPlay()
@@ -64,8 +71,8 @@ void AItem::BeginPlay()
 	OverlapSphere->OnComponentEndOverlap.AddDynamic(this, &AItem::OnSphereEndOverlap);
 
 	SetItemProperties(ItemState);
-
 	InitializeCustomDepth();
+	StartMaterialPulseTimer();
 }
 
 void AItem::OnConstruction(const FTransform& Transform)
@@ -235,6 +242,16 @@ FVector AItem::GetInterpLocation()
 	return FVector(0.f);
 }
 
+void AItem::UpdateMaterialPulse()
+{
+	if (ItemState != EItemState::EIS_Pickup || MaterialPulseCurve == nullptr || DynamicMaterialInstance == nullptr) return;
+	const float ElapsedTime = GetWorldTimerManager().GetTimerElapsed(MaterialPulseTimer);
+	const FVector CurveValue = MaterialPulseCurve->GetVectorValue(ElapsedTime);
+	DynamicMaterialInstance->SetScalarParameterValue(TEXT("GlowAmount"), CurveValue.X * GlowAmount);
+	DynamicMaterialInstance->SetScalarParameterValue(TEXT("FresnelExponent"), CurveValue.Y * FresnelExponent);
+	DynamicMaterialInstance->SetScalarParameterValue(TEXT("FresnelReflectFraction"), CurveValue.Z * FresnelReflectFraction);
+}
+
 void AItem::EnableGlowMaterial()
 {
 	if (DynamicMaterialInstance) DynamicMaterialInstance->SetScalarParameterValue(TEXT("GlowBlendAlpha"), 0);
@@ -338,4 +355,14 @@ void AItem::PlayEquipSound()
 		UGameplayStatics::PlaySound2D(this, EquipSound);
 		ArcoroxCharacter->StartEquipSoundTimer();
 	}
+}
+
+void AItem::StartMaterialPulseTimer()
+{
+	if (ItemState == EItemState::EIS_Pickup) GetWorldTimerManager().SetTimer(MaterialPulseTimer, this, &AItem::ResetMaterialPulseTimer, MaterialPulseCurveTime);
+}
+
+void AItem::ResetMaterialPulseTimer()
+{
+	StartMaterialPulseTimer();
 }

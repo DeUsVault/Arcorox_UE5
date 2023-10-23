@@ -10,6 +10,7 @@ class UBoxComponent;
 class UWidgetComponent;
 class USphereComponent;
 class UCurveFloat;
+class UCurveVector;
 class AArcoroxCharacter;
 
 UENUM(BlueprintType)
@@ -101,6 +102,15 @@ protected:
 
 	/* Get interpolation location based on item type and interp location index */
 	FVector GetInterpLocation();
+
+	/* Updates dynamic material instance parameters based on pulse vector curve */
+	void UpdateMaterialPulse();
+
+	/* Starts the Material Pulse Timer */
+	void StartMaterialPulseTimer();
+
+	/* Callback for Material Pulse Timer */
+	void ResetMaterialPulseTimer();
 
 	/* Callback for Sphere Component OnComponentBeginOverlap */
 	UFUNCTION()
@@ -198,6 +208,29 @@ private:
 	/* Material instance to be used with dynamic material instance */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 	UMaterialInstance* MaterialInstance;
+
+	/* Vector curve to manipulate dynamic material parameters */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	UCurveVector* MaterialPulseCurve;
+
+	/* Duration of material pulse timer */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	float MaterialPulseCurveTime;
+
+	/* Glow amount parameter of material instance */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	float GlowAmount;
+
+	/* Fresnel exponent parameter of material instance */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	float FresnelExponent;
+
+	/* Fresnel reflect fraction parameter of material instance */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	float FresnelReflectFraction;
+
+	/* Timer for dynamic material pulse curve */
+	FTimerHandle MaterialPulseTimer;
 
 	/* For interpolating item in X and Y directions */
 	float ItemInterpX;
