@@ -224,6 +224,7 @@ void AItem::FinishInterpolating()
 	{
 		ArcoroxCharacter->DecrementInterpLocationItemCount(InterpLocationIndex);
 		ArcoroxCharacter->GetPickupItem(this);
+		SetItemState(EItemState::EIS_PickedUp);
 	}
 	//Scale item to original size
 	SetActorScale3D(FVector(1.f));
@@ -244,9 +245,19 @@ FVector AItem::GetInterpLocation()
 
 void AItem::UpdateMaterialPulse()
 {
-	if (ItemState != EItemState::EIS_Pickup || MaterialPulseCurve == nullptr || DynamicMaterialInstance == nullptr) return;
-	const float ElapsedTime = GetWorldTimerManager().GetTimerElapsed(MaterialPulseTimer);
-	const FVector CurveValue = MaterialPulseCurve->GetVectorValue(ElapsedTime);
+	if (DynamicMaterialInstance == nullptr) return;
+	float ElapsedTime;
+	FVector CurveValue;
+	if (ItemState == EItemState::EIS_Pickup && MaterialPulseCurve)
+	{
+		ElapsedTime = GetWorldTimerManager().GetTimerElapsed(MaterialPulseTimer);
+		CurveValue = MaterialPulseCurve->GetVectorValue(ElapsedTime);
+	}
+	else if (ItemState == EItemState::EIS_EquipInterpolating && MaterialPulseInterpCurve)
+	{
+		ElapsedTime = GetWorldTimerManager().GetTimerElapsed(ItemInterpolationTimer);
+		CurveValue = MaterialPulseInterpCurve->GetVectorValue(ElapsedTime);
+	}
 	DynamicMaterialInstance->SetScalarParameterValue(TEXT("GlowAmount"), CurveValue.X * GlowAmount);
 	DynamicMaterialInstance->SetScalarParameterValue(TEXT("FresnelExponent"), CurveValue.Y * FresnelExponent);
 	DynamicMaterialInstance->SetScalarParameterValue(TEXT("FresnelReflectFraction"), CurveValue.Z * FresnelReflectFraction);
@@ -332,6 +343,7 @@ void AItem::StartItemCurve(AArcoroxCharacter* Character)
 	InterpInitialYawOffset = ItemYaw - CameraYaw;
 	bIsInterpolating = true;
 	SetItemState(EItemState::EIS_EquipInterpolating);
+	GetWorldTimerManager().ClearTimer(MaterialPulseTimer);
 	PlayPickupSound();
 	bCanChangeCustomDepth = false;
 	GetWorldTimerManager().SetTimer(ItemInterpolationTimer, this, &AItem::FinishInterpolating, ZCurveTime);
