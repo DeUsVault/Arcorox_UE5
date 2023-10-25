@@ -382,6 +382,13 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
 	float EquipSoundTime;
 
+	/* TArray of items for character inventory */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
+	TArray<AItem*> Inventory;
+
+	/* Capacity of inventory */
+	const int32 InventoryCapacity = 6;
+
 	/* Current camera field of view this frame */
 	float CameraCurrentFOV;
 

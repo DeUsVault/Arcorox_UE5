@@ -126,6 +126,7 @@ void AArcoroxCharacter::BeginPlay()
 	EquipWeapon(SpawnDefaultWeapon());
 	if (EquippedWeapon)
 	{
+		Inventory.Add(EquippedWeapon);
 		EquippedWeapon->DisableGlowMaterial();
 		EquippedWeapon->DisableCustomDepth();
 	}
@@ -187,7 +188,11 @@ void AArcoroxCharacter::GetPickupItem(AItem* Item)
 {
 	if (Item) Item->PlayEquipSound();
 	auto Weapon = Cast<AWeapon>(Item);
-	if (Weapon) SwapWeapon(Weapon);
+	if (Weapon)
+	{
+		if (Inventory.Num() < InventoryCapacity) Inventory.Add(Weapon);
+		else SwapWeapon(Weapon);
+	}
 	auto Ammo = Cast<AAmmo>(Item);
 	if (Ammo) PickupAmmo(Ammo);
 }
