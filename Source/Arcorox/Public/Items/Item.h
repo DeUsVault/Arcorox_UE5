@@ -233,13 +233,17 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 	float FresnelReflectFraction;
 
-	/* Background image in the inventory */
+	/* Background icon image in the inventory */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
 	UTexture2D* BackgroundIcon;
 
-	/* Item image in the inventory */
+	/* Item icon image in the inventory */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
 	UTexture2D* ItemIcon;
+
+	/* Ammo icon image in the inventory */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
+	UTexture2D* AmmoIcon;
 
 	/* Timer for dynamic material pulse curve */
 	FTimerHandle MaterialPulseTimer;
