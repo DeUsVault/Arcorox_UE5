@@ -235,7 +235,11 @@ private:
 
 	/* Background image in the inventory */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
-	UTexture2D* IconBackground;
+	UTexture2D* BackgroundIcon;
+
+	/* Item image in the inventory */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
+	UTexture2D* ItemIcon;
 
 	/* Timer for dynamic material pulse curve */
 	FTimerHandle MaterialPulseTimer;
