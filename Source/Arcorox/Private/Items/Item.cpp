@@ -28,7 +28,8 @@ AItem::AItem() :
 	MaterialPulseCurveTime(5.f),
 	GlowAmount(150.f),
 	FresnelExponent(3.f),
-	FresnelReflectFraction(4.f)
+	FresnelReflectFraction(4.f),
+	InventorySlotIndex(0)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -169,6 +170,15 @@ void AItem::SetItemProperties(EItemState State)
 			ItemMesh->SetSimulatePhysics(false);
 			ItemMesh->SetEnableGravity(false);
 			ItemMesh->SetVisibility(true);
+			DisableMeshCollision();
+			DisableSphereCollision();
+			DisableBoxCollision();
+			break;
+		case EItemState::EIS_PickedUp:
+			HidePickupWidget();
+			ItemMesh->SetSimulatePhysics(false);
+			ItemMesh->SetEnableGravity(false);
+			ItemMesh->SetVisibility(false);
 			DisableMeshCollision();
 			DisableSphereCollision();
 			DisableBoxCollision();

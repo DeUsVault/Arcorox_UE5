@@ -82,6 +82,8 @@ public:
 	FORCEINLINE int32 GetItemCount() const { return ItemCount; }
 	FORCEINLINE EItemType GetItemType() const { return ItemType; }
 	FORCEINLINE void SetItemType(EItemType Type) { ItemType = Type; }
+	FORCEINLINE int32 GetInventorySlotIndex() const { return InventorySlotIndex; }
+	FORCEINLINE void SetInventorySlotIndex(int32 Index) { InventorySlotIndex = Index; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -244,6 +246,10 @@ private:
 	/* Ammo icon image in the inventory */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
 	UTexture2D* AmmoIcon;
+
+	/* Index of item in character inventory */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
+	int32 InventorySlotIndex;
 
 	/* Timer for dynamic material pulse curve */
 	FTimerHandle MaterialPulseTimer;
