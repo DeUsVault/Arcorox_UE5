@@ -43,6 +43,8 @@ struct FInterpLocation
 	int32 ItemCount;
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEquipItemDelegate, int32, CurrentSlotIndex, int32, NewSlotIndex);
+
 UCLASS()
 class ARCOROX_API AArcoroxCharacter : public ACharacter
 {
@@ -385,6 +387,10 @@ private:
 	/* TArray of items for character inventory */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
 	TArray<AItem*> Inventory;
+
+	/* Delegate for sending inventory slot info to Inventory Bar Widget */
+	UPROPERTY(BlueprintAssignable, Category = Delegates, meta = (AllowPrivateAccess = "true"))
+	FEquipItemDelegate EquipItemDelegate;
 
 	/* Capacity of inventory */
 	const int32 InventoryCapacity = 6;

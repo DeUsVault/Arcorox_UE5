@@ -485,6 +485,8 @@ void AArcoroxCharacter::EquipWeapon(AWeapon* Weapon)
 		if (WeaponSocket)
 		{
 			WeaponSocket->AttachActor(Weapon, GetMesh());
+			if (EquippedWeapon == nullptr) EquipItemDelegate.Broadcast(-1, Weapon->GetInventorySlotIndex());
+			else EquipItemDelegate.Broadcast(EquippedWeapon->GetInventorySlotIndex(), Weapon->GetInventorySlotIndex());
 			EquippedWeapon = Weapon;
 			EquippedWeapon->SetItemState(EItemState::EIS_Equipped);
 		}
