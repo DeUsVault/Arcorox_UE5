@@ -165,6 +165,12 @@ void AArcoroxCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &AArcoroxCharacter::InteractButtonReleased);
 		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, this, &AArcoroxCharacter::ReloadButtonPressed);
 		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &AArcoroxCharacter::CrouchButtonPressed);
+		EnhancedInputComponent->BindAction(FAction, ETriggerEvent::Started, this, &AArcoroxCharacter::FKeyPressed);
+		EnhancedInputComponent->BindAction(OneAction, ETriggerEvent::Started, this, &AArcoroxCharacter::OneKeyPressed);
+		EnhancedInputComponent->BindAction(TwoAction, ETriggerEvent::Started, this, &AArcoroxCharacter::TwoKeyPressed);
+		EnhancedInputComponent->BindAction(ThreeAction, ETriggerEvent::Started, this, &AArcoroxCharacter::ThreeKeyPressed);
+		EnhancedInputComponent->BindAction(FourAction, ETriggerEvent::Started, this, &AArcoroxCharacter::FourKeyPressed);
+		EnhancedInputComponent->BindAction(FiveAction, ETriggerEvent::Started, this, &AArcoroxCharacter::FiveKeyPressed);
 	}
 }
 
@@ -340,6 +346,36 @@ void AArcoroxCharacter::CrouchButtonPressed()
 	}
 }
 
+void AArcoroxCharacter::FKeyPressed()
+{
+
+}
+
+void AArcoroxCharacter::OneKeyPressed()
+{
+
+}
+
+void AArcoroxCharacter::TwoKeyPressed()
+{
+
+}
+
+void AArcoroxCharacter::ThreeKeyPressed()
+{
+
+}
+
+void AArcoroxCharacter::FourKeyPressed()
+{
+
+}
+
+void AArcoroxCharacter::FiveKeyPressed()
+{
+
+}
+
 bool AArcoroxCharacter::GetBeamEndLocation(const FVector& BarrelSocketLocation, FVector& OutBeamLocation)
 {
 	//Check for crosshair trace hit
@@ -506,6 +542,8 @@ void AArcoroxCharacter::DropWeapon()
 
 void AArcoroxCharacter::SwapWeapon(AWeapon* Weapon)
 {
+	if (EquippedWeapon == nullptr) return;
+	if (Inventory.Num() - 1 >= EquippedWeapon->GetInventorySlotIndex()) Inventory[EquippedWeapon->GetInventorySlotIndex()] = Weapon;
 	DropWeapon();
 	EquipWeapon(Weapon);
 	TraceHitItem = nullptr;
