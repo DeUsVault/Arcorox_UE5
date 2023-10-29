@@ -317,7 +317,12 @@ void AArcoroxCharacter::AimButtonReleased()
 
 void AArcoroxCharacter::InteractButtonPressed()
 {
-	if (TraceHitItem) TraceHitItem->StartItemCurve(this);
+	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	if (TraceHitItem)
+	{
+		TraceHitItem->StartItemCurve(this);
+		TraceHitItem = nullptr;
+	}
 }
 
 void AArcoroxCharacter::InteractButtonReleased()
@@ -348,32 +353,44 @@ void AArcoroxCharacter::CrouchButtonPressed()
 
 void AArcoroxCharacter::FKeyPressed()
 {
-
+	if (EquippedWeapon == nullptr) return;
+	if (EquippedWeapon->GetInventorySlotIndex() == 0) return;
+	ExchangeInventoryItems(EquippedWeapon->GetInventorySlotIndex(), 0);
 }
 
 void AArcoroxCharacter::OneKeyPressed()
 {
-
+	if (EquippedWeapon == nullptr) return;
+	if (EquippedWeapon->GetInventorySlotIndex() == 1) return;
+	ExchangeInventoryItems(EquippedWeapon->GetInventorySlotIndex(), 1);
 }
 
 void AArcoroxCharacter::TwoKeyPressed()
 {
-
+	if (EquippedWeapon == nullptr) return;
+	if (EquippedWeapon->GetInventorySlotIndex() == 2) return;
+	ExchangeInventoryItems(EquippedWeapon->GetInventorySlotIndex(), 2);
 }
 
 void AArcoroxCharacter::ThreeKeyPressed()
 {
-
+	if (EquippedWeapon == nullptr) return;
+	if (EquippedWeapon->GetInventorySlotIndex() == 3) return;
+	ExchangeInventoryItems(EquippedWeapon->GetInventorySlotIndex(), 3);
 }
 
 void AArcoroxCharacter::FourKeyPressed()
 {
-
+	if (EquippedWeapon == nullptr) return;
+	if (EquippedWeapon->GetInventorySlotIndex() == 4) return;
+	ExchangeInventoryItems(EquippedWeapon->GetInventorySlotIndex(), 4);
 }
 
 void AArcoroxCharacter::FiveKeyPressed()
 {
-
+	if (EquippedWeapon == nullptr) return;
+	if (EquippedWeapon->GetInventorySlotIndex() == 5) return;
+	ExchangeInventoryItems(EquippedWeapon->GetInventorySlotIndex(), 5);
 }
 
 bool AArcoroxCharacter::GetBeamEndLocation(const FVector& BarrelSocketLocation, FVector& OutBeamLocation)
@@ -412,6 +429,15 @@ void AArcoroxCharacter::SendBullet()
 			SpawnBeamParticles(SocketTransform, BeamEnd);
 		}
 	}
+}
+
+void AArcoroxCharacter::ExchangeInventoryItems(int32 CurrentSlotIndex, int32 TargetSlotIndex)
+{
+	if (CombatState != ECombatState::ECS_Unoccupied || EquippedWeapon == nullptr || CurrentSlotIndex == TargetSlotIndex || TargetSlotIndex >= Inventory.Num()) return;
+	AWeapon* CurrentEquippedWeapon = EquippedWeapon;
+	AWeapon* NewEquippedWeapon = Cast<AWeapon>(Inventory[TargetSlotIndex]);
+	EquipWeapon(NewEquippedWeapon);
+	CurrentEquippedWeapon->SetItemState(EItemState::EIS_PickedUp);
 }
 
 bool AArcoroxCharacter::CrosshairLineTrace(FHitResult& OutHit, FVector& OutHitLocation)
@@ -469,6 +495,7 @@ void AArcoroxCharacter::ItemTrace()
 		if (CrosshairLineTrace(ItemTraceResult, HitLocation))
 		{
 			TraceHitItem = Cast<AItem>(ItemTraceResult.GetActor());
+			if (TraceHitItem && TraceHitItem->GetItemState() == EItemState::EIS_EquipInterpolating) TraceHitItem = nullptr;
 			if (TraceHitItem)
 			{
 				TraceHitItem->ShowPickupWidget();
@@ -543,7 +570,11 @@ void AArcoroxCharacter::DropWeapon()
 void AArcoroxCharacter::SwapWeapon(AWeapon* Weapon)
 {
 	if (EquippedWeapon == nullptr) return;
-	if (Inventory.Num() - 1 >= EquippedWeapon->GetInventorySlotIndex()) Inventory[EquippedWeapon->GetInventorySlotIndex()] = Weapon;
+	if (Inventory.Num() - 1 >= EquippedWeapon->GetInventorySlotIndex())
+	{
+		Inventory[EquippedWeapon->GetInventorySlotIndex()] = Weapon;
+		Weapon->SetInventorySlotIndex(EquippedWeapon->GetInventorySlotIndex());
+	}
 	DropWeapon();
 	EquipWeapon(Weapon);
 	TraceHitItem = nullptr;

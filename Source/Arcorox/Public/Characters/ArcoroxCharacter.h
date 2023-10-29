@@ -114,6 +114,8 @@ protected:
 	bool GetBeamEndLocation(const FVector& BarrelSocketLocation, FVector& OutBeamLocation);
 	void SendBullet();
 
+	void ExchangeInventoryItems(int32 CurrentSlotIndex, int32 TargetSlotIndex);
+
 	/* Line trace for items behind the crosshairs*/
 	bool CrosshairLineTrace(FHitResult& OutHit, FVector& OutHitLocation);
 	void CalculateCrosshairSpread(float DeltaTime);

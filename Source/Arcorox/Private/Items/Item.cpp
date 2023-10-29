@@ -159,6 +159,7 @@ void AItem::SetItemProperties(EItemState State)
 		case EItemState::EIS_Falling:
 			ItemMesh->SetSimulatePhysics(true);
 			ItemMesh->SetEnableGravity(true);
+			ItemMesh->SetVisibility(true);
 			ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 			ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 			ItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
@@ -234,7 +235,6 @@ void AItem::FinishInterpolating()
 	{
 		ArcoroxCharacter->DecrementInterpLocationItemCount(InterpLocationIndex);
 		ArcoroxCharacter->GetPickupItem(this);
-		SetItemState(EItemState::EIS_PickedUp);
 	}
 	//Scale item to original size
 	SetActorScale3D(FVector(1.f));
