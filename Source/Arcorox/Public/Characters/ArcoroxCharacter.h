@@ -25,6 +25,7 @@ enum class ECombatState : uint8
 	ECS_Unoccupied UMETA(DisplayName = "Unoccupied"),
 	ECS_Firing UMETA(DisplayName = "Firing"),
 	ECS_Reloading UMETA(DisplayName = "Reloading"),
+	ECS_Equipping UMETA(DisplayName = "Equipping"),
 
 	ECS_MAX UMETA(DisplayName = "DefaultMAX")
 };
@@ -269,6 +270,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* ReloadMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* EquipMontage;
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	TArray<FName> HipFireMontageSections;
