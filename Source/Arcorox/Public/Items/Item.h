@@ -86,6 +86,7 @@ public:
 	FORCEINLINE int32 GetInventorySlotIndex() const { return InventorySlotIndex; }
 	FORCEINLINE void SetInventorySlotIndex(int32 Index) { InventorySlotIndex = Index; }
 	FORCEINLINE void SetArcoroxCharacter(AArcoroxCharacter* Character) { ArcoroxCharacter = Character; }
+	FORCEINLINE void SetCharacterInventoryFull(bool bInventoryFull) { bCharacterInventoryFull = bInventoryFull; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -252,6 +253,10 @@ private:
 	/* Index of item in character inventory */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
 	int32 InventorySlotIndex;
+
+	/* Is character's inventory full */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
+	bool bCharacterInventoryFull;
 
 	/* Timer for dynamic material pulse curve */
 	FTimerHandle MaterialPulseTimer;

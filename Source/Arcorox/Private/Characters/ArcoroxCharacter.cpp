@@ -504,6 +504,7 @@ void AArcoroxCharacter::ItemTrace()
 			{
 				TraceHitItem->ShowPickupWidget();
 				TraceHitItem->EnableCustomDepth();
+				TraceHitItem->SetCharacterInventoryFull(Inventory.Num() >= InventoryCapacity);
 			}
 			
 			if (TraceHitItemLastFrame)

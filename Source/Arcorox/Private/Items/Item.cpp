@@ -29,7 +29,8 @@ AItem::AItem() :
 	GlowAmount(150.f),
 	FresnelExponent(3.f),
 	FresnelReflectFraction(4.f),
-	InventorySlotIndex(0)
+	InventorySlotIndex(0),
+	bCharacterInventoryFull(false)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
