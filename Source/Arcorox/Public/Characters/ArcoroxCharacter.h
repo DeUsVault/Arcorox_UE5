@@ -169,6 +169,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void FinishReloading();
 
+	UFUNCTION(BlueprintCallable)
+	void FinishEquipping();
+
 	/* Called in response to Grab Clip notify in the character Animation Blueprint */
 	UFUNCTION(BlueprintCallable)
 	void GrabClip();
@@ -232,6 +235,7 @@ private:
 	void PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames);
 	void PlayGunfireMontage();
 	void PlayReloadMontage();
+	void PlayEquipMontage();
 	void CameraZoomInterpolation(float DeltaTime);
 	void SetupEnhancedInput();
 	void SetLookScale();

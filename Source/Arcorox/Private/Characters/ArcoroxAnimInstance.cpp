@@ -60,6 +60,7 @@ void UArcoroxAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 		bReloading = ArcoroxCharacter->GetCombatState() == ECombatState::ECS_Reloading;
 		bAiming = ArcoroxCharacter->IsAiming();
+		bEquipping = ArcoroxCharacter->GetCombatState() == ECombatState::ECS_Equipping;
 
 		if (bReloading) OffsetState = EOffsetState::EOS_Reloading;
 		else if (bIsFalling) OffsetState = EOffsetState::EOS_InAir;
@@ -126,19 +127,19 @@ void UArcoroxAnimInstance::SetRecoilScale()
 {
 	if (bTurningInPlace)
 	{
-		if (bReloading) RecoilScale = 1.f;
+		if (bReloading || bEquipping) RecoilScale = 1.f;
 		else RecoilScale = 0.f;
 	}
 	else
 	{
 		if (bCrouching)
 		{
-			if (bReloading) RecoilScale = 1.f;
+			if (bReloading || bEquipping) RecoilScale = 1.f;
 			else RecoilScale = 0.1f;
 		}
 		else
 		{
-			if (bAiming || bReloading) RecoilScale = 1.f;
+			if (bAiming || bReloading || bEquipping) RecoilScale = 1.f;
 			else RecoilScale = 0.5f;
 		}
 	}

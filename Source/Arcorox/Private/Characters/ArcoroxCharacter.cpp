@@ -438,6 +438,8 @@ void AArcoroxCharacter::ExchangeInventoryItems(int32 CurrentSlotIndex, int32 Tar
 	AWeapon* NewEquippedWeapon = Cast<AWeapon>(Inventory[TargetSlotIndex]);
 	EquipWeapon(NewEquippedWeapon);
 	CurrentEquippedWeapon->SetItemState(EItemState::EIS_PickedUp);
+	CombatState = ECombatState::ECS_Equipping;
+	PlayEquipMontage();
 }
 
 bool AArcoroxCharacter::CrosshairLineTrace(FHitResult& OutHit, FVector& OutHitLocation)
@@ -709,6 +711,11 @@ void AArcoroxCharacter::FinishReloading()
 	}
 }
 
+void AArcoroxCharacter::FinishEquipping()
+{
+	CombatState = ECombatState::ECS_Unoccupied;
+}
+
 void AArcoroxCharacter::GrabClip()
 {
 	if (EquippedWeapon == nullptr || HandSceneComponent == nullptr) return;
@@ -775,6 +782,11 @@ void AArcoroxCharacter::PlayGunfireMontage()
 void AArcoroxCharacter::PlayReloadMontage()
 {
 	PlayMontageSection(ReloadMontage, EquippedWeapon->GetReloadMontageSection());
+}
+
+void AArcoroxCharacter::PlayEquipMontage()
+{
+	PlayMontageSection(EquipMontage, FName(TEXT("Default")));
 }
 
 void AArcoroxCharacter::CameraZoomInterpolation(float DeltaTime)

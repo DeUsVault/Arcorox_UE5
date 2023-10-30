@@ -70,7 +70,7 @@ private:
 	float Pitch;
 
 	/* Is character in reload animation */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turn In Place", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	bool bReloading;
 
 	/* State to determine which Aim Offset to use */
@@ -84,6 +84,10 @@ private:
 	/* Is character crouching */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Crouching, meta = (AllowPrivateAccess = "true"))
 	bool bCrouching;
+
+	/* Is character equipping */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	bool bEquipping;
 
 	/* Scale for recoil to adjust recoil for crouching and aiming */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
