@@ -132,7 +132,7 @@ protected:
 	AWeapon* SpawnDefaultWeapon();
 
 	/* Attach weapon to character's weapon socket */
-	void EquipWeapon(AWeapon* Weapon);
+	void EquipWeapon(AWeapon* Weapon, bool bSwapping = false);
 
 	/* Detach weapon and have it fall to ground */
 	void DropWeapon();

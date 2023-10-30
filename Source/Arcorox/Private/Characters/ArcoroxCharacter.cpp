@@ -434,7 +434,8 @@ void AArcoroxCharacter::SendBullet()
 
 void AArcoroxCharacter::ExchangeInventoryItems(int32 CurrentSlotIndex, int32 TargetSlotIndex)
 {
-	if (CombatState != ECombatState::ECS_Unoccupied || EquippedWeapon == nullptr || CurrentSlotIndex == TargetSlotIndex || TargetSlotIndex >= Inventory.Num()) return;
+	const bool CannotExchangeItems = ((CombatState != ECombatState::ECS_Unoccupied && CombatState != ECombatState::ECS_Equipping) || EquippedWeapon == nullptr || CurrentSlotIndex == TargetSlotIndex || TargetSlotIndex >= Inventory.Num());
+	if (CannotExchangeItems) return;
 	AWeapon* CurrentEquippedWeapon = EquippedWeapon;
 	AWeapon* NewEquippedWeapon = Cast<AWeapon>(Inventory[TargetSlotIndex]);
 	EquipWeapon(NewEquippedWeapon);
@@ -545,7 +546,7 @@ AWeapon* AArcoroxCharacter::SpawnDefaultWeapon()
 	return nullptr;
 }
 
-void AArcoroxCharacter::EquipWeapon(AWeapon* Weapon)
+void AArcoroxCharacter::EquipWeapon(AWeapon* Weapon, bool bSwapping)
 {
 	if (Weapon)
 	{
@@ -554,7 +555,7 @@ void AArcoroxCharacter::EquipWeapon(AWeapon* Weapon)
 		{
 			WeaponSocket->AttachActor(Weapon, GetMesh());
 			if (EquippedWeapon == nullptr) EquipItemDelegate.Broadcast(-1, Weapon->GetInventorySlotIndex());
-			else EquipItemDelegate.Broadcast(EquippedWeapon->GetInventorySlotIndex(), Weapon->GetInventorySlotIndex());
+			else if(!bSwapping) EquipItemDelegate.Broadcast(EquippedWeapon->GetInventorySlotIndex(), Weapon->GetInventorySlotIndex());
 			EquippedWeapon = Weapon;
 			EquippedWeapon->SetItemState(EItemState::EIS_Equipped);
 		}
@@ -581,7 +582,7 @@ void AArcoroxCharacter::SwapWeapon(AWeapon* Weapon)
 		Weapon->SetInventorySlotIndex(EquippedWeapon->GetInventorySlotIndex());
 	}
 	DropWeapon();
-	EquipWeapon(Weapon);
+	EquipWeapon(Weapon, true);
 	TraceHitItem = nullptr;
 	TraceHitItemLastFrame = nullptr;
 }
