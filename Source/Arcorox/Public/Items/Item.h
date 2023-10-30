@@ -68,6 +68,7 @@ public:
 	void StartItemCurve(AArcoroxCharacter* Character);
 	void PlayPickupSound();
 	void PlayEquipSound();
+	void ForcePlayEquipSound();
 
 	void EnableGlowMaterial();
 	void DisableGlowMaterial();
@@ -84,6 +85,7 @@ public:
 	FORCEINLINE void SetItemType(EItemType Type) { ItemType = Type; }
 	FORCEINLINE int32 GetInventorySlotIndex() const { return InventorySlotIndex; }
 	FORCEINLINE void SetInventorySlotIndex(int32 Index) { InventorySlotIndex = Index; }
+	FORCEINLINE void SetArcoroxCharacter(AArcoroxCharacter* Character) { ArcoroxCharacter = Character; }
 
 protected:
 	virtual void BeginPlay() override;

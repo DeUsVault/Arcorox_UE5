@@ -128,6 +128,7 @@ void AArcoroxCharacter::BeginPlay()
 	{
 		Inventory.Add(EquippedWeapon);
 		EquippedWeapon->SetInventorySlotIndex(0);
+		EquippedWeapon->SetArcoroxCharacter(this);
 		EquippedWeapon->DisableGlowMaterial();
 		EquippedWeapon->DisableCustomDepth();
 	}
@@ -437,6 +438,7 @@ void AArcoroxCharacter::ExchangeInventoryItems(int32 CurrentSlotIndex, int32 Tar
 	AWeapon* CurrentEquippedWeapon = EquippedWeapon;
 	AWeapon* NewEquippedWeapon = Cast<AWeapon>(Inventory[TargetSlotIndex]);
 	EquipWeapon(NewEquippedWeapon);
+	NewEquippedWeapon->ForcePlayEquipSound();
 	CurrentEquippedWeapon->SetItemState(EItemState::EIS_PickedUp);
 	CombatState = ECombatState::ECS_Equipping;
 	PlayEquipMontage();

@@ -379,6 +379,12 @@ void AItem::PlayEquipSound()
 	}
 }
 
+void AItem::ForcePlayEquipSound()
+{
+	if (ArcoroxCharacter == nullptr || EquipSound == nullptr) return;
+	UGameplayStatics::PlaySound2D(this, EquipSound);
+}
+
 void AItem::StartMaterialPulseTimer()
 {
 	if (ItemState == EItemState::EIS_Pickup) GetWorldTimerManager().SetTimer(MaterialPulseTimer, this, &AItem::ResetMaterialPulseTimer, MaterialPulseCurveTime);
