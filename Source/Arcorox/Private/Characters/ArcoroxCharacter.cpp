@@ -66,7 +66,9 @@ AArcoroxCharacter::AArcoroxCharacter() :
 	bShouldPlayPickupSound(true),
 	bShouldPlayEquipSound(true),
 	PickupSoundTime(0.2f),
-	EquipSoundTime(0.2f)
+	EquipSoundTime(0.2f),
+	//Highlight Icon animation property
+	HighlightedInventorySlot(-1)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -593,6 +595,19 @@ int32 AArcoroxCharacter::GetEmptyInventorySlot() const
 	for (int32 i = 0; i < Inventory.Num(); i++)	if (Inventory[i] == nullptr) return i;
 	if (Inventory.Num() < InventoryCapacity) return Inventory.Num();
 	return -1;
+}
+
+void AArcoroxCharacter::HighlightInventorySlot()
+{
+	HighlightedInventorySlot = GetEmptyInventorySlot();
+	HighlightIconDelegate.Broadcast(HighlightedInventorySlot, true);
+}
+
+void AArcoroxCharacter::UnhighlightInventorySlot()
+{
+	if (HighlightedInventorySlot == -1) return;
+	HighlightIconDelegate.Broadcast(HighlightedInventorySlot, false);
+	HighlightedInventorySlot = -1;
 }
 
 void AArcoroxCharacter::InitializeAmmoMap()

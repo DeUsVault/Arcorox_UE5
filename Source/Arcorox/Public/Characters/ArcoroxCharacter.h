@@ -144,6 +144,12 @@ protected:
 	/* Returns index of empty inventory slot or -1 if full */
 	int32 GetEmptyInventorySlot() const;
 
+	/* Broadcasts inventory slot info using delegate to play the highlight icon animation */
+	void HighlightInventorySlot();
+
+	/* Broadcasts inventory slot info using delegate to stop playing the highlight icon animation */
+	void UnhighlightInventorySlot();
+
 	/* Initialize Ammo Map with default ammo values */
 	void InitializeAmmoMap();
 
@@ -433,6 +439,10 @@ private:
 	/* Delegate for sending inventory slot info to play the highlight icon animation for the Inventory Bar Widget */
 	UPROPERTY(BlueprintAssignable, Category = Delegates, meta = (AllowPrivateAccess = "true"))
 	FHighlightIconDelegate HighlightIconDelegate;
+
+	/* Inventory slot index that is currently playing the Highlight Icon animation */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
+	int32 HighlightedInventorySlot;
 
 	/* Capacity of inventory */
 	const int32 InventoryCapacity = 6;
