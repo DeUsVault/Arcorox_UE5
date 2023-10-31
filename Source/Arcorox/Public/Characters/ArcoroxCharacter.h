@@ -77,6 +77,12 @@ public:
 	void StartPickupSoundTimer();
 	void StartEquipSoundTimer();
 
+	/* Broadcasts inventory slot info using delegate to play the highlight icon animation */
+	void HighlightInventorySlot();
+
+	/* Broadcasts inventory slot info using delegate to stop playing the highlight icon animation */
+	void UnhighlightInventorySlot();
+
 	UFUNCTION(BlueprintCallable)
 	float GetCrosshairSpreadMultiplier() const;
 
@@ -143,12 +149,6 @@ protected:
 
 	/* Returns index of empty inventory slot or -1 if full */
 	int32 GetEmptyInventorySlot() const;
-
-	/* Broadcasts inventory slot info using delegate to play the highlight icon animation */
-	void HighlightInventorySlot();
-
-	/* Broadcasts inventory slot info using delegate to stop playing the highlight icon animation */
-	void UnhighlightInventorySlot();
 
 	/* Initialize Ammo Map with default ammo values */
 	void InitializeAmmoMap();

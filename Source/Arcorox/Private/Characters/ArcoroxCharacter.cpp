@@ -502,6 +502,15 @@ void AArcoroxCharacter::ItemTrace()
 		if (CrosshairLineTrace(ItemTraceResult, HitLocation))
 		{
 			TraceHitItem = Cast<AItem>(ItemTraceResult.GetActor());
+			const AWeapon* TraceHitWeapon = Cast<AWeapon>(TraceHitItem);
+			if (TraceHitWeapon)
+			{
+				if (HighlightedInventorySlot == -1) HighlightInventorySlot();
+			}
+			else
+			{
+				if (HighlightedInventorySlot != -1) UnhighlightInventorySlot();
+			}
 			if (TraceHitItem && TraceHitItem->GetItemState() == EItemState::EIS_EquipInterpolating) TraceHitItem = nullptr;
 			if (TraceHitItem)
 			{

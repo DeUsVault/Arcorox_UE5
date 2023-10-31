@@ -103,7 +103,11 @@ void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 	if (OtherActor)
 	{
 		ArcoroxCharacter = Cast<AArcoroxCharacter>(OtherActor);
-		if (ArcoroxCharacter) ArcoroxCharacter->IncrementOverlappedItemCount(-1);
+		if (ArcoroxCharacter)
+		{
+			ArcoroxCharacter->IncrementOverlappedItemCount(-1);
+			ArcoroxCharacter->UnhighlightInventorySlot();
+		}
 	}
 }
 
@@ -236,6 +240,7 @@ void AItem::FinishInterpolating()
 	{
 		ArcoroxCharacter->DecrementInterpLocationItemCount(InterpLocationIndex);
 		ArcoroxCharacter->GetPickupItem(this);
+		ArcoroxCharacter->UnhighlightInventorySlot();
 	}
 	//Scale item to original size
 	SetActorScale3D(FVector(1.f));
