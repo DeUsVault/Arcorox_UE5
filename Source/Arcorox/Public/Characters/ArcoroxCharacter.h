@@ -45,6 +45,7 @@ struct FInterpLocation
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEquipItemDelegate, int32, CurrentSlotIndex, int32, NewSlotIndex);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHighlightIconDelegate, int32, InventorySlotIndex, bool, bStartAnimation);
 
 UCLASS()
 class ARCOROX_API AArcoroxCharacter : public ACharacter
@@ -139,6 +140,9 @@ protected:
 
 	/* Drops equipped weapon and equips TraceHitItem if it's a weapon */
 	void SwapWeapon(AWeapon* Weapon);
+
+	/* Returns index of empty inventory slot or -1 if full */
+	int32 GetEmptyInventorySlot() const;
 
 	/* Initialize Ammo Map with default ammo values */
 	void InitializeAmmoMap();
@@ -425,6 +429,10 @@ private:
 	/* Delegate for sending inventory slot info to Inventory Bar Widget */
 	UPROPERTY(BlueprintAssignable, Category = Delegates, meta = (AllowPrivateAccess = "true"))
 	FEquipItemDelegate EquipItemDelegate;
+
+	/* Delegate for sending inventory slot info to play the highlight icon animation for the Inventory Bar Widget */
+	UPROPERTY(BlueprintAssignable, Category = Delegates, meta = (AllowPrivateAccess = "true"))
+	FHighlightIconDelegate HighlightIconDelegate;
 
 	/* Capacity of inventory */
 	const int32 InventoryCapacity = 6;

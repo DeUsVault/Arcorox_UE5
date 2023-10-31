@@ -587,6 +587,14 @@ void AArcoroxCharacter::SwapWeapon(AWeapon* Weapon)
 	TraceHitItemLastFrame = nullptr;
 }
 
+int32 AArcoroxCharacter::GetEmptyInventorySlot() const
+{
+	if (Inventory.Num() >= InventoryCapacity) return -1;
+	for (int32 i = 0; i < Inventory.Num(); i++)	if (Inventory[i] == nullptr) return i;
+	if (Inventory.Num() < InventoryCapacity) return Inventory.Num();
+	return -1;
+}
+
 void AArcoroxCharacter::InitializeAmmoMap()
 {
 	AmmoMap.Add(EAmmoType::EAT_9mm, Starting9mmAmmo);
