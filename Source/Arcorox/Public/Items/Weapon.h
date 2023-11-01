@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Items/Item.h"
 #include "Items/AmmoType.h"
+#include "Engine/DataTable.h"
 #include "Weapon.generated.h"
 
 UENUM(BlueprintType)
@@ -14,6 +15,39 @@ enum class EWeaponType : uint8
 	EWT_AssaultRifle UMETA(DisplayName = "AssaultRifle"),
 
 	EWT_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
+USTRUCT(BlueprintType)
+struct FWeaponTypeTable : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EAmmoType AmmoType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 AmmoCount;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 MagazineCapacity;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USoundBase* PickupSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USoundBase* EquipSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USkeletalMesh* WeaponMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString WeaponName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTexture2D* InventoryIcon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTexture2D* AmmoIcon;
 };
 
 UCLASS()
@@ -48,6 +82,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void OnConstruction(const FTransform& Transform) override;
+
 	void StopFalling();
 
 private:
@@ -78,6 +114,10 @@ private:
 	/* Is character moving the clip(magazine) (reloading) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
 	bool bMovingClip;
+
+	/* Weapon type Data Table */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
+	UDataTable* WeaponTypeDataTable;
 
 	FTimerHandle ThrowWeaponTimer;
 	float ThrowWeaponTime;

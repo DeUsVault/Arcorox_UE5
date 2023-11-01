@@ -113,6 +113,11 @@ public:
 	FORCEINLINE void SetInventorySlotIndex(int32 Index) { InventorySlotIndex = Index; }
 	FORCEINLINE void SetArcoroxCharacter(AArcoroxCharacter* Character) { ArcoroxCharacter = Character; }
 	FORCEINLINE void SetCharacterInventoryFull(bool bInventoryFull) { bCharacterInventoryFull = bInventoryFull; }
+	FORCEINLINE void SetPickupSound(USoundBase* Sound) { PickupSound = Sound; }
+	FORCEINLINE void SetEquipSound(USoundBase* Sound) { EquipSound = Sound; }
+	FORCEINLINE void SetItemName(FString Name) { ItemName = Name; }
+	FORCEINLINE void SetBackgroundIcon(UTexture2D* Icon) { BackgroundIcon = Icon; }
+	FORCEINLINE void SetAmmoIcon(UTexture2D* Icon) { AmmoIcon = Icon; }
 
 protected:
 	virtual void BeginPlay() override;
