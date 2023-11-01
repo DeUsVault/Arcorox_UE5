@@ -40,6 +40,11 @@ void AWeapon::BeginPlay()
 void AWeapon::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
+	GetWeaponTypeDataTableInfo();
+}
+
+void AWeapon::GetWeaponTypeDataTableInfo()
+{
 	const FString WeaponTypeDataTablePath(TEXT("/Script/Engine.DataTable'/Game/Dynamic/Blueprints/DataTables/WeaponTypeDataTable.WeaponTypeDataTable'"));
 	UDataTable* WeaponTypeDataTableObject = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), nullptr, *WeaponTypeDataTablePath));
 	if (WeaponTypeDataTableObject)

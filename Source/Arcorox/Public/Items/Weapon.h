@@ -84,6 +84,8 @@ protected:
 
 	virtual void OnConstruction(const FTransform& Transform) override;
 
+	void GetWeaponTypeDataTableInfo();
+
 	void StopFalling();
 
 private:
