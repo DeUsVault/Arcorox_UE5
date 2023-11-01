@@ -87,6 +87,13 @@ void AItem::OnConstruction(const FTransform& Transform)
 		ItemMesh->SetMaterial(MaterialIndex, DynamicMaterialInstance);
 	}
 	EnableGlowMaterial();
+
+	FString ItemRarityDataTablePath(TEXT("/Script/Engine.DataTable'/Game/Dynamic/Blueprints/DataTables/ItemRarityDataTable.ItemRarityDataTable'"));
+	UDataTable* ItemRarityDataTableObject = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), nullptr, *ItemRarityDataTablePath));
+	if (ItemRarityDataTableObject)
+	{
+
+	}
 }
 
 void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
