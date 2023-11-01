@@ -67,6 +67,9 @@ struct FItemRarityTable : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UTexture2D* IconBackground;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 CustomDepthStencil;
 };
 
 UCLASS()
@@ -115,6 +118,8 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void OnConstruction(const FTransform& Transform) override;
+
+	void GetItemRarityDataTableInfo();
 
 	/* Sets Item properties based on ItemState */
 	virtual void SetItemProperties(EItemState State);
@@ -174,7 +179,7 @@ private:
 	int32 ItemCount;
 
 	/* Item Rarity - determines star count of pickup widget */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Rarity", meta = (AllowPrivateAccess = "true"))
 	EItemRarity ItemRarity;
 
 	/* Array of booleans to determine which stars to show in the pickup widget */
@@ -261,10 +266,6 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 	float FresnelReflectFraction;
 
-	/* Background icon image in the inventory */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
-	UTexture2D* BackgroundIcon;
-
 	/* Item icon image in the inventory */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
 	UTexture2D* ItemIcon;
@@ -284,6 +285,26 @@ private:
 	/* Item Rarity Data Table */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
 	UDataTable* ItemRarityDataTable;
+
+	/* Color of material glow */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Rarity", meta = (AllowPrivateAccess = "true"))
+	FLinearColor GlowColor;
+
+	/* Light color of pickup widget */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Rarity", meta = (AllowPrivateAccess = "true"))
+	FLinearColor LightColor;
+
+	/* Dark color of pickup widget */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Rarity", meta = (AllowPrivateAccess = "true"))
+	FLinearColor DarkColor;
+
+	/* Amount of stars on pickup widget */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Rarity", meta = (AllowPrivateAccess = "true"))
+	int32 NumStars;
+
+	/* Background icon image in the inventory and pickup widget */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Rarity", meta = (AllowPrivateAccess = "true"))
+	UTexture2D* BackgroundIcon;
 
 	/* Timer for dynamic material pulse curve */
 	FTimerHandle MaterialPulseTimer;
