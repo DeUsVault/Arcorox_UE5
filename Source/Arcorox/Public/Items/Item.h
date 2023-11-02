@@ -116,7 +116,7 @@ public:
 	FORCEINLINE void SetPickupSound(USoundBase* Sound) { PickupSound = Sound; }
 	FORCEINLINE void SetEquipSound(USoundBase* Sound) { EquipSound = Sound; }
 	FORCEINLINE void SetItemName(FString Name) { ItemName = Name; }
-	FORCEINLINE void SetBackgroundIcon(UTexture2D* Icon) { BackgroundIcon = Icon; }
+	FORCEINLINE void SetItemIcon(UTexture2D* Icon) { ItemIcon = Icon; }
 	FORCEINLINE void SetAmmoIcon(UTexture2D* Icon) { AmmoIcon = Icon; }
 
 protected:

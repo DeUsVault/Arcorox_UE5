@@ -68,7 +68,7 @@ void AWeapon::GetWeaponTypeDataTableInfo()
 			SetEquipSound(WeaponTypeRow->EquipSound);
 			GetItemMesh()->SetSkeletalMesh(WeaponTypeRow->WeaponMesh);
 			SetItemName(WeaponTypeRow->WeaponName);
-			SetBackgroundIcon(WeaponTypeRow->InventoryIcon);
+			SetItemIcon(WeaponTypeRow->InventoryIcon);
 			SetAmmoIcon(WeaponTypeRow->AmmoIcon);
 		}
 	}
