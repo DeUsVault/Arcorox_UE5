@@ -96,6 +96,7 @@ public:
 	void PlayEquipSound();
 	void ForcePlayEquipSound();
 
+	void InitializeDynamicMaterialInstance();
 	void EnableGlowMaterial();
 	void DisableGlowMaterial();
 
@@ -108,8 +109,10 @@ public:
 	FORCEINLINE USoundBase* GetEquipSound() const { return EquipSound; }
 	FORCEINLINE int32 GetItemCount() const { return ItemCount; }
 	FORCEINLINE EItemType GetItemType() const { return ItemType; }
-	FORCEINLINE void SetItemType(EItemType Type) { ItemType = Type; }
 	FORCEINLINE int32 GetInventorySlotIndex() const { return InventorySlotIndex; }
+	FORCEINLINE UMaterialInstance* GetMaterialInstance() const { return MaterialInstance; }
+	FORCEINLINE int32 GetMaterialIndex() const { return MaterialIndex; }
+	FORCEINLINE void SetItemType(EItemType Type) { ItemType = Type; }
 	FORCEINLINE void SetInventorySlotIndex(int32 Index) { InventorySlotIndex = Index; }
 	FORCEINLINE void SetArcoroxCharacter(AArcoroxCharacter* Character) { ArcoroxCharacter = Character; }
 	FORCEINLINE void SetCharacterInventoryFull(bool bInventoryFull) { bCharacterInventoryFull = bInventoryFull; }
@@ -118,6 +121,8 @@ public:
 	FORCEINLINE void SetItemName(FString Name) { ItemName = Name; }
 	FORCEINLINE void SetItemIcon(UTexture2D* Icon) { ItemIcon = Icon; }
 	FORCEINLINE void SetAmmoIcon(UTexture2D* Icon) { AmmoIcon = Icon; }
+	FORCEINLINE void SetMaterialInstance(UMaterialInstance* MatInst) { MaterialInstance = MatInst; }
+	FORCEINLINE void SetMaterialIndex(int32 Index) { MaterialIndex = Index; }
 
 protected:
 	virtual void BeginPlay() override;

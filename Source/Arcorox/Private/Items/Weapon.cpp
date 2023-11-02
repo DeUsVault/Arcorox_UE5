@@ -41,6 +41,7 @@ void AWeapon::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
 	GetWeaponTypeDataTableInfo();
+	InitializeDynamicMaterialInstance();
 }
 
 void AWeapon::GetWeaponTypeDataTableInfo()
@@ -70,6 +71,10 @@ void AWeapon::GetWeaponTypeDataTableInfo()
 			SetItemName(WeaponTypeRow->WeaponName);
 			SetItemIcon(WeaponTypeRow->InventoryIcon);
 			SetAmmoIcon(WeaponTypeRow->AmmoIcon);
+			SetMaterialInstance(WeaponTypeRow->MaterialInstance);
+			PreviousMaterialIndex = GetMaterialIndex();
+			if (GetItemMesh()) GetItemMesh()->SetMaterial(PreviousMaterialIndex, nullptr);
+			SetMaterialIndex(WeaponTypeRow->MaterialIndex);
 		}
 	}
 }

@@ -48,6 +48,12 @@ struct FWeaponTypeTable : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UTexture2D* AmmoIcon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UMaterialInstance* MaterialInstance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 MaterialIndex;
 };
 
 UCLASS()
@@ -120,6 +126,8 @@ private:
 	/* Weapon type Data Table */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
 	UDataTable* WeaponTypeDataTable;
+
+	int32 PreviousMaterialIndex;
 
 	FTimerHandle ThrowWeaponTimer;
 	float ThrowWeaponTime;

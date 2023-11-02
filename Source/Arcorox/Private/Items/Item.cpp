@@ -81,6 +81,11 @@ void AItem::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
 	GetItemRarityDataTableInfo();
+	InitializeDynamicMaterialInstance();
+}
+
+void AItem::InitializeDynamicMaterialInstance()
+{
 	if (MaterialInstance)
 	{
 		DynamicMaterialInstance = UMaterialInstanceDynamic::Create(MaterialInstance, this);
