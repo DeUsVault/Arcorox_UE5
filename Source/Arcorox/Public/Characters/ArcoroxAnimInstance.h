@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "Items/WeaponType.h"
 #include "ArcoroxAnimInstance.generated.h"
 
 UENUM(BlueprintType)
@@ -96,6 +97,10 @@ private:
 	/* Is the character turning in place */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Turn In Place", meta = (AllowPrivateAccess = "true"))
 	bool bTurningInPlace;
+
+	/* Type of Equipped Weapon */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	EWeaponType EquippedWeaponType;
 
 	/* Current character rotation yaw for turning in place functionality */
 	float TIPCharacterRotationYaw;

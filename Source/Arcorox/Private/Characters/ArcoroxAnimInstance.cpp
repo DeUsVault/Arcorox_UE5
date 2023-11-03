@@ -4,6 +4,7 @@
 #include "Characters/ArcoroxAnimInstance.h"
 #include "Characters/ArcoroxCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Items/Weapon.h"
 #include "Kismet/KismetMathLibrary.h"
 
 UArcoroxAnimInstance::UArcoroxAnimInstance() :
@@ -66,6 +67,8 @@ void UArcoroxAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		else if (bIsFalling) OffsetState = EOffsetState::EOS_InAir;
 		else if (bAiming) OffsetState = EOffsetState::EOS_Aiming;
 		else OffsetState = EOffsetState::EOS_Hip;
+
+		if (ArcoroxCharacter->GetEquippedWeapon()) EquippedWeaponType = ArcoroxCharacter->GetEquippedWeapon()->GetWeaponType();
 
 	}
 	TurnInPlace();

@@ -5,17 +5,9 @@
 #include "CoreMinimal.h"
 #include "Items/Item.h"
 #include "Items/AmmoType.h"
+#include "Items/WeaponType.h"
 #include "Engine/DataTable.h"
 #include "Weapon.generated.h"
-
-UENUM(BlueprintType)
-enum class EWeaponType : uint8
-{
-	EWT_SubmachineGun UMETA(DisplayName = "SubmachineGun"),
-	EWT_AssaultRifle UMETA(DisplayName = "AssaultRifle"),
-
-	EWT_MAX UMETA(DisplayName = "DefaultMAX")
-};
 
 USTRUCT(BlueprintType)
 struct FWeaponTypeTable : public FTableRowBase
