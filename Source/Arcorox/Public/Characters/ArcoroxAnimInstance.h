@@ -102,6 +102,10 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	EWeaponType EquippedWeaponType;
 
+	/* Should FABRIK IK be used */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	bool bShouldUseFABRIK;
+
 	/* Current character rotation yaw for turning in place functionality */
 	float TIPCharacterRotationYaw;
 

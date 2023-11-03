@@ -27,7 +27,9 @@ UArcoroxAnimInstance::UArcoroxAnimInstance() :
 	DeltaYaw(0.f),
 	bCrouching(false),
 	RecoilScale(1.f),
-	bTurningInPlace(false)
+	bTurningInPlace(false),
+	EquippedWeaponType(EWeaponType::EWT_SubmachineGun),
+	bShouldUseFABRIK(true)
 {
 
 }
@@ -53,15 +55,17 @@ void UArcoroxAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		bIsFalling = ArcoroxCharacterMovement->IsFalling();
 		bIsAccelerating = ArcoroxCharacterMovement->GetCurrentAcceleration().Size() > 0.f;
 		bCrouching = ArcoroxCharacter->IsCrouching();
+		ECombatState CombatState = ArcoroxCharacter->GetCombatState();
+		bShouldUseFABRIK = CombatState == ECombatState::ECS_Unoccupied || CombatState == ECombatState::ECS_Firing;
 
 		FRotator AimRotation = ArcoroxCharacter->GetBaseAimRotation();
 		FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(ArcoroxCharacter->GetVelocity());
 		MovementOffsetYaw = UKismetMathLibrary::NormalizedDeltaRotator(MovementRotation, AimRotation).Yaw;
 		if (ArcoroxCharacter->GetVelocity().Size() > 0) LastMovementOffsetYaw = MovementOffsetYaw;
 
-		bReloading = ArcoroxCharacter->GetCombatState() == ECombatState::ECS_Reloading;
+		bReloading = CombatState == ECombatState::ECS_Reloading;
 		bAiming = ArcoroxCharacter->IsAiming();
-		bEquipping = ArcoroxCharacter->GetCombatState() == ECombatState::ECS_Equipping;
+		bEquipping = CombatState == ECombatState::ECS_Equipping;
 
 		if (bReloading) OffsetState = EOffsetState::EOS_Reloading;
 		else if (bIsFalling) OffsetState = EOffsetState::EOS_InAir;
@@ -69,7 +73,6 @@ void UArcoroxAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		else OffsetState = EOffsetState::EOS_Hip;
 
 		if (ArcoroxCharacter->GetEquippedWeapon()) EquippedWeaponType = ArcoroxCharacter->GetEquippedWeapon()->GetWeaponType();
-
 	}
 	TurnInPlace();
 	Lean(DeltaTime);
