@@ -65,6 +65,8 @@ void AWeapon::GetWeaponTypeDataTableInfo()
 			AmmoType = WeaponTypeRow->AmmoType;
 			Ammo = WeaponTypeRow->AmmoCount;
 			MagazineCapacity = WeaponTypeRow->MagazineCapacity;
+			ClipBoneName = WeaponTypeRow->ClipBoneName;
+			ReloadMontageSection = WeaponTypeRow->ReloadMontageSection;
 			SetPickupSound(WeaponTypeRow->PickupSound);
 			SetEquipSound(WeaponTypeRow->EquipSound);
 			GetItemMesh()->SetSkeletalMesh(WeaponTypeRow->WeaponMesh);
