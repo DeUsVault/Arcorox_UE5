@@ -75,7 +75,11 @@ void AWeapon::GetWeaponTypeDataTableInfo()
 			SetAmmoIcon(WeaponTypeRow->AmmoIcon);
 			SetMaterialInstance(WeaponTypeRow->MaterialInstance);
 			PreviousMaterialIndex = GetMaterialIndex();
-			if (GetItemMesh()) GetItemMesh()->SetMaterial(PreviousMaterialIndex, nullptr);
+			if (GetItemMesh())
+			{
+				GetItemMesh()->SetAnimInstanceClass(WeaponTypeRow->AnimationBlueprint);
+				GetItemMesh()->SetMaterial(PreviousMaterialIndex, nullptr);
+			}
 			SetMaterialIndex(WeaponTypeRow->MaterialIndex);
 		}
 	}

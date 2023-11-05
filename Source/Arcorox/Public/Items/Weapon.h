@@ -52,6 +52,9 @@ struct FWeaponTypeTable : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName ReloadMontageSection;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UAnimInstance> AnimationBlueprint;
 };
 
 UCLASS()
