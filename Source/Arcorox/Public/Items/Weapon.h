@@ -81,6 +81,9 @@ struct FWeaponTypeTable : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USoundBase* FireSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FName BoneToHide;
 };
 
 UCLASS()
@@ -187,6 +190,10 @@ private:
 	/* Sound for weapon fire */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
 	USoundBase* FireSound;
+
+	/* Bone to hide on SMG weapon skeletal mesh (for pistol) */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
+	FName BoneToHide;
 
 	int32 PreviousMaterialIndex;
 

@@ -35,6 +35,8 @@ void AWeapon::BeginPlay()
 	Super::BeginPlay();
 
 	SetItemType(EItemType::EIT_Weapon);
+
+	if (BoneToHide != FName()) GetItemMesh()->HideBoneByName(BoneToHide, EPhysBodyOp::PBO_None);
 }
 
 void AWeapon::OnConstruction(const FTransform& Transform)
@@ -59,6 +61,9 @@ void AWeapon::GetWeaponTypeDataTableInfo()
 		case EWeaponType::EWT_AssaultRifle:
 			WeaponTypeRow = WeaponTypeDataTableObject->FindRow<FWeaponTypeTable>(FName("AssaultRifle"), TEXT(""));
 			break;
+		case EWeaponType::EWT_Pistol:
+			WeaponTypeRow = WeaponTypeDataTableObject->FindRow<FWeaponTypeTable>(FName("Pistol"), TEXT(""));
+			break;
 		}
 		SetDataTableProperties(WeaponTypeRow);
 	}
@@ -81,6 +86,7 @@ void AWeapon::SetDataTableProperties(FWeaponTypeTable* WeaponTypeRow)
 		FireRate = WeaponTypeRow->FireRate;
 		MuzzleFlash = WeaponTypeRow->MuzzleFlash;
 		FireSound = WeaponTypeRow->FireSound;
+		BoneToHide = WeaponTypeRow->BoneToHide;
 		SetPickupSound(WeaponTypeRow->PickupSound);
 		SetEquipSound(WeaponTypeRow->EquipSound);
 		GetItemMesh()->SetSkeletalMesh(WeaponTypeRow->WeaponMesh);
