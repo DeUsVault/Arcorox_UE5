@@ -78,6 +78,9 @@ void AWeapon::SetDataTableProperties(FWeaponTypeTable* WeaponTypeRow)
 		MidCrosshair = WeaponTypeRow->MidCrosshair;
 		LeftCrosshair = WeaponTypeRow->LeftCrosshair;
 		RightCrosshair = WeaponTypeRow->RightCrosshair;
+		FireRate = WeaponTypeRow->FireRate;
+		MuzzleFlash = WeaponTypeRow->MuzzleFlash;
+		FireSound = WeaponTypeRow->FireSound;
 		SetPickupSound(WeaponTypeRow->PickupSound);
 		SetEquipSound(WeaponTypeRow->EquipSound);
 		GetItemMesh()->SetSkeletalMesh(WeaponTypeRow->WeaponMesh);

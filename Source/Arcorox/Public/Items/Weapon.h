@@ -9,6 +9,8 @@
 #include "Engine/DataTable.h"
 #include "Weapon.generated.h"
 
+class UParticleSystem;
+
 USTRUCT(BlueprintType)
 struct FWeaponTypeTable : public FTableRowBase
 {
@@ -70,6 +72,15 @@ struct FWeaponTypeTable : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UTexture2D* RightCrosshair;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float FireRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UParticleSystem* MuzzleFlash;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USoundBase* FireSound;
 };
 
 UCLASS()
@@ -99,6 +110,9 @@ public:
 	FORCEINLINE EAmmoType GetAmmoType() const { return AmmoType; }
 	FORCEINLINE FName GetReloadMontageSection() const { return ReloadMontageSection; }
 	FORCEINLINE FName GetClipBoneName() const { return ClipBoneName; }
+	FORCEINLINE float GetFireRate() const { return FireRate; }
+	FORCEINLINE UParticleSystem* GetMuzzleFlash() const { return MuzzleFlash; }
+	FORCEINLINE USoundBase* GetFireSound() const { return FireSound; }
 	FORCEINLINE void SetMovingClip(bool Moving) { bMovingClip = Moving; }
 
 protected:
@@ -161,6 +175,18 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
 	UTexture2D* RightCrosshair;
+
+	/* Automatic fire rate for weapon */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
+	float FireRate;
+
+	/* Particle system for muzzle flash of weapon */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
+	UParticleSystem* MuzzleFlash;
+
+	/* Sound for weapon fire */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
+	USoundBase* FireSound;
 
 	int32 PreviousMaterialIndex;
 

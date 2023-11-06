@@ -269,12 +269,6 @@ private:
 	float AimingLookScale;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
-	USoundBase* FireSound;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
-	UParticleSystem* MuzzleFlash;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UParticleSystem* ImpactParticles;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
@@ -462,7 +456,6 @@ private:
 	//Automatic Weapon Fire
 	bool bFireButtonPressed;
 	bool bShouldFire;
-	float FireRate;
 	FTimerHandle AutoFireTimer;
 
 	bool bShouldTraceForItems;

@@ -39,7 +39,6 @@ AArcoroxCharacter::AArcoroxCharacter() :
 	ShootTimeDuration(0.05f),
 	bFiringWeapon(false),
 	//Automatic weapon fire
-	FireRate(0.1f),
 	bShouldFire(true),
 	bFireButtonPressed(false),
 	bShouldTraceForItems(false),
@@ -547,7 +546,7 @@ void AArcoroxCharacter::StartCrosshairShootTimer()
 void AArcoroxCharacter::StartAutoFireTimer()
 {
 	CombatState = ECombatState::ECS_Firing;
-	GetWorldTimerManager().SetTimer(AutoFireTimer, this, &AArcoroxCharacter::AutoFireReset, FireRate);
+	GetWorldTimerManager().SetTimer(AutoFireTimer, this, &AArcoroxCharacter::AutoFireReset, EquippedWeapon->GetFireRate());
 }
 
 AWeapon* AArcoroxCharacter::SpawnDefaultWeapon()
@@ -771,12 +770,12 @@ void AArcoroxCharacter::ReleaseClip()
 
 void AArcoroxCharacter::PlayFireSound()
 {
-	if (FireSound) UGameplayStatics::PlaySound2D(this, FireSound);
+	if (EquippedWeapon->GetFireSound()) UGameplayStatics::PlaySound2D(this, EquippedWeapon->GetFireSound());
 }
 
 void AArcoroxCharacter::SpawnMuzzleFlash(const FTransform& SocketTransform)
 {
-	if (MuzzleFlash) UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, SocketTransform);
+	if (EquippedWeapon->GetMuzzleFlash()) UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), EquippedWeapon->GetMuzzleFlash(), SocketTransform);
 }
 
 void AArcoroxCharacter::SpawnImpactParticles(const FVector& BeamEnd)
