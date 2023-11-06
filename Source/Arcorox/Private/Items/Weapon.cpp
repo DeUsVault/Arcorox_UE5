@@ -60,28 +60,38 @@ void AWeapon::GetWeaponTypeDataTableInfo()
 			WeaponTypeRow = WeaponTypeDataTableObject->FindRow<FWeaponTypeTable>(FName("AssaultRifle"), TEXT(""));
 			break;
 		}
-		if (WeaponTypeRow)
+		SetDataTableProperties(WeaponTypeRow);
+	}
+}
+
+void AWeapon::SetDataTableProperties(FWeaponTypeTable* WeaponTypeRow)
+{
+	if (WeaponTypeRow)
+	{
+		AmmoType = WeaponTypeRow->AmmoType;
+		Ammo = WeaponTypeRow->AmmoCount;
+		MagazineCapacity = WeaponTypeRow->MagazineCapacity;
+		ClipBoneName = WeaponTypeRow->ClipBoneName;
+		ReloadMontageSection = WeaponTypeRow->ReloadMontageSection;
+		TopCrosshair = WeaponTypeRow->TopCrosshair;
+		BottomCrosshair = WeaponTypeRow->BottomCrosshair;
+		MidCrosshair = WeaponTypeRow->MidCrosshair;
+		LeftCrosshair = WeaponTypeRow->LeftCrosshair;
+		RightCrosshair = WeaponTypeRow->RightCrosshair;
+		SetPickupSound(WeaponTypeRow->PickupSound);
+		SetEquipSound(WeaponTypeRow->EquipSound);
+		GetItemMesh()->SetSkeletalMesh(WeaponTypeRow->WeaponMesh);
+		SetItemName(WeaponTypeRow->WeaponName);
+		SetItemIcon(WeaponTypeRow->InventoryIcon);
+		SetAmmoIcon(WeaponTypeRow->AmmoIcon);
+		SetMaterialInstance(WeaponTypeRow->MaterialInstance);
+		PreviousMaterialIndex = GetMaterialIndex();
+		if (GetItemMesh())
 		{
-			AmmoType = WeaponTypeRow->AmmoType;
-			Ammo = WeaponTypeRow->AmmoCount;
-			MagazineCapacity = WeaponTypeRow->MagazineCapacity;
-			ClipBoneName = WeaponTypeRow->ClipBoneName;
-			ReloadMontageSection = WeaponTypeRow->ReloadMontageSection;
-			SetPickupSound(WeaponTypeRow->PickupSound);
-			SetEquipSound(WeaponTypeRow->EquipSound);
-			GetItemMesh()->SetSkeletalMesh(WeaponTypeRow->WeaponMesh);
-			SetItemName(WeaponTypeRow->WeaponName);
-			SetItemIcon(WeaponTypeRow->InventoryIcon);
-			SetAmmoIcon(WeaponTypeRow->AmmoIcon);
-			SetMaterialInstance(WeaponTypeRow->MaterialInstance);
-			PreviousMaterialIndex = GetMaterialIndex();
-			if (GetItemMesh())
-			{
-				GetItemMesh()->SetAnimInstanceClass(WeaponTypeRow->AnimationBlueprint);
-				GetItemMesh()->SetMaterial(PreviousMaterialIndex, nullptr);
-			}
-			SetMaterialIndex(WeaponTypeRow->MaterialIndex);
+			GetItemMesh()->SetAnimInstanceClass(WeaponTypeRow->AnimationBlueprint);
+			GetItemMesh()->SetMaterial(PreviousMaterialIndex, nullptr);
 		}
+		SetMaterialIndex(WeaponTypeRow->MaterialIndex);
 	}
 }
 

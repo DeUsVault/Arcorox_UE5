@@ -55,6 +55,21 @@ struct FWeaponTypeTable : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UAnimInstance> AnimationBlueprint;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTexture2D* TopCrosshair;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTexture2D* BottomCrosshair;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTexture2D* MidCrosshair;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTexture2D* LeftCrosshair;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTexture2D* RightCrosshair;
 };
 
 UCLASS()
@@ -93,6 +108,8 @@ protected:
 
 	void GetWeaponTypeDataTableInfo();
 
+	void SetDataTableProperties(FWeaponTypeTable* WeaponTypeRow);
+
 	void StopFalling();
 
 private:
@@ -127,6 +144,23 @@ private:
 	/* Weapon type Data Table */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
 	UDataTable* WeaponTypeDataTable;
+
+	/* Textures for weapon crosshairs */
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
+	UTexture2D* TopCrosshair;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
+	UTexture2D* BottomCrosshair;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
+	UTexture2D* MidCrosshair;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
+	UTexture2D* LeftCrosshair;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
+	UTexture2D* RightCrosshair;
 
 	int32 PreviousMaterialIndex;
 
