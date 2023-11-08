@@ -191,9 +191,17 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
 	USoundBase* FireSound;
 
-	/* Bone to hide on SMG weapon skeletal mesh (for pistol) */
+	/* Bone to hide on SMG weapon skeletal mesh (for SMG & pistol) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
 	FName BoneToHide;
+
+	/* Displacement of pistol slide while firing */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
+	float PistolSlideDisplacement;
+
+	/* Curve for pistol slide displacement */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
+	UCurveFloat* PistolSlideCurve;
 
 	int32 PreviousMaterialIndex;
 
