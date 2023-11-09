@@ -16,7 +16,9 @@ AWeapon::AWeapon():
 	PistolSlideDisplacement(0.f),
 	PistolSlideTime(0.2f),
 	bDisplacingPistolSlide(false),
-	PistolSlideDistance(4.f)
+	PistolSlideDistance(4.f),
+	TargetPistolRecoilRotation(20.f),
+	PistolRecoilRotation(0.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -167,4 +169,5 @@ void AWeapon::UpdatePistolSlideDisplacement()
 	const float ElapsedTime = GetWorldTimerManager().GetTimerElapsed(PistolSlideTimer);
 	const float CurveValue = PistolSlideCurve->GetFloatValue(ElapsedTime);
 	PistolSlideDisplacement = CurveValue * PistolSlideDistance;
+	PistolRecoilRotation = CurveValue * TargetPistolRecoilRotation;
 }

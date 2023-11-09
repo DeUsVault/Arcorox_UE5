@@ -222,6 +222,14 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
 	float PistolSlideTime;
 
+	/* Maximum rotation for pistol while firing */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
+	float TargetPistolRecoilRotation;
+
+	/* How much the pistol is rotating while firing */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
+	float PistolRecoilRotation;
+
 	/* Timer for displacing pistol slide */
 	FTimerHandle PistolSlideTimer;
 
