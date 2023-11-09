@@ -13,7 +13,10 @@ AWeapon::AWeapon():
 	AmmoType(EAmmoType::EAT_9mm),
 	ReloadMontageSection(FName(TEXT("Reload SMG"))),
 	ClipBoneName(FName(TEXT("smg_clip"))),
-	PistolSlideDisplacement(0.f)
+	PistolSlideDisplacement(0.f),
+	PistolSlideTime(0.2f),
+	bDisplacingPistolSlide(false),
+	PistolSlideDistance(4.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -29,6 +32,8 @@ void AWeapon::Tick(float DeltaTime)
 		const FRotator Rotation{ 0.f, GetItemMesh()->GetComponentRotation().Yaw, 0.f };
 		GetItemMesh()->SetWorldRotation(Rotation, false, nullptr, ETeleportType::TeleportPhysics);
 	}
+
+	UpdatePistolSlideDisplacement();
 }
 
 void AWeapon::BeginPlay()
@@ -138,9 +143,28 @@ bool AWeapon::FullMagazine()
 	return Ammo == MagazineCapacity;
 }
 
+void AWeapon::StartPistolSlideTimer()
+{
+	bDisplacingPistolSlide = true;
+	GetWorldTimerManager().SetTimer(PistolSlideTimer, this, &AWeapon::FinishPistolSlideDisplacement, PistolSlideTime);
+}
+
 void AWeapon::StopFalling()
 {
 	bIsFalling = false;
 	SetItemState(EItemState::EIS_Pickup);
 	StartMaterialPulseTimer();
+}
+
+void AWeapon::FinishPistolSlideDisplacement()
+{
+	bDisplacingPistolSlide = false;
+}
+
+void AWeapon::UpdatePistolSlideDisplacement()
+{
+	if (!bDisplacingPistolSlide || PistolSlideCurve == nullptr) return;
+	const float ElapsedTime = GetWorldTimerManager().GetTimerElapsed(PistolSlideTimer);
+	const float CurveValue = PistolSlideCurve->GetFloatValue(ElapsedTime);
+	PistolSlideDisplacement = CurveValue * PistolSlideDistance;
 }

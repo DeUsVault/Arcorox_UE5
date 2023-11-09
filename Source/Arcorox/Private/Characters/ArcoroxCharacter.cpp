@@ -280,6 +280,7 @@ void AArcoroxCharacter::FireWeapon()
 		StartCrosshairShootTimer();
 		EquippedWeapon->DecrementAmmo();
 		StartAutoFireTimer();
+		if (EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Pistol) EquippedWeapon->StartPistolSlideTimer();
 	}
 }
 

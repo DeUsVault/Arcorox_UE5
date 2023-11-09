@@ -107,6 +107,9 @@ public:
 	/* Is the gun magazine full */
 	bool FullMagazine();
 
+	/* Starts the timer for displacing the pistol slide */
+	void StartPistolSlideTimer();
+
 	FORCEINLINE int32 GetAmmo() const { return Ammo; }
 	FORCEINLINE int32 GetMagazineCapacity() const { return MagazineCapacity; }
 	FORCEINLINE EWeaponType GetWeaponType() const { return WeaponType; }
@@ -128,6 +131,10 @@ protected:
 	void SetDataTableProperties(FWeaponTypeTable* WeaponTypeRow);
 
 	void StopFalling();
+
+	void FinishPistolSlideDisplacement();
+
+	void UpdatePistolSlideDisplacement();
 
 private:
 	/* Ammo count for the Weapon */
@@ -202,6 +209,21 @@ private:
 	/* Curve for pistol slide displacement */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
 	UCurveFloat* PistolSlideCurve;
+
+	/* Is the pistol slide being moved */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
+	bool bDisplacingPistolSlide;
+
+	/* Distance that the pistol slide should be displaced */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
+	float PistolSlideDistance;
+
+	/* Time for pistol slide displacment to occur */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
+	float PistolSlideTime;
+
+	/* Timer for displacing pistol slide */
+	FTimerHandle PistolSlideTimer;
 
 	int32 PreviousMaterialIndex;
 
