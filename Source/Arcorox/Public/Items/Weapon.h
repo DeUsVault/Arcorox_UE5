@@ -84,6 +84,9 @@ struct FWeaponTypeTable : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName BoneToHide;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bAutomaticWeapon;
 };
 
 UCLASS()
@@ -119,6 +122,7 @@ public:
 	FORCEINLINE float GetFireRate() const { return FireRate; }
 	FORCEINLINE UParticleSystem* GetMuzzleFlash() const { return MuzzleFlash; }
 	FORCEINLINE USoundBase* GetFireSound() const { return FireSound; }
+	FORCEINLINE bool IsWeaponAutomatic() const { return bAutomaticWeapon; }
 	FORCEINLINE void SetMovingClip(bool Moving) { bMovingClip = Moving; }
 
 protected:
@@ -164,6 +168,10 @@ private:
 	/* Is character moving the clip(magazine) (reloading) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
 	bool bMovingClip;
+
+	/* Is the weapon automatic or semi-automatic/burst fire */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
+	bool bAutomaticWeapon;
 
 	/* Weapon type Data Table */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))

@@ -18,7 +18,8 @@ AWeapon::AWeapon():
 	bDisplacingPistolSlide(false),
 	PistolSlideDistance(4.f),
 	TargetPistolRecoilRotation(20.f),
-	PistolRecoilRotation(0.f)
+	PistolRecoilRotation(0.f),
+	bAutomaticWeapon(true)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -95,6 +96,7 @@ void AWeapon::SetDataTableProperties(FWeaponTypeTable* WeaponTypeRow)
 		MuzzleFlash = WeaponTypeRow->MuzzleFlash;
 		FireSound = WeaponTypeRow->FireSound;
 		BoneToHide = WeaponTypeRow->BoneToHide;
+		bAutomaticWeapon = WeaponTypeRow->bAutomaticWeapon;
 		SetPickupSound(WeaponTypeRow->PickupSound);
 		SetEquipSound(WeaponTypeRow->EquipSound);
 		GetItemMesh()->SetSkeletalMesh(WeaponTypeRow->WeaponMesh);

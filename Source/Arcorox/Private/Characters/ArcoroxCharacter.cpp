@@ -309,7 +309,7 @@ void AArcoroxCharacter::FireButtonReleased()
 void AArcoroxCharacter::AimButtonPressed()
 {
 	bAimButtonPressed = true;
-	if (CombatState != ECombatState::ECS_Reloading) Aim();
+	if (CombatState != ECombatState::ECS_Reloading && CombatState != ECombatState::ECS_Equipping) Aim();
 }
 
 void AArcoroxCharacter::AimButtonReleased()
@@ -438,6 +438,7 @@ void AArcoroxCharacter::ExchangeInventoryItems(int32 CurrentSlotIndex, int32 Tar
 {
 	const bool CannotExchangeItems = ((CombatState != ECombatState::ECS_Unoccupied && CombatState != ECombatState::ECS_Equipping) || EquippedWeapon == nullptr || CurrentSlotIndex == TargetSlotIndex || TargetSlotIndex >= Inventory.Num());
 	if (CannotExchangeItems) return;
+	if (bAiming) StopAiming();
 	AWeapon* CurrentEquippedWeapon = EquippedWeapon;
 	AWeapon* NewEquippedWeapon = Cast<AWeapon>(Inventory[TargetSlotIndex]);
 	EquipWeapon(NewEquippedWeapon);
@@ -546,6 +547,7 @@ void AArcoroxCharacter::StartCrosshairShootTimer()
 
 void AArcoroxCharacter::StartAutoFireTimer()
 {
+	if (EquippedWeapon == nullptr) return;
 	CombatState = ECombatState::ECS_Firing;
 	GetWorldTimerManager().SetTimer(AutoFireTimer, this, &AArcoroxCharacter::AutoFireReset, EquippedWeapon->GetFireRate());
 }
@@ -712,9 +714,10 @@ int32 AArcoroxCharacter::GetInterpLocationIndex()
 void AArcoroxCharacter::AutoFireReset()
 {
 	CombatState = ECombatState::ECS_Unoccupied;
+	if (EquippedWeapon == nullptr) return;
 	if (WeaponHasAmmo())
 	{
-		if (bFireButtonPressed) FireWeapon();
+		if (bFireButtonPressed && EquippedWeapon->IsWeaponAutomatic()) FireWeapon();
 	}
 	else
 	{
@@ -750,6 +753,7 @@ void AArcoroxCharacter::FinishReloading()
 void AArcoroxCharacter::FinishEquipping()
 {
 	CombatState = ECombatState::ECS_Unoccupied;
+	if (bAimButtonPressed) Aim();
 }
 
 void AArcoroxCharacter::GrabClip()
