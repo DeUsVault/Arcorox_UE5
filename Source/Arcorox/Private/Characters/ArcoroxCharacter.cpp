@@ -16,6 +16,8 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "Animation/AnimMontage.h"
 #include "Kismet/GameplayStatics.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
+#include "Arcorox/Arcorox.h"
 
 AArcoroxCharacter::AArcoroxCharacter() :
 	//Is Aiming
@@ -771,6 +773,18 @@ void AArcoroxCharacter::ReleaseClip()
 {
 	if (EquippedWeapon == nullptr) return;
 	EquippedWeapon->SetMovingClip(false);
+}
+
+EPhysicalSurface AArcoroxCharacter::GetSurfaceType()
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr) return EPhysicalSurface::SurfaceType_Default;
+	FHitResult HitResult;
+	FCollisionQueryParams QueryParams;
+	QueryParams.bReturnPhysicalMaterial = true;
+	World->LineTraceSingleByChannel(HitResult, GetActorLocation(), GetActorLocation() + FVector(0.f, 0.f, -300.f), ECollisionChannel::ECC_Visibility, QueryParams);
+	if (HitResult.PhysMaterial == nullptr) return EPhysicalSurface::SurfaceType_Default;
+	return UPhysicalMaterial::DetermineSurfaceType(HitResult.PhysMaterial.Get());
 }
 
 void AArcoroxCharacter::PlayFireSound()

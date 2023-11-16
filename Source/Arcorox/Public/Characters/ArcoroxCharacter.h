@@ -191,6 +191,10 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void ReleaseClip();
 
+	/* Returns physical surface type of the ground upon every character footstep */
+	UFUNCTION(BlueprintCallable)
+	EPhysicalSurface GetSurfaceType();
+
 	/* Enhanced Input */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputMappingContext* ArcoroxContext;
