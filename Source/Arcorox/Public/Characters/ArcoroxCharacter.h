@@ -120,7 +120,7 @@ protected:
 	void FireWeapon();
 	void ReloadWeapon();
 
-	bool GetBeamEndLocation(const FVector& BarrelSocketLocation, FVector& OutBeamLocation);
+	bool GetBeamEndLocation(const FVector& BarrelSocketLocation, FHitResult& OutHit);
 	void SendBullet();
 
 	void ExchangeInventoryItems(int32 CurrentSlotIndex, int32 TargetSlotIndex);

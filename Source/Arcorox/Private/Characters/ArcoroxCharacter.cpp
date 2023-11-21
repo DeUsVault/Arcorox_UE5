@@ -18,6 +18,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Arcorox/Arcorox.h"
+#include "Interfaces/HitInterface.h"
 
 AArcoroxCharacter::AArcoroxCharacter() :
 	//Is Aiming
@@ -398,8 +399,9 @@ void AArcoroxCharacter::FiveKeyPressed()
 	ExchangeInventoryItems(EquippedWeapon->GetInventorySlotIndex(), 5);
 }
 
-bool AArcoroxCharacter::GetBeamEndLocation(const FVector& BarrelSocketLocation, FVector& OutBeamLocation)
+bool AArcoroxCharacter::GetBeamEndLocation(const FVector& BarrelSocketLocation, FHitResult& OutHit)
 {
+	FVector OutBeamLocation;
 	//Check for crosshair trace hit
 	FHitResult CrosshairHitResult;
 	if (CrosshairLineTrace(CrosshairHitResult, OutBeamLocation))
@@ -407,17 +409,16 @@ bool AArcoroxCharacter::GetBeamEndLocation(const FVector& BarrelSocketLocation, 
 		OutBeamLocation = CrosshairHitResult.Location;
 	}
 	//Perform line trace from weapon barrel
-	FHitResult WeaponTraceHit;
 	const FVector WeaponTraceStart{ BarrelSocketLocation };
 	const FVector StartToEnd{ OutBeamLocation - BarrelSocketLocation };
 	const FVector WeaponTraceEnd{ BarrelSocketLocation + StartToEnd * 1.25f };
-	GetWorld()->LineTraceSingleByChannel(WeaponTraceHit, WeaponTraceStart, WeaponTraceEnd, ECollisionChannel::ECC_Visibility);
-	if (WeaponTraceHit.bBlockingHit) //Object between weapon barrel and beam end point?
+	GetWorld()->LineTraceSingleByChannel(OutHit, WeaponTraceStart, WeaponTraceEnd, ECollisionChannel::ECC_Visibility);
+	if (!OutHit.bBlockingHit) //No object between weapon barrel and beam end point?
 	{
-		OutBeamLocation = WeaponTraceHit.Location;
-		return true;
+		OutHit.Location = OutBeamLocation;
+		return false;
 	}
-	return false;
+	return true;
 }
 
 void AArcoroxCharacter::SendBullet()
@@ -426,12 +427,22 @@ void AArcoroxCharacter::SendBullet()
 	if (BarrelSocket)
 	{
 		const FTransform SocketTransform = BarrelSocket->GetSocketTransform(EquippedWeapon->GetItemMesh());
-		FVector BeamEnd;
+		FHitResult BeamHitResult;
 		SpawnMuzzleFlash(SocketTransform);
-		if (GetBeamEndLocation(SocketTransform.GetLocation(), BeamEnd))
+		if (GetBeamEndLocation(SocketTransform.GetLocation(), BeamHitResult))
 		{
-			SpawnImpactParticles(BeamEnd);
-			SpawnBeamParticles(SocketTransform, BeamEnd);
+			//Does the hit Actor implement the HitInterface
+			if (BeamHitResult.GetActor())
+			{
+				IHitInterface* HitInterface = Cast<IHitInterface>(BeamHitResult.GetActor());
+				if (HitInterface)
+				{
+					HitInterface->Hit_Implementation(BeamHitResult);
+					return;
+				}
+			}
+			SpawnImpactParticles(BeamHitResult.Location);
+			SpawnBeamParticles(SocketTransform, BeamHitResult.Location);
 		}
 	}
 }
