@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "Items/AmmoType.h"
+#include "Interfaces/HitInterface.h"
 #include "ArcoroxCharacter.generated.h"
 
 //Forward declarations to avoid including unnecessary header files
@@ -48,7 +49,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEquipItemDelegate, int32, CurrentS
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHighlightIconDelegate, int32, InventorySlotIndex, bool, bStartAnimation);
 
 UCLASS()
-class ARCOROX_API AArcoroxCharacter : public ACharacter
+class ARCOROX_API AArcoroxCharacter : public ACharacter, public IHitInterface
 {
 	GENERATED_BODY()
 
@@ -57,6 +58,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void Jump() override;
+	virtual void Hit_Implementation(FHitResult HitResult) override;
 
 	void IncrementOverlappedItemCount(int8 Amount);
 

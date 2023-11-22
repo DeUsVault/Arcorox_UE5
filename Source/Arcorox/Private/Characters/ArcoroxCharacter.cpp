@@ -18,7 +18,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Arcorox/Arcorox.h"
-#include "Interfaces/HitInterface.h"
 
 AArcoroxCharacter::AArcoroxCharacter() :
 	//Is Aiming
@@ -188,6 +187,11 @@ void AArcoroxCharacter::Jump()
 		return;
 	}
 	Super::Jump();
+}
+
+void AArcoroxCharacter::Hit_Implementation(FHitResult HitResult)
+{
+
 }
 
 void AArcoroxCharacter::IncrementOverlappedItemCount(int8 Amount)
