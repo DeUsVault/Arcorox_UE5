@@ -18,6 +18,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Arcorox/Arcorox.h"
+#include "Enemy/Enemy.h"
 
 AArcoroxCharacter::AArcoroxCharacter() :
 	//Is Aiming
@@ -435,18 +436,21 @@ void AArcoroxCharacter::SendBullet()
 		SpawnMuzzleFlash(SocketTransform);
 		if (GetBeamEndLocation(SocketTransform.GetLocation(), BeamHitResult))
 		{
-			//Does the hit Actor implement the HitInterface
 			if (BeamHitResult.GetActor())
 			{
+				//Does the hit Actor implement the HitInterface
 				IHitInterface* HitInterface = Cast<IHitInterface>(BeamHitResult.GetActor());
-				if (HitInterface)
-				{
-					HitInterface->Hit_Implementation(BeamHitResult);
-					return;
-				}
+				if (HitInterface) HitInterface->Hit_Implementation(BeamHitResult);
+				
+				//Is the hit Actor an Enemy
+				AEnemy* Enemy = Cast<AEnemy>(BeamHitResult.GetActor());
+				if (Enemy) UGameplayStatics::ApplyDamage(BeamHitResult.GetActor(), EquippedWeapon->GetDamage(), GetController(), this, UDamageType::StaticClass());
 			}
-			SpawnImpactParticles(BeamHitResult.Location);
-			SpawnBeamParticles(SocketTransform, BeamHitResult.Location);
+			else
+			{
+				SpawnImpactParticles(BeamHitResult.Location);
+				SpawnBeamParticles(SocketTransform, BeamHitResult.Location);
+			}
 		}
 	}
 }
