@@ -87,6 +87,12 @@ struct FWeaponTypeTable : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bAutomaticWeapon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Damage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float HeadshotMultiplier;
 };
 
 UCLASS()
@@ -123,6 +129,8 @@ public:
 	FORCEINLINE UParticleSystem* GetMuzzleFlash() const { return MuzzleFlash; }
 	FORCEINLINE USoundBase* GetFireSound() const { return FireSound; }
 	FORCEINLINE bool IsWeaponAutomatic() const { return bAutomaticWeapon; }
+	FORCEINLINE float GetDamage() const { return Damage; }
+	FORCEINLINE float GetHeadshotMultiplier() const { return HeadshotMultiplier; }
 	FORCEINLINE void SetMovingClip(bool Moving) { bMovingClip = Moving; }
 
 protected:
@@ -156,6 +164,14 @@ private:
 	/* Type of ammo corresponding to weapon type */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
 	EAmmoType AmmoType;
+
+	/* Damage value when actor is hit by bullet from this weapon */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
+	float Damage;
+
+	/* Value to scale damage by when weapon shoots an actor in the head */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
+	float HeadshotMultiplier;
 
 	/* Name of animation montage section to play for the character based on the specific weapon type */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))

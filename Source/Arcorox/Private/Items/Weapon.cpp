@@ -97,6 +97,8 @@ void AWeapon::SetDataTableProperties(FWeaponTypeTable* WeaponTypeRow)
 		FireSound = WeaponTypeRow->FireSound;
 		BoneToHide = WeaponTypeRow->BoneToHide;
 		bAutomaticWeapon = WeaponTypeRow->bAutomaticWeapon;
+		Damage = WeaponTypeRow->Damage;
+		HeadshotMultiplier = WeaponTypeRow->HeadshotMultiplier;
 		SetPickupSound(WeaponTypeRow->PickupSound);
 		SetEquipSound(WeaponTypeRow->EquipSound);
 		GetItemMesh()->SetSkeletalMesh(WeaponTypeRow->WeaponMesh);

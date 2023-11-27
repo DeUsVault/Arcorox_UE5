@@ -5,7 +5,9 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
 
-AEnemy::AEnemy()
+AEnemy::AEnemy() :
+	Health(100.f),
+	MaxHealth(100.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
