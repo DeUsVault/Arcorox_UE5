@@ -22,8 +22,14 @@ public:
 	virtual void Hit_Implementation(FHitResult HitResult) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
+	FORCEINLINE FString GetHeadBone() const { return HeadBone; }
+
 protected:
 	virtual void BeginPlay() override;
+
+private:	
+	void PlayImpactSound();
+	void SpawnImpactParticles(FHitResult& HitResult);
 
 	/* Current health of enemy */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
@@ -41,8 +47,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	USoundBase* ImpactSound;
 
-private:	
-	void PlayImpactSound();
-	void SpawnImpactParticles(FHitResult& HitResult);
+	/* Name of head bone on skeleton for headshot damage functionality */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	FString HeadBone;
 
 };

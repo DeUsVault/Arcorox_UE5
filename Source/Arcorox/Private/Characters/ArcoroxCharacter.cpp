@@ -441,15 +441,19 @@ void AArcoroxCharacter::SendBullet()
 				//Does the hit Actor implement the HitInterface
 				IHitInterface* HitInterface = Cast<IHitInterface>(BeamHitResult.GetActor());
 				if (HitInterface) HitInterface->Hit_Implementation(BeamHitResult);
-				
+				else
+				{
+					SpawnImpactParticles(BeamHitResult.Location);
+					SpawnBeamParticles(SocketTransform, BeamHitResult.Location);
+				}
 				//Is the hit Actor an Enemy
 				AEnemy* Enemy = Cast<AEnemy>(BeamHitResult.GetActor());
-				if (Enemy) UGameplayStatics::ApplyDamage(BeamHitResult.GetActor(), EquippedWeapon->GetDamage(), GetController(), this, UDamageType::StaticClass());
-			}
-			else
-			{
-				SpawnImpactParticles(BeamHitResult.Location);
-				SpawnBeamParticles(SocketTransform, BeamHitResult.Location);
+				if (Enemy)
+				{
+					float Damage = EquippedWeapon->GetDamage();
+					if (BeamHitResult.BoneName.ToString().Equals(Enemy->GetHeadBone())) Damage *= EquippedWeapon->GetHeadshotMultiplier();
+					UGameplayStatics::ApplyDamage(BeamHitResult.GetActor(), Damage, GetController(), this, UDamageType::StaticClass());
+				}
 			}
 		}
 	}
