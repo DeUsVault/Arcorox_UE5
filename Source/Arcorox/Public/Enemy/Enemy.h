@@ -27,6 +27,14 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	UFUNCTION(BlueprintNativeEvent)
+	void ShowHealthBar();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void HideHealthBar();
+
+	void ShowHealthBar_Implementation();
+
 private:	
 	void PlayImpactSound();
 	void SpawnImpactParticles(FHitResult& HitResult);
@@ -50,5 +58,12 @@ private:
 	/* Name of head bone on skeleton for headshot damage functionality */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	FString HeadBone;
+
+	/* How long Health Bar should be displayed when enemy is hit */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	float HealthBarDisplayTime;
+
+	/* FTimerHandle for displaying the Health Bar */
+	FTimerHandle HealthBarDisplayTimer;
 
 };

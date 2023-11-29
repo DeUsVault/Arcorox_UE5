@@ -7,7 +7,8 @@
 
 AEnemy::AEnemy() :
 	Health(100.f),
-	MaxHealth(100.f)
+	MaxHealth(100.f),
+	HealthBarDisplayTime(5.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -32,6 +33,12 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+void AEnemy::ShowHealthBar_Implementation()
+{
+	GetWorldTimerManager().ClearTimer(HealthBarDisplayTimer);
+	GetWorldTimerManager().SetTimer(HealthBarDisplayTimer, this, &AEnemy::HideHealthBar, HealthBarDisplayTime);
+}
+
 void AEnemy::PlayImpactSound()
 {
 	if (ImpactSound) UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
@@ -46,6 +53,7 @@ void AEnemy::Hit_Implementation(FHitResult HitResult)
 {
 	PlayImpactSound();
 	SpawnImpactParticles(HitResult);
+	ShowHealthBar();
 }
 
 float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
