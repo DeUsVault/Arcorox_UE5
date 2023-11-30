@@ -8,6 +8,7 @@
 #include "Enemy.generated.h"
 
 class UParticleSystem;
+class UAnimMontage;
 
 UCLASS()
 class ARCOROX_API AEnemy : public ACharacter, public IHitInterface
@@ -35,9 +36,14 @@ protected:
 
 	void ShowHealthBar_Implementation();
 
+	/* Called when Health reaches 0 */
+	void Die();
+
 private:	
 	void PlayImpactSound();
 	void SpawnImpactParticles(FHitResult& HitResult);
+	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName, float PlayRate);
+	void PlayHitMontage(FHitResult& HitResult, float PlayRate = 1.f);
 
 	/* Current health of enemy */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
@@ -58,6 +64,9 @@ private:
 	/* Name of head bone on skeleton for headshot damage functionality */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	FString HeadBone;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* HitMontage;
 
 	/* How long Health Bar should be displayed when enemy is hit */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
