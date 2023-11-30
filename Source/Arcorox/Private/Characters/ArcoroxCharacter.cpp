@@ -451,8 +451,14 @@ void AArcoroxCharacter::SendBullet()
 				if (Enemy)
 				{
 					float Damage = EquippedWeapon->GetDamage();
-					if (BeamHitResult.BoneName.ToString().Equals(Enemy->GetHeadBone())) Damage *= EquippedWeapon->GetHeadshotMultiplier();
+					bool bHeadshot = false;
+					if (BeamHitResult.BoneName.ToString().Equals(Enemy->GetHeadBone()))
+					{
+						bHeadshot = true;
+						Damage *= EquippedWeapon->GetHeadshotMultiplier();
+					}
 					UGameplayStatics::ApplyDamage(BeamHitResult.GetActor(), Damage, GetController(), this, UDamageType::StaticClass());
+					Enemy->ShowHitDamage(Damage, BeamHitResult.Location, bHeadshot);
 				}
 			}
 		}

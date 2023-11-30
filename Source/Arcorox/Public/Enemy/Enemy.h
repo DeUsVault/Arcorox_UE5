@@ -23,6 +23,9 @@ public:
 	virtual void Hit_Implementation(FHitResult HitResult) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShowHitDamage(int32 Damage, FVector HitLocation, bool bHeadshot);
+
 	FORCEINLINE FString GetHeadBone() const { return HeadBone; }
 
 protected:
@@ -34,10 +37,20 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void HideHealthBar();
 
+	UFUNCTION(BlueprintCallable)
+	void StoreHitDamage(UUserWidget* Widget, FVector Location);
+
+	UFUNCTION()
+	void DestroyHitDamage(UUserWidget* HitDamage);
+
 	void ShowHealthBar_Implementation();
 
 	/* Called when Health reaches 0 */
 	void Die();
+
+	void ResetHitReactTimer();
+
+	void UpdateHitDamages();
 
 private:	
 	void PlayImpactSound();
@@ -72,7 +85,28 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	float HealthBarDisplayTime;
 
+	/* Minimum hit react delay time */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	float MinHitReactTime;
+
+	/* Maximum hit react delay time */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	float MaxHitReactTime;
+
+	/* Map of Hit Damage widgets and their locations */
+	UPROPERTY(VisibleAnywhere, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	TMap<UUserWidget*, FVector> HitDamages;
+
+	/* How long Hit Damage widgets will persist on screen */
+	UPROPERTY(EditAnywhere, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	float HitDamageDestroyTime;
+
 	/* FTimerHandle for displaying the Health Bar */
 	FTimerHandle HealthBarDisplayTimer;
 
+	/* FTimerHandle for hit react delay */
+	FTimerHandle HitReactTimer;
+
+	/* Can the Hit React montage be played */
+	bool bCanHitReact;
 };
