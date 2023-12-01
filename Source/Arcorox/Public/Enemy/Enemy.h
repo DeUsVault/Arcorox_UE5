@@ -9,6 +9,7 @@
 
 class UParticleSystem;
 class UAnimMontage;
+class AEnemyController;
 class UBehaviorTree;
 
 UCLASS()
@@ -106,6 +107,13 @@ private:
 	/* Behavior Tree for Enemy AI Character */
 	UPROPERTY(EditAnywhere, Category = "Behavior Tree", meta = (AllowPrivateAccess = "true"))
 	UBehaviorTree* BehaviorTree;
+
+	/* Location for Enemy to patrol to */
+	UPROPERTY(EditAnywhere, Category = "Behavior Tree", meta = (AllowPrivateAccess = "true", MakeEditWidget = "true"))
+	FVector PatrolPoint;
+
+	/* Pointer to Enemy AI Controller instance */
+	AEnemyController* EnemyController;
 
 	/* FTimerHandle for displaying the Health Bar */
 	FTimerHandle HealthBarDisplayTimer;

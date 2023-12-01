@@ -2,8 +2,11 @@
 
 
 #include "Enemy/Enemy.h"
+#include "Enemy/EnemyController.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Animation/AnimMontage.h"
 #include "Blueprint/UserWidget.h"
 
@@ -25,6 +28,14 @@ void AEnemy::BeginPlay()
 	Super::BeginPlay();
 	
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+
+	EnemyController = Cast<AEnemyController>(GetController());
+	const FVector WorldPatrolPoint = UKismetMathLibrary::TransformLocation(GetActorTransform(), PatrolPoint);
+	if (EnemyController)
+	{
+		EnemyController->GetBlackboardComponent()->SetValueAsVector(TEXT("PatrolPoint"), WorldPatrolPoint);
+		EnemyController->RunBehaviorTree(BehaviorTree);
+	}
 }
 
 void AEnemy::Tick(float DeltaTime)
