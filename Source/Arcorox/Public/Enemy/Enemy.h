@@ -9,6 +9,7 @@
 
 class UParticleSystem;
 class UAnimMontage;
+class UBehaviorTree;
 
 UCLASS()
 class ARCOROX_API AEnemy : public ACharacter, public IHitInterface
@@ -27,6 +28,7 @@ public:
 	void ShowHitDamage(int32 Damage, FVector HitLocation, bool bHeadshot);
 
 	FORCEINLINE FString GetHeadBone() const { return HeadBone; }
+	FORCEINLINE UBehaviorTree* GetBehaviorTree() const { return BehaviorTree; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -100,6 +102,10 @@ private:
 	/* How long Hit Damage widgets will persist on screen */
 	UPROPERTY(EditAnywhere, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	float HitDamageDestroyTime;
+
+	/* Behavior Tree for Enemy AI Character */
+	UPROPERTY(EditAnywhere, Category = "Behavior Tree", meta = (AllowPrivateAccess = "true"))
+	UBehaviorTree* BehaviorTree;
 
 	/* FTimerHandle for displaying the Health Bar */
 	FTimerHandle HealthBarDisplayTimer;
