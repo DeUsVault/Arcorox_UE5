@@ -9,6 +9,8 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Animation/AnimMontage.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/SphereComponent.h"
+#include "Characters/ArcoroxCharacter.h"
 
 AEnemy::AEnemy() :
 	Health(100.f),
@@ -21,19 +23,25 @@ AEnemy::AEnemy() :
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	AggroSphere = CreateDefaultSubobject<USphereComponent>(TEXT("AggroSphere"));
+	AggroSphere->SetupAttachment(GetRootComponent());
 }
 
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (AggroSphere) AggroSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::AggroSphereOverlap);
+
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 
 	EnemyController = Cast<AEnemyController>(GetController());
 	const FVector WorldPatrolPoint = UKismetMathLibrary::TransformLocation(GetActorTransform(), PatrolPoint);
-	if (EnemyController)
+	const FVector WorldPatrolPoint2 = UKismetMathLibrary::TransformLocation(GetActorTransform(), PatrolPoint2);
+	if (EnemyController && EnemyController->GetBlackboardComponent() && BehaviorTree)
 	{
 		EnemyController->GetBlackboardComponent()->SetValueAsVector(TEXT("PatrolPoint"), WorldPatrolPoint);
+		EnemyController->GetBlackboardComponent()->SetValueAsVector(TEXT("PatrolPoint2"), WorldPatrolPoint2);
 		EnemyController->RunBehaviorTree(BehaviorTree);
 	}
 }
@@ -64,6 +72,16 @@ void AEnemy::DestroyHitDamage(UUserWidget* HitDamage)
 {
 	HitDamages.Remove(HitDamage);
 	HitDamage->RemoveFromParent();
+}
+
+void AEnemy::AggroSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor == nullptr) return;
+	AArcoroxCharacter* ArcoroxCharacter = Cast<AArcoroxCharacter>(OtherActor);
+	if (ArcoroxCharacter && EnemyController && EnemyController->GetBlackboardComponent())
+	{
+		EnemyController->GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), ArcoroxCharacter);
+	}
 }
 
 void AEnemy::ShowHealthBar_Implementation()
