@@ -44,6 +44,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void StoreHitDamage(UUserWidget* Widget, FVector Location);
 
+	UFUNCTION(BlueprintCallable)
+	void SetStunned(bool Stunned);
+
 	UFUNCTION()
 	void DestroyHitDamage(UUserWidget* HitDamage);
 
@@ -112,6 +115,14 @@ private:
 	/* Overlap sphere for Enemy to become hostile toward player */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	USphereComponent* AggroSphere;
+
+	/* Is Enemy playing hit react animation */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	bool bStunned;
+
+	/* Chance of Enemy being stunned when hit (0-1) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	float StunChance;
 
 	/* Behavior Tree for Enemy AI Character */
 	UPROPERTY(EditAnywhere, Category = "Behavior Tree", meta = (AllowPrivateAccess = "true"))

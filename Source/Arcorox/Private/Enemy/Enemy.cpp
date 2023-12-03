@@ -19,7 +19,9 @@ AEnemy::AEnemy() :
 	bCanHitReact(true),
 	MinHitReactTime(0.5f),
 	MaxHitReactTime(0.8f),
-	HitDamageDestroyTime(1.5f)
+	HitDamageDestroyTime(1.5f),
+	bStunned(false),
+	StunChance(0.5f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -66,6 +68,15 @@ void AEnemy::StoreHitDamage(UUserWidget* Widget, FVector Location)
 	FTimerDelegate HitDamageDelegate;
 	HitDamageDelegate.BindUFunction(this, FName("DestroyHitDamage"), Widget);
 	GetWorldTimerManager().SetTimer(HitDamageTimer, HitDamageDelegate, HitDamageDestroyTime, false);
+}
+
+void AEnemy::SetStunned(bool Stunned)
+{
+	bStunned = Stunned;
+	if (EnemyController && EnemyController->GetBlackboardComponent())
+	{
+		EnemyController->GetBlackboardComponent()->SetValueAsBool(TEXT("Stunned"), bStunned);
+	}
 }
 
 void AEnemy::DestroyHitDamage(UUserWidget* HitDamage)
@@ -157,7 +168,12 @@ void AEnemy::Hit_Implementation(FHitResult HitResult)
 	PlayImpactSound();
 	SpawnImpactParticles(HitResult);
 	ShowHealthBar();
-	PlayHitMontage(HitResult);
+	const float Stunned = FMath::FRandRange(0.f, 1.f);
+	if (Stunned <= StunChance)
+	{
+		PlayHitMontage(HitResult);
+		SetStunned(true);
+	}
 }
 
 float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
