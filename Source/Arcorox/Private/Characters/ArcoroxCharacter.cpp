@@ -70,7 +70,10 @@ AArcoroxCharacter::AArcoroxCharacter() :
 	PickupSoundTime(0.2f),
 	EquipSoundTime(0.2f),
 	//Highlight Icon animation property
-	HighlightedInventorySlot(-1)
+	HighlightedInventorySlot(-1),
+	//Health
+	Health(100.f),
+	MaxHealth(100.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -193,6 +196,13 @@ void AArcoroxCharacter::Jump()
 void AArcoroxCharacter::Hit_Implementation(FHitResult HitResult)
 {
 
+}
+
+float AArcoroxCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	return 0.0f;
 }
 
 void AArcoroxCharacter::IncrementOverlappedItemCount(int8 Amount)

@@ -11,6 +11,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/SphereComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/BoxComponent.h"
 #include "Characters/ArcoroxCharacter.h"
 
 AEnemy::AEnemy() :
@@ -23,7 +24,8 @@ AEnemy::AEnemy() :
 	HitDamageDestroyTime(1.5f),
 	bStunned(false),
 	StunChance(0.5f),
-	bInAttackRange(false)
+	bInAttackRange(false),
+	WeaponDamage(20.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -32,6 +34,11 @@ AEnemy::AEnemy() :
 
 	AttackRangeSphere = CreateDefaultSubobject<USphereComponent>(TEXT("AttackRangeSphere"));
 	AttackRangeSphere->SetupAttachment(GetRootComponent());
+
+	LeftWeaponBox = CreateDefaultSubobject<UBoxComponent>(TEXT("LeftWeaponBox"));
+	LeftWeaponBox->SetupAttachment(GetMesh(), FName("LeftWeapon"));
+	RightWeaponBox = CreateDefaultSubobject<UBoxComponent>(TEXT("RightWeaponBox"));
+	RightWeaponBox->SetupAttachment(GetMesh(), FName("RightWeapon"));
 }
 
 void AEnemy::BeginPlay()
@@ -43,6 +50,22 @@ void AEnemy::BeginPlay()
 	{
 		AttackRangeSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::AttackRangeSphereOverlap);
 		AttackRangeSphere->OnComponentEndOverlap.AddDynamic(this, &AEnemy::AttackRangeSphereEndOverlap);
+	}
+	if (LeftWeaponBox)
+	{
+		LeftWeaponBox->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::LeftWeaponOverlap);
+		LeftWeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		LeftWeaponBox->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+		LeftWeaponBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		LeftWeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+	}
+	if (RightWeaponBox)
+	{
+		RightWeaponBox->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::RightWeaponOverlap);
+		RightWeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		RightWeaponBox->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+		RightWeaponBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		RightWeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 	}
 
 	if (GetMesh())
@@ -139,6 +162,26 @@ void AEnemy::AttackRangeSphereEndOverlap(UPrimitiveComponent* OverlappedComponen
 	}
 }
 
+void AEnemy::LeftWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor == nullptr) return;
+	AArcoroxCharacter* ArcoroxCharacter = Cast<AArcoroxCharacter>(OtherActor);
+	if (ArcoroxCharacter)
+	{
+
+	}
+}
+
+void AEnemy::RightWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor == nullptr) return;
+	AArcoroxCharacter* ArcoroxCharacter = Cast<AArcoroxCharacter>(OtherActor);
+	if (ArcoroxCharacter)
+	{
+
+	}
+}
+
 void AEnemy::ShowHealthBar_Implementation()
 {
 	GetWorldTimerManager().ClearTimer(HealthBarDisplayTimer);
@@ -200,6 +243,26 @@ void AEnemy::PlayHitMontage(FHitResult& HitResult, float PlayRate)
 void AEnemy::PlayAttackMontage(float PlayRate)
 {
 	PlayRandomMontageSection(AttackMontage, AttackMontageSections, PlayRate);
+}
+
+void AEnemy::ActivateLeftWeapon()
+{
+	if (LeftWeaponBox) LeftWeaponBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+}
+
+void AEnemy::DeactivateLeftWeapon()
+{
+	if (LeftWeaponBox) LeftWeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AEnemy::ActivateRightWeapon()
+{
+	if (RightWeaponBox) RightWeaponBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+}
+
+void AEnemy::DeactivateRightWeapon()
+{
+	if (RightWeaponBox) RightWeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AEnemy::PlayMontageSection(UAnimMontage* Montage, const FName& SectionName, float PlayRate)

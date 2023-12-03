@@ -10,6 +10,7 @@
 class UParticleSystem;
 class UAnimMontage;
 class USphereComponent;
+class UBoxComponent;
 class AEnemyController;
 class UBehaviorTree;
 
@@ -48,10 +49,19 @@ protected:
 	void SetStunned(bool Stunned);
 
 	UFUNCTION(BlueprintCallable)
-	void SetInAttackRange(bool InRange);
+	void PlayAttackMontage(float PlayRate = 1.f);
 
 	UFUNCTION(BlueprintCallable)
-	void PlayAttackMontage(float PlayRate = 1.f);
+	void ActivateLeftWeapon();
+
+	UFUNCTION(BlueprintCallable)
+	void DeactivateLeftWeapon();
+
+	UFUNCTION(BlueprintCallable)
+	void ActivateRightWeapon();
+
+	UFUNCTION(BlueprintCallable)
+	void DeactivateRightWeapon();
 
 	UFUNCTION()
 	void DestroyHitDamage(UUserWidget* HitDamage);
@@ -68,7 +78,17 @@ protected:
 	UFUNCTION()
 	void AttackRangeSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	/* Called when actor overlaps with LeftWeaponBox */
+	UFUNCTION()
+	void LeftWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	/* Called when actor overlaps with RightWeaponBox */
+	UFUNCTION()
+	void RightWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 	void ShowHealthBar_Implementation();
+
+	void SetInAttackRange(bool InRange);
 
 	/* Called when Health reaches 0 */
 	void Die();
@@ -155,6 +175,18 @@ private:
 	/* Is player in attack range of Enemy */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	bool bInAttackRange;
+
+	/* Collision volume for left weapon */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	UBoxComponent* LeftWeaponBox;
+
+	/* Collision volume for right weapon */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	UBoxComponent* RightWeaponBox;
+
+	/* How much damage the Enemy inflicts per weapon hit */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	float WeaponDamage;
 
 	/* Behavior Tree for Enemy AI Character */
 	UPROPERTY(EditAnywhere, Category = "Behavior Tree", meta = (AllowPrivateAccess = "true"))

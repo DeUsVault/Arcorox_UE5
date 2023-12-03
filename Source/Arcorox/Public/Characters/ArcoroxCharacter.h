@@ -59,6 +59,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void Jump() override;
 	virtual void Hit_Implementation(FHitResult HitResult) override;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	void IncrementOverlappedItemCount(int8 Amount);
 
@@ -444,6 +445,14 @@ private:
 	/* Inventory slot index that is currently playing the Highlight Icon animation */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
 	int32 HighlightedInventorySlot;
+
+	/* Health of character */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	float Health;
+
+	/* Maximum health of character */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	float MaxHealth;
 
 	/* Capacity of inventory */
 	const int32 InventoryCapacity = 6;
