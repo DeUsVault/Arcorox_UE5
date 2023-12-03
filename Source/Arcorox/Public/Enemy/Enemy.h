@@ -47,12 +47,26 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void SetStunned(bool Stunned);
 
+	UFUNCTION(BlueprintCallable)
+	void SetInAttackRange(bool InRange);
+
+	UFUNCTION(BlueprintCallable)
+	void PlayAttackMontage(float PlayRate = 1.f);
+
 	UFUNCTION()
 	void DestroyHitDamage(UUserWidget* HitDamage);
 
-	/* Called when an actor or component overlaps with AggroSphere */
+	/* Called when an actor overlaps with AggroSphere */
 	UFUNCTION()
 	void AggroSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	/* Called when an actor overlaps with AttackRangeSphere */
+	UFUNCTION()
+	void AttackRangeSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	/* Called when actor stops overlapping with AttackRangeSphere */
+	UFUNCTION()
+	void AttackRangeSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	void ShowHealthBar_Implementation();
 
@@ -67,6 +81,7 @@ private:
 	void PlayImpactSound();
 	void SpawnImpactParticles(FHitResult& HitResult);
 	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName, float PlayRate);
+	void PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames, float PlayRate);
 	void PlayHitMontage(FHitResult& HitResult, float PlayRate = 1.f);
 
 	/* Current health of enemy */
@@ -89,8 +104,17 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	FString HeadBone;
 
+	/* Hit React animation montage */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* HitMontage;
+
+	/* Attack animation montage */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* AttackMontage;
+
+	/* Array of Attack Montage section names */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	TArray<FName> AttackMontageSections;
 
 	/* How long Health Bar should be displayed when enemy is hit */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
@@ -116,6 +140,10 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	USphereComponent* AggroSphere;
 
+	/* Overlap sphere for Enemy to attack player */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	USphereComponent* AttackRangeSphere;
+
 	/* Is Enemy playing hit react animation */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	bool bStunned;
@@ -123,6 +151,10 @@ private:
 	/* Chance of Enemy being stunned when hit (0-1) */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	float StunChance;
+
+	/* Is player in attack range of Enemy */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	bool bInAttackRange;
 
 	/* Behavior Tree for Enemy AI Character */
 	UPROPERTY(EditAnywhere, Category = "Behavior Tree", meta = (AllowPrivateAccess = "true"))

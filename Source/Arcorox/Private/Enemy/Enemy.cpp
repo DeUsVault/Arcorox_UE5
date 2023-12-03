@@ -10,6 +10,7 @@
 #include "Animation/AnimMontage.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/SphereComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Characters/ArcoroxCharacter.h"
 
 AEnemy::AEnemy() :
@@ -21,12 +22,16 @@ AEnemy::AEnemy() :
 	MaxHitReactTime(0.8f),
 	HitDamageDestroyTime(1.5f),
 	bStunned(false),
-	StunChance(0.5f)
+	StunChance(0.5f),
+	bInAttackRange(false)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
 	AggroSphere = CreateDefaultSubobject<USphereComponent>(TEXT("AggroSphere"));
 	AggroSphere->SetupAttachment(GetRootComponent());
+
+	AttackRangeSphere = CreateDefaultSubobject<USphereComponent>(TEXT("AttackRangeSphere"));
+	AttackRangeSphere->SetupAttachment(GetRootComponent());
 }
 
 void AEnemy::BeginPlay()
@@ -34,8 +39,18 @@ void AEnemy::BeginPlay()
 	Super::BeginPlay();
 	
 	if (AggroSphere) AggroSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::AggroSphereOverlap);
+	if (AttackRangeSphere)
+	{
+		AttackRangeSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::AttackRangeSphereOverlap);
+		AttackRangeSphere->OnComponentEndOverlap.AddDynamic(this, &AEnemy::AttackRangeSphereEndOverlap);
+	}
 
-	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+	if (GetMesh())
+	{
+		GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+		GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	}
+	if (GetCapsuleComponent()) GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
 	EnemyController = Cast<AEnemyController>(GetController());
 	const FVector WorldPatrolPoint = UKismetMathLibrary::TransformLocation(GetActorTransform(), PatrolPoint);
@@ -79,6 +94,15 @@ void AEnemy::SetStunned(bool Stunned)
 	}
 }
 
+void AEnemy::SetInAttackRange(bool InRange)
+{
+	bInAttackRange = InRange;
+	if (EnemyController && EnemyController->GetBlackboardComponent())
+	{
+		EnemyController->GetBlackboardComponent()->SetValueAsBool(TEXT("InAttackRange"), bInAttackRange);
+	}
+}
+
 void AEnemy::DestroyHitDamage(UUserWidget* HitDamage)
 {
 	HitDamages.Remove(HitDamage);
@@ -92,6 +116,26 @@ void AEnemy::AggroSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 	if (ArcoroxCharacter && EnemyController && EnemyController->GetBlackboardComponent())
 	{
 		EnemyController->GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), ArcoroxCharacter);
+	}
+}
+
+void AEnemy::AttackRangeSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor == nullptr) return;
+	AArcoroxCharacter* ArcoroxCharacter = Cast<AArcoroxCharacter>(OtherActor);
+	if (ArcoroxCharacter)
+	{
+		SetInAttackRange(true);
+	}
+}
+
+void AEnemy::AttackRangeSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor == nullptr) return;
+	AArcoroxCharacter* ArcoroxCharacter = Cast<AArcoroxCharacter>(OtherActor);
+	if (ArcoroxCharacter)
+	{
+		SetInAttackRange(false);
 	}
 }
 
@@ -153,6 +197,11 @@ void AEnemy::PlayHitMontage(FHitResult& HitResult, float PlayRate)
 	GetWorldTimerManager().SetTimer(HitReactTimer, this, &AEnemy::ResetHitReactTimer, FMath::FRandRange(MinHitReactTime, MaxHitReactTime));
 }
 
+void AEnemy::PlayAttackMontage(float PlayRate)
+{
+	PlayRandomMontageSection(AttackMontage, AttackMontageSections, PlayRate);
+}
+
 void AEnemy::PlayMontageSection(UAnimMontage* Montage, const FName& SectionName, float PlayRate)
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
@@ -161,6 +210,13 @@ void AEnemy::PlayMontageSection(UAnimMontage* Montage, const FName& SectionName,
 		AnimInstance->Montage_Play(Montage, PlayRate);
 		AnimInstance->Montage_JumpToSection(SectionName, Montage);
 	}
+}
+
+void AEnemy::PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames, float PlayRate)
+{
+	if (SectionNames.Num() <= 0) return;
+	const int32 Section = FMath::FRandRange(0.f, SectionNames.Num() - 1);
+	PlayMontageSection(Montage, SectionNames[Section], PlayRate);
 }
 
 void AEnemy::Hit_Implementation(FHitResult HitResult)
