@@ -162,24 +162,24 @@ void AEnemy::AttackRangeSphereEndOverlap(UPrimitiveComponent* OverlappedComponen
 	}
 }
 
-void AEnemy::LeftWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AEnemy::InflictDamage(AActor* DamagedActor)
 {
-	if (OtherActor == nullptr) return;
-	AArcoroxCharacter* ArcoroxCharacter = Cast<AArcoroxCharacter>(OtherActor);
+	if (DamagedActor == nullptr) return;
+	AArcoroxCharacter* ArcoroxCharacter = Cast<AArcoroxCharacter>(DamagedActor);
 	if (ArcoroxCharacter)
 	{
-
+		UGameplayStatics::ApplyDamage(ArcoroxCharacter, WeaponDamage, EnemyController, this, UDamageType::StaticClass());
 	}
+}
+
+void AEnemy::LeftWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	InflictDamage(OtherActor);
 }
 
 void AEnemy::RightWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor == nullptr) return;
-	AArcoroxCharacter* ArcoroxCharacter = Cast<AArcoroxCharacter>(OtherActor);
-	if (ArcoroxCharacter)
-	{
-
-	}
+	InflictDamage(OtherActor);
 }
 
 void AEnemy::ShowHealthBar_Implementation()

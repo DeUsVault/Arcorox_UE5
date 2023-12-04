@@ -103,6 +103,7 @@ private:
 	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName, float PlayRate);
 	void PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames, float PlayRate);
 	void PlayHitMontage(FHitResult& HitResult, float PlayRate = 1.f);
+	void InflictDamage(AActor* DamagedActor);
 
 	/* Current health of enemy */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))

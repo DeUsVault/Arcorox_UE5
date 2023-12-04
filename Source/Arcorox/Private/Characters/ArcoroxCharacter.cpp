@@ -202,7 +202,13 @@ float AArcoroxCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	return 0.0f;
+	if (Health - DamageAmount <= 0.f)
+	{
+		Health = 0.f;
+		//Die
+	}
+	else Health -= DamageAmount;
+	return DamageAmount;
 }
 
 void AArcoroxCharacter::IncrementOverlappedItemCount(int8 Amount)
