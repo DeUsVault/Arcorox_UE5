@@ -169,6 +169,7 @@ void AEnemy::InflictDamage(AActor* DamagedActor)
 	if (ArcoroxCharacter)
 	{
 		UGameplayStatics::ApplyDamage(ArcoroxCharacter, WeaponDamage, EnemyController, this, UDamageType::StaticClass());
+		ArcoroxCharacter->PlayMeleeImpactSound();
 	}
 }
 

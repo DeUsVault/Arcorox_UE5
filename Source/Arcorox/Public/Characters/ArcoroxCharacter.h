@@ -89,6 +89,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetCrosshairSpreadMultiplier() const;
 
+	void PlayMeleeImpactSound();
+
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE UCameraComponent* GetCamera() const { return Camera; }
 	FORCEINLINE bool IsAiming() const { return bAiming; }
@@ -453,6 +455,10 @@ private:
 	/* Maximum health of character */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	float MaxHealth;
+
+	/* Sound played when character hit by melee attack */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	USoundBase* MeleeImpactSound;
 
 	/* Capacity of inventory */
 	const int32 InventoryCapacity = 6;

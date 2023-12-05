@@ -268,6 +268,11 @@ float AArcoroxCharacter::GetCrosshairSpreadMultiplier() const
 	return CrosshairSpreadMultiplier;
 }
 
+void AArcoroxCharacter::PlayMeleeImpactSound()
+{
+	if (MeleeImpactSound) UGameplayStatics::PlaySoundAtLocation(this, MeleeImpactSound, GetActorLocation());
+}
+
 void AArcoroxCharacter::Move(const FInputActionValue& Value)
 {
 	const FVector2D MovementVector = Value.Get<FVector2D>();
