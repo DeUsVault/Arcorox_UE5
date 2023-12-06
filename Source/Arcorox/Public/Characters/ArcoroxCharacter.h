@@ -90,6 +90,7 @@ public:
 	float GetCrosshairSpreadMultiplier() const;
 
 	void PlayMeleeImpactSound();
+	void SpawnBloodParticles(const FTransform& SocketTransform);
 
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE UCameraComponent* GetCamera() const { return Camera; }
@@ -459,6 +460,10 @@ private:
 	/* Sound played when character hit by melee attack */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	USoundBase* MeleeImpactSound;
+
+	/* Particle system for blood when getting hit */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	UParticleSystem* BloodParticles;
 
 	/* Capacity of inventory */
 	const int32 InventoryCapacity = 6;

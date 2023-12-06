@@ -273,6 +273,11 @@ void AArcoroxCharacter::PlayMeleeImpactSound()
 	if (MeleeImpactSound) UGameplayStatics::PlaySoundAtLocation(this, MeleeImpactSound, GetActorLocation());
 }
 
+void AArcoroxCharacter::SpawnBloodParticles(const FTransform& SocketTransform)
+{
+	if (BloodParticles) UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BloodParticles, SocketTransform);
+}
+
 void AArcoroxCharacter::Move(const FInputActionValue& Value)
 {
 	const FVector2D MovementVector = Value.Get<FVector2D>();

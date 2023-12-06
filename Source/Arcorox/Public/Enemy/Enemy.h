@@ -13,6 +13,7 @@ class USphereComponent;
 class UBoxComponent;
 class AEnemyController;
 class UBehaviorTree;
+class AArcoroxCharacter;
 
 UCLASS()
 class ARCOROX_API AEnemy : public ACharacter, public IHitInterface
@@ -103,7 +104,7 @@ private:
 	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName, float PlayRate);
 	void PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames, float PlayRate);
 	void PlayHitMontage(FHitResult& HitResult, float PlayRate = 1.f);
-	void InflictDamage(AActor* DamagedActor);
+	void InflictDamage(AArcoroxCharacter* ArcoroxCharacter, const FName& WeaponSocket);
 
 	/* Current health of enemy */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
@@ -188,6 +189,14 @@ private:
 	/* How much damage the Enemy inflicts per weapon hit */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	float WeaponDamage;
+
+	/* Name of left weapon bone socket */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	FName LeftWeaponSocket;
+
+	/* Name of right weaponn bone socket */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	FName RightWeaponSocket;
 
 	/* Behavior Tree for Enemy AI Character */
 	UPROPERTY(EditAnywhere, Category = "Behavior Tree", meta = (AllowPrivateAccess = "true"))

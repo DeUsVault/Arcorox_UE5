@@ -25,7 +25,9 @@ AEnemy::AEnemy() :
 	bStunned(false),
 	StunChance(0.5f),
 	bInAttackRange(false),
-	WeaponDamage(20.f)
+	WeaponDamage(20.f),
+	LeftWeaponSocket(TEXT("FX_Trail_L_02")),
+	RightWeaponSocket(TEXT("FX_Trail_R_02"))
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -162,25 +164,26 @@ void AEnemy::AttackRangeSphereEndOverlap(UPrimitiveComponent* OverlappedComponen
 	}
 }
 
-void AEnemy::InflictDamage(AActor* DamagedActor)
+void AEnemy::InflictDamage(AArcoroxCharacter* ArcoroxCharacter, const FName& WeaponSocket)
 {
-	if (DamagedActor == nullptr) return;
-	AArcoroxCharacter* ArcoroxCharacter = Cast<AArcoroxCharacter>(DamagedActor);
-	if (ArcoroxCharacter)
-	{
-		UGameplayStatics::ApplyDamage(ArcoroxCharacter, WeaponDamage, EnemyController, this, UDamageType::StaticClass());
-		ArcoroxCharacter->PlayMeleeImpactSound();
-	}
+	if (ArcoroxCharacter == nullptr) return;
+	UGameplayStatics::ApplyDamage(ArcoroxCharacter, WeaponDamage, EnemyController, this, UDamageType::StaticClass());
+	ArcoroxCharacter->PlayMeleeImpactSound();
+	ArcoroxCharacter->SpawnBloodParticles(GetMesh()->GetSocketTransform(WeaponSocket));
 }
 
 void AEnemy::LeftWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	InflictDamage(OtherActor);
+	if (OtherActor == nullptr) return;
+	AArcoroxCharacter* ArcoroxCharacter = Cast<AArcoroxCharacter>(OtherActor);
+	if(ArcoroxCharacter) InflictDamage(ArcoroxCharacter, LeftWeaponSocket);
 }
 
 void AEnemy::RightWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	InflictDamage(OtherActor);
+	if (OtherActor == nullptr) return;
+	AArcoroxCharacter* ArcoroxCharacter = Cast<AArcoroxCharacter>(OtherActor);
+	if (ArcoroxCharacter) InflictDamage(ArcoroxCharacter, RightWeaponSocket);
 }
 
 void AEnemy::ShowHealthBar_Implementation()
